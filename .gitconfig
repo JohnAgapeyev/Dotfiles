@@ -1,0 +1,5 @@
+[user]
+	name = John Agapeyev
+	email = jagapeyev@gmail.com
+[core]
+	editor = vim
