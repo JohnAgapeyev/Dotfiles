@@ -52,8 +52,8 @@ signal=11
 [volume]
 label=VOL
 #label=♪
-#instance=Master
-instance=PCM
+instance=Master
+#instance=PCM
 interval=once
 signal=10
 
@@ -108,7 +108,7 @@ interval=5
 label=CPU
 interval=10
 min_width=CPU: 100.00%
-#separator=false
+separator=true
 
 #[load_average]
 #interval=10
@@ -118,9 +118,8 @@ min_width=CPU: 100.00%
 # The battery instance defaults to 0.
 [battery]
 label=BAT
-#label=⚡
 #instance=1
-interval=30
+interval=10
 
 # Date Time
 #
@@ -148,7 +147,7 @@ interval=1
 # Support multiple chips, though lm-sensors.
 # The script may be called with -w and -c switches to specify thresholds,
 # see the script for details.
-[temperature]
-label=TEMP
-interval=10
+#[temperature]
+#label=TEMP
+#interval=10
 

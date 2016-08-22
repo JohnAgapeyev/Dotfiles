@@ -9,4 +9,4 @@ if [ -x /usr/bin/cowsay -a -x /usr/bin/fortune ]
     fortune|cowsay
 fi
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+#export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
