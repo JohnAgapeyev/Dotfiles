@@ -9,4 +9,9 @@ if [ -x /usr/bin/cowsay -a -x /usr/bin/fortune ]
     fortune|cowsay
 fi
 
+
+if [ -z "$DISPLAY" ] && [ "$(fgconsole)" -eq 1 ]; then
+  exec startx 
+fi
+
 #export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
