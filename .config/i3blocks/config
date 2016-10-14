@@ -51,11 +51,11 @@ signal=11
 # See the script for details.
 [volume]
 label=VOL
-#label=♪
+label=♪
 instance=Master
 #instance=PCM
 interval=once
-signal=10
+signal=1
 
 # Memory usage
 #
@@ -118,7 +118,7 @@ separator=true
 # The battery instance defaults to 0.
 [battery]
 label=BAT
-#instance=1
+#instance=0
 interval=10
 
 # Date Time
