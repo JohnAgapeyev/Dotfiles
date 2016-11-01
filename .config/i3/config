@@ -163,5 +163,5 @@ bar {
         status_command i3blocks
 }
 
-exec /usr/lib64/gnome-settings-daemon
 exec --no-startup-id feh --bg-scale ~/Pictures/watch_wallpaper.jpg
+exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
