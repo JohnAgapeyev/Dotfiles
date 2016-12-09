@@ -13,13 +13,16 @@ application/x-extension-xht=userapp-Firefox-4M79KY.desktop
 text/xml=firefox.desktop
 application/vnd.mozilla.xul+xml=firefox.desktop
 text/mml=firefox.desktop
+x-scheme-handler/mailto=userapp-Thunderbird-ME8WQY.desktop
+message/rfc822=userapp-Thunderbird-ME8WQY.desktop
 
 [Added Associations]
-x-scheme-handler/http=userapp-Firefox-4M79KY.desktop;
-x-scheme-handler/https=userapp-Firefox-4M79KY.desktop;firefox.desktop;
-text/html=userapp-Firefox-4M79KY.desktop;firefox.desktop;
-application/xhtml+xml=userapp-Firefox-4M79KY.desktop;firefox.desktop;
+x-scheme-handler/https=firefox.desktop;
+text/html=firefox.desktop;
+application/xhtml+xml=firefox.desktop;
 text/plain=geany.desktop;urxvt.desktop;
 text/xml=firefox.desktop;
 application/vnd.mozilla.xul+xml=firefox.desktop;
 text/mml=firefox.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird-ME8WQY.desktop;
+message/rfc822=userapp-Thunderbird-ME8WQY.desktop;
