@@ -131,7 +131,8 @@ bindsym XF86AudioMute exec amixer set Master toggle && exec pkill -SIGRTMIN+1 i3
 bindsym XF86AudioLowerVolume exec amixer set Master 2%- && exec pkill -SIGRTMIN+1 i3blocks
 bindsym XF86AudioRaiseVolume exec amixer set Master 2%+ && exec pkill -SIGRTMIN+1 i3blocks
 
-bindsym $mod+Control+l exec i3lock -e -i ~/Downloads/cryingseal.png -t -f
+#bindsym $mod+Control+l exec i3lock -e -i ~/Downloads/cryingseal.png -t -f
+bindsym $mod+Control+l exec sflock
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -165,3 +166,4 @@ bar {
 
 exec --no-startup-id feh --bg-scale ~/Pictures/watch_wallpaper.jpg
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
+exec --no-startup-id compton -CbG

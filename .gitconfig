@@ -1,5 +1,6 @@
 [user]
 	name = John Agapeyev
 	email = jagapeyev@gmail.com
+	signingkey = BC9BA90B
 [core]
 	editor = vim
