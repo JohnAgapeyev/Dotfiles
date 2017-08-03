@@ -9,6 +9,8 @@ alias ls='ls --color=auto'
 PS1='[\u@\h \W]\$ '
 
 export TERM=xterm-256color
+export VISUAL=nvim
+export EDITOR=nvim
 
 #Set SSH to use gpg-agent
 unset SSH_AGENT_PID
@@ -18,7 +20,6 @@ fi
 
 set GPG TTY
 export GPG_TTY=$(tty)
-
 
 # Start the gpg-agent if not already running
 if ! pgrep -x -u "${USER}" gpg-agent >/dev/null 2>&1; then

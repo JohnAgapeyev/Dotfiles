@@ -1,41 +1,42 @@
 set nocompatible              " be iMproved, required
-filetype off                  " required
-set t_Co=256
 
-set background=dark
-syntax on
+call plug#begin()
+Plug 'junegunn/vim-plug'
+Plug 'morhetz/gruvbox'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-fugitive'
+Plug 'scrooloose/syntastic'
+Plug 'Shougo/deoplete.nvim'
+Plug 'vim-airline/vim-airline'
+call plug#end()
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+if has('nvim')
+    "check if we need an upgrade or an update
+    command! PU PlugUpgrade | PlugUpdate
+    let s:need_install = keys(filter(copy(g:plugs), '!isdirectory(v:val.dir)'))
+    let s:need_clean = len(s:need_install) + len(globpath(g:plug_home, '*', 0, 1)) > len(filter(values(g:plugs), 'stridx(v:val.dir, g:plug_home) == 0'))
+    let s:need_install = join(s:need_install, ' ')
+    if has('vim_starting')
+        if s:need_clean
+            autocmd VimEnter * PlugClean!
+        endif
+        if len(s:need_install)
+            execute 'autocmd VimEnter * PlugInstall --sync' s:need_install '| source $MYVIMRC'
+            finish
+        endif
+    else
+        if s:need_clean
+            PlugClean!
+        endif
+        if len(s:need_install)
+            execute 'PlugInstall --sync' s:need_install | source $MYVIMRC
+            finish
+        endif
+    endif
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
-Plugin 'morhetz/gruvbox'
-
-Plugin 'scrooloose/nerdtree'
-
-Plugin 'tpope/vim-fugitive'
-
-Plugin 'scrooloose/syntastic'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+    " Use deoplete.
+    let g:deoplete#enable_at_startup = 1
+endif
 
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
@@ -46,6 +47,10 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+set t_Co=256
+
+set background=dark
+
 set number
 
 set autoread
@@ -53,15 +58,14 @@ set autoread
 set ruler
 
 set cmdheight=2
+set showcmd
 
 set hid
 
 set ignorecase
-
 set smartcase
 
 set hlsearch
-
 set incsearch
 
 set lazyredraw
@@ -77,8 +81,6 @@ set tm=500
 
 set foldcolumn=1
 
-set background=dark
-
 set encoding=utf8
 
 set ffs=unix,dos,mac
@@ -86,7 +88,6 @@ set ffs=unix,dos,mac
 set nobackup
 set nowb
 set noswapfile
-set expandtab
 
 set expandtab
 set smarttab
@@ -102,3 +103,11 @@ set wrap
 
 set ssop-=options    " do not store global and local values in a session
 set ssop-=folds      " do not store folds
+
+set mouse=a
+set confirm
+
+set backspace=indent,eol,start
+
+set wildmenu
+
