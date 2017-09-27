@@ -8,6 +8,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/syntastic'
 Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 Plug 'vim-airline/vim-airline'
+Plug 'ntpeters/vim-better-whitespace'
 call plug#end()
 
 if has('nvim')
@@ -46,6 +47,8 @@ let g:gruvbox_contrast_dark = "hard"
 autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+autocmd BufEnter * EnableStripWhitespaceOnSave
 
 set t_Co=256
 
