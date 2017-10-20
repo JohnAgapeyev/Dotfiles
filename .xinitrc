@@ -42,4 +42,6 @@ xscreensaver &
 xsetroot -cursor_name left_ptr &
 numlockx &
 
+xsets s off -dpms
+
 exec i3
