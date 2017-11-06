@@ -1,5 +1,10 @@
 set nocompatible              " be iMproved, required
 
+let s:vim_plug = '~/.local/share/nvim/site/autoload/plug.vim'
+if empty(glob(s:vim_plug, 1))
+  execute 'silent !curl -fLo' s:vim_plug '--create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+endif
+
 call plug#begin()
 Plug 'junegunn/vim-plug'
 Plug 'morhetz/gruvbox'
@@ -9,31 +14,19 @@ Plug 'scrooloose/syntastic'
 Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
+Plug 'skywind3000/asyncrun.vim'
 call plug#end()
 
 if has('nvim')
-    "check if we need an upgrade or an update
-    command! PU PlugUpgrade | PlugUpdate
-    let s:need_install = keys(filter(copy(g:plugs), '!isdirectory(v:val.dir)'))
-    let s:need_clean = len(s:need_install) + len(globpath(g:plug_home, '*', 0, 1)) > len(filter(values(g:plugs), 'stridx(v:val.dir, g:plug_home) == 0'))
-    let s:need_install = join(s:need_install, ' ')
-    if has('vim_starting')
-        if s:need_clean
-            autocmd VimEnter * PlugClean!
-        endif
-        if len(s:need_install)
-            execute 'autocmd VimEnter * PlugInstall --sync' s:need_install '| source $MYVIMRC'
-            finish
-        endif
-    else
-        if s:need_clean
-            PlugClean!
-        endif
-        if len(s:need_install)
-            execute 'PlugInstall --sync' s:need_install | source $MYVIMRC
-            finish
-        endif
+    "check if we need to install any missing plugins
+    let s:need_install = join(keys(filter(copy(g:plugs), '!isdirectory(v:val.dir)')), ' ')
+    if len(s:need_install)
+        "This needs to be called seperately in order for plugins to load correctly after installation
+        execute 'autocmd VimEnter * PlugInstall --sync' s:need_install '| source $MYVIMRC'
     endif
+
+    "Run update, upgrade, and clean in the background as an async task using the asyncrun plugin
+    autocmd VimEnter * AsyncRun 'nvim -u NONE --cmd "PlugUpdate | PlugUpgrade | PlugClean! | q"'
 
     " Use deoplete.
     let g:deoplete#enable_at_startup = 1
