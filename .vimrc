@@ -15,6 +15,7 @@ Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'skywind3000/asyncrun.vim'
+Plug 'isaacmorneau/vim-update-daily'
 call plug#end()
 
 if has('nvim')
@@ -25,8 +26,8 @@ if has('nvim')
         execute 'autocmd VimEnter * PlugInstall --sync' s:need_install '| source $MYVIMRC'
     endif
 
-    "Run update, upgrade, and clean in the background as an async task using the asyncrun plugin
-    autocmd VimEnter * AsyncRun 'nvim -u NONE --cmd "PlugUpdate | PlugUpgrade | PlugClean! | q"'
+    " Run this command daily using vim-update-daily plugin
+    let g:update_daily = 'PlugUpdate | PlugUpgrade | PlugClean | q'
 
     " Use deoplete.
     let g:deoplete#enable_at_startup = 1
