@@ -27,7 +27,7 @@ if has('nvim')
     endif
 
     " Run this command daily using vim-update-daily plugin
-    let g:update_daily = 'PlugUpdate | PlugUpgrade | PlugClean | q'
+    let g:update_daily = 'PlugUpdate | PlugUpgrade'
 
     " Use deoplete.
     let g:deoplete#enable_at_startup = 1
