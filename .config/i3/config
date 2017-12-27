@@ -170,4 +170,4 @@ bindsym $mod+r mode "resize"
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id feh --bg-scale ~/Pictures/snowden.jpg
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
-exec --no-startup-id compton -C
+exec --no-startup-id compton -b
