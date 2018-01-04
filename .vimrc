@@ -1,8 +1,10 @@
 set nocompatible              " be iMproved, required
 
-let s:vim_plug = '~/.local/share/nvim/site/autoload/plug.vim'
+"Silently download and install vim-plug
+let s:vim_plug = '~/.vim/autoload/plug.vim'
 if empty(glob(s:vim_plug, 1))
-  execute 'silent !curl -fLo' s:vim_plug '--create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    execute 'silent !curl -fLo' s:vim_plug '--create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin()
@@ -11,23 +13,28 @@ Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/syntastic'
-Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'isaacmorneau/vim-update-daily'
 call plug#end()
 
-if has('nvim')
-    "check if we need to install any missing plugins
-    let s:need_install = join(keys(filter(copy(g:plugs), '!isdirectory(v:val.dir)')), ' ')
-    if len(s:need_install)
-        "This needs to be called seperately in order for plugins to load correctly after installation
-        execute 'autocmd VimEnter * PlugInstall --sync' s:need_install '| source $MYVIMRC'
-    endif
+"Autoinstall plugins
+autocmd VimEnter *
+            \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+            \|   PlugInstall --sync | q
+            \| endif
 
+if has('nvim')
     " Run this command daily using vim-update-daily plugin
-    let g:update_daily = 'PlugUpdate | PlugUpgrade'
+    let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
 
     " Use deoplete.
     let g:deoplete#enable_at_startup = 1
@@ -42,6 +49,7 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+"Strip trailing whitespace on save
 autocmd BufEnter * EnableStripWhitespaceOnSave
 
 set t_Co=256
@@ -90,6 +98,8 @@ set expandtab
 set smarttab
 set shiftwidth=4
 set tabstop=4
+
+filetype indent plugin on
 
 set lbr
 set tw=500
