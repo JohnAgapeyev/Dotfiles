@@ -171,3 +171,4 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id feh --bg-scale ~/Pictures/snowden.jpg
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id compton -b
+exec --no-startup-id unclutter -b
