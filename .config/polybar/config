@@ -49,7 +49,7 @@ font-1 = fixed:pixelsize=10;1
 
 modules-left = i3
 modules-center =
-modules-right = xkeyboard filesystem xbacklight volume memory cpu wlan eth battery temperature date powermenu
+modules-right = xkeyboard filesystem xbacklight volume memory cpu wlan eth battery temperature date
 
 tray-position = right
 tray-padding = 1
