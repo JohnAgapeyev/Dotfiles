@@ -134,6 +134,11 @@ bindsym XF86AudioMute exec amixer set Master toggle && exec pkill -SIGRTMIN+1 i3
 bindsym XF86AudioLowerVolume exec amixer set Master 2%- && exec pkill -SIGRTMIN+1 i3blocks
 bindsym XF86AudioRaiseVolume exec amixer set Master 2%+ && exec pkill -SIGRTMIN+1 i3blocks
 
+bindsym XF86AudioPlay exec mpc toggle
+bindsym XF86AudioStop exec mpc stop
+bindsym XF86AudioPrev exec mpc prev
+bindsym XF86AudioNext exec mpc next
+
 #bindsym $mod+Control+l exec i3lock -e -i ~/Downloads/cryingseal.png -t -f
 bindsym $mod+Control+l exec sflock
 
