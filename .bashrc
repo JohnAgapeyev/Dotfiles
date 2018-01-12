@@ -8,7 +8,7 @@
 alias ls='ls --color=auto'
 PS1='[\u@\h \W]\$ '
 
-export TERM=xterm-256color
+export TERM=rxvt-256color
 export VISUAL=nvim
 export EDITOR=nvim
 
