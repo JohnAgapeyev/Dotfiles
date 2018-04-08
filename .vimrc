@@ -22,8 +22,8 @@ else
 endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
-Plug 'skywind3000/asyncrun.vim'
 Plug 'isaacmorneau/vim-update-daily'
+Plug 'zchee/deoplete-clang'
 call plug#end()
 
 "Autoinstall plugins
@@ -47,10 +47,13 @@ let g:gruvbox_contrast_dark = "hard"
 "Enable nerdtree on launch and restore focus to file window
 autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 "Strip trailing whitespace on save
 autocmd BufEnter * EnableStripWhitespaceOnSave
+
+"Close preview window after insertion completion
+autocmd CompleteDone * pclose
 
 set t_Co=256
 
