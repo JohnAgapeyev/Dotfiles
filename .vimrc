@@ -15,15 +15,15 @@ Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/syntastic'
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'zchee/deoplete-clang'
+    Plug 'Shougo/neoinclude.vim'
 else
-    Plug 'Shougo/deoplete.nvim'
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
 endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
-Plug 'zchee/deoplete-clang'
 call plug#end()
 
 "Autoinstall plugins
