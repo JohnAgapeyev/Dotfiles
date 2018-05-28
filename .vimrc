@@ -55,6 +55,12 @@ autocmd BufEnter * EnableStripWhitespaceOnSave
 "Close preview window after insertion completion
 autocmd CompleteDone * pclose
 
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
 set t_Co=256
 
 set background=dark
