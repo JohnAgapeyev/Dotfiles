@@ -249,9 +249,6 @@ set backspace=indent,eol,start
 "Wildcard/enhanced menu mode
 set wildmenu
 
-"Tell me what's open
-set title
-
 "Save all mistakes and edits
 set undofile
 set undolevels=1000
