@@ -12,7 +12,7 @@ Plug 'junegunn/vim-plug'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/syntastic'
+Plug 'neomake/neomake'
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'zchee/deoplete-clang'
@@ -26,6 +26,47 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
 call plug#end()
 
+"Create directories if they don't exist
+"This will also set the temp files be stored in those directories
+function! InitializeDirectories()
+    let parent = $HOME
+    let prefix = 'vim'
+    let dir_list = {
+                \ 'backup': 'backupdir',
+                \ 'views':  'viewdir',
+                \ 'swap':   'directory',
+                \ 'undo':   'undodir' }
+
+    let common_dir = parent . '/.' . prefix
+
+    for [dirname, settingname] in items(dir_list)
+        let directory = common_dir . dirname . '/'
+        if exists("*mkdir")
+            if !isdirectory(directory)
+                call mkdir(directory)
+            endif
+        endif
+        if !isdirectory(directory)
+            echo "Warning: Unable to create backup directory: " . directory
+            echo "Try: mkdir -p " . directory
+        else
+            let directory = substitute(directory, " ", "\\\\ ", "g")
+            exec "set " . settingname . "=" . directory
+        endif
+    endfor
+    let g:scratch_dir = common_dir . 'scratch'. '/'
+    if exists("*mkdir")
+        if !isdirectory(g:scratch_dir)
+            call mkdir(g:scratch_dir)
+        endif
+    endif
+    if !isdirectory(g:scratch_dir)
+        echo "Warning: Unable to create scratch directory: " . g:scratch_dir
+        echo "Try: mkdir -p " . g:scratch_dir
+    endif
+endfunction
+call InitializeDirectories()
+
 "Autoinstall plugins
 autocmd VimEnter *
             \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
@@ -33,12 +74,61 @@ autocmd VimEnter *
             \| endif
 
 if has('nvim')
-    " Run this command daily using vim-update-daily plugin
-    let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
-
     " Use deoplete.
     let g:deoplete#enable_at_startup = 1
+    "dont require the same file type
+    let g:deoplete#buffer#require_same_filetype = 0
 endif
+
+"Set proper python paths
+let g:python_host_prog = '/usr/bin/python2'
+let g:python3_host_prog = '/usr/bin/python3'
+
+"NEOMAKE
+"
+" When writing a buffer (no delay).
+call neomake#configure#automake('w')
+
+let g:neomake_c_enabled_makers=['gcc']
+let g:neomake_cpp_enabled_makers=['gcc']
+
+let g:neomake_c_gcc_args=[
+            \ '-std=c11',
+            \ '-Wall',
+            \ '-Wextra',
+            \ '-Wpedantic',
+            \ '-Wformat=2',
+            \ '-Wuninitialized',
+            \ '-Wundef',
+            \ '-Wfloat-equal',
+            \ '-Wshadow',
+            \ '-Wcast-align',
+            \ '-Wstrict-prototypes',
+            \ '-Wstrict-overflow=2',
+            \ '-Wwrite-strings',
+            \ '-fopenmp',
+            \ ]
+let g:neomake_cpp_gcc_args=[
+            \ '-std=c++17',
+            \ '-Wall',
+            \ '-Wextra',
+            \ '-Wpedantic',
+            \ '-Wformat=2',
+            \ '-Wuninitialized',
+            \ '-Wundef',
+            \ '-Wfloat-equal',
+            \ '-Wshadow',
+            \ '-Wcast-align',
+            \ '-Wstrict-prototypes',
+            \ '-Wstrict-overflow=2',
+            \ '-Wwrite-strings',
+            \ '-fopenmp',
+            \ ]
+"
+"END NEOMAKE
+
+" Run this command daily using vim-update-daily plugin
+let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
 
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
@@ -55,75 +145,124 @@ autocmd BufEnter * EnableStripWhitespaceOnSave
 "Close preview window after insertion completion
 autocmd CompleteDone * pclose
 
+"Jump to last open
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+"AIRLINE
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
 
 " Show just the filename
 let g:airline#extensions#tabline#fnamemod = ':t'
+"END AIRLINE
 
-set t_Co=256
+"Enable syntax highlighting
+syntax on
 
+"Set indent style from plugin
+filetype indent plugin on
+
+"Use a dark background
 set background=dark
 
+"Show absolute column numbers
 set number
 
+"Reread a file if Vim didn't touch it
 set autoread
 
+"Display cursor position in file
 set ruler
 
+"Number of lines in cmd height
 set cmdheight=2
+
+"Show the current command
 set showcmd
 
+"Hide a buffer when it is abandoned
 set hid
 
+"Enable list mode to show whitespace
+set list
+
+"Don't be so pedantic about case
 set ignorecase
 set smartcase
 
+"Highlight all search matches
 set hlsearch
+"Search the incremental pattern, rather than when I press enter
 set incsearch
 
+"Don't repaint when executing macros
 set lazyredraw
 
+"Modern magic characters instead of vi legacy cruft
 set magic
 
+"Brief jump to matching brace if it's on screen
 set showmatch
 
+"No sounds or flashing lights, I'm not a child
 set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
 
+"Show open/close folds
 set foldcolumn=1
 
+"Use utf8 like a normal person
 set encoding=utf8
 
+"LF is the only acceptable line ending
 set ffs=unix,dos,mac
 
-set nobackup
-set nowb
-set noswapfile
-
+"Tabs are 4 spaces
 set expandtab
 set smarttab
 set shiftwidth=4
 set tabstop=4
 
-filetype indent plugin on
-
-set lbr
-set tw=500
-
+"Enable auto and smart indent
 set ai
 set si
+
+"Enable line wrapping
 set wrap
 
-set ssop-=options    " do not store global and local values in a session
-set ssop-=folds      " do not store folds
+"Do not store global and local values in a session
+set ssop-=options
+"Do not store folds
+set ssop-=folds
 
+"Allow me to use the mouse on terminal vim
 set mouse=a
+
+"Ask me if I'm doing something dumb
 set confirm
 
+"Be smart about backspacing
 set backspace=indent,eol,start
 
+"Wildcard/enhanced menu mode
 set wildmenu
 
+"Tell me what's open
+set title
+
+"Save all mistakes and edits
+set undofile
+set undolevels=1000
+set undoreload=10000
+
+"visualize whitepsace
+set listchars=tab:→→,trail:●,nbsp:○
+
+"Set up scratch file saving
+let g:scratch_persistence_file = g:scratch_dir . strftime("scratch_%Y-%m-%d")
+let g:scratch_no_mappings = 1
+
+"share vim and system clipboard
+set clipboard+=unnamed
