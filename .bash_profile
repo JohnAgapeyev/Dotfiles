@@ -6,6 +6,6 @@
 
 if [ -x /usr/bin/cowsay -a -x /usr/bin/fortune ]
   then
-    fortune -a | cowsay | lolcat
+    fortune -a | cowsay | lolcat -t
 fi
 
