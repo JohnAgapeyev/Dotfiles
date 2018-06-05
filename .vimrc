@@ -133,6 +133,7 @@ let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
 let g:gruvbox_contrast_dark = "hard"
+let g:gruvbox_italic = 1
 
 "Enable nerdtree on launch and restore focus to file window
 autocmd StdinReadPre * let s:std_in=1
