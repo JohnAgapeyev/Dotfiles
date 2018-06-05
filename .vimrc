@@ -263,3 +263,6 @@ let g:scratch_no_mappings = 1
 
 "share vim and system clipboard
 set clipboard+=unnamed
+
+"enable true 24-bit colour
+set tgc
