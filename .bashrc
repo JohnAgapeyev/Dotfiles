@@ -29,3 +29,19 @@ fi
 
 # Refresh gpg-agent tty in case user switches into an X session
 gpg-connect-agent updatestartuptty /bye >/dev/null
+
+function changeaudio() {
+    echo "Setting default sink to: $1";
+    pacmd set-default-sink $1
+    pacmd list-sink-inputs | grep index | while read line
+    do
+        echo "Moving input: ";
+        echo $line | cut -f2 -d' ';
+        echo "to sink: $1";
+        pacmd move-sink-input `echo $line | cut -f2 -d' '` $1
+    done
+}
+
+function mvsane () {
+    mv "$@" $(echo "$@" | sed -r 's/[ ]+/_/g' | sed -r 's/[^a-zA-Z0-9_.-]//g' | sed -r 's/[_-]{2,}/-/g')
+}
