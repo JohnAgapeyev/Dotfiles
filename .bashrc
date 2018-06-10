@@ -13,6 +13,9 @@ export TERMINAL=termite
 export VISUAL=nvim
 export EDITOR=nvim
 
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++
+
 #Set SSH to use gpg-agent
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
