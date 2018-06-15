@@ -51,3 +51,10 @@ function mvsane () {
         mv "$F" $(echo "$F" | sed -r 's/[ ]+/_/g' | sed -r 's/[^a-zA-Z0-9_.-]//g' | sed -r 's/[_-]{2,}/-/g')
     done
 }
+
+function shellencode () {
+    for F in "$@"
+    do
+        printf '"' && xxd -g 0 $F | awk '{print $2}' | fold -w2 | awk '{print "\\x" $1}' | tr -d '\n' && echo '"'
+    done
+}
