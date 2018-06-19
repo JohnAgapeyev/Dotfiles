@@ -58,3 +58,26 @@ function shellencode () {
         printf '"' && xxd -g 0 $F | awk '{print $2}' | fold -w2 | awk '{print "\\x" $1}' | tr -d '\n' && echo '"'
     done
 }
+
+function repeat () {
+    local i max
+    max=$1; shift;
+    for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+        eval "$@";
+    done
+}
+
+function hexlines() {
+    LIN=$1
+    WID=$2
+    if [ $(($WID%2)) -eq 0 ]; then
+        head -c $(($LIN * $WID / 2)) /dev/urandom | xxd -g0 -| awk '{print $2}' | tr -d '\n' | fold -w$WID && echo
+    else
+        head -c $(($LIN * $(($WID / 2 + 1)))) /dev/urandom | xxd -g0 -| awk '{print $2}' | tr -d '\n' | fold -w$WID | head -n $LIN
+    fi
+}
+
+function newhex() {
+    BYTE_COUNT=$(($1 * $2))
+    dd iflag=count_bytes if=/dev/urandom count=$BYTE_COUNT 2> /dev/null | xxd -g 0 -c $2 | awk '{print $2}'
+}
