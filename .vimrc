@@ -180,6 +180,7 @@ let g:gruvbox_italic = 1
 "Enable nerdtree on launch and restore focus to file window
 autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
+autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
 autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 "Strip trailing whitespace on save
