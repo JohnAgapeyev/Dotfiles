@@ -28,8 +28,6 @@ Plug 'isaacmorneau/vim-update-daily'
 
 " Track the engine.
 Plug 'SirVer/ultisnips'
-" Snippets are separated from the engine. Add this if you want them:
-Plug 'honza/vim-snippets'
 call plug#end()
 
 "Create directories if they don't exist
@@ -93,6 +91,7 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 "ULTISNIPS
 let g:UltiSnipsUsePythonVersion = 3
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/customsnippets']
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-space>"
