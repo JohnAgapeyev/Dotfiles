@@ -24,6 +24,11 @@ endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
+
+" Track the engine.
+Plug 'SirVer/ultisnips'
+" Snippets are separated from the engine. Add this if you want them:
+Plug 'honza/vim-snippets'
 call plug#end()
 
 "Create directories if they don't exist
@@ -78,14 +83,24 @@ if has('nvim')
     let g:deoplete#enable_at_startup = 1
     "dont require the same file type
     let g:deoplete#buffer#require_same_filetype = 0
+    "
 endif
 
 "Set proper python paths
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python3'
 
+"ULTISNIPS
+let g:UltiSnipsUsePythonVersion = 3
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsListSnippets="<c-space>"
+let g:UltiSnipsJumpForwardTrigger="<c-l>"
+let g:UltiSnipsJumpBackwardTrigger="<c-h>"
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
 "NEOMAKE
-"
 " When writing a buffer (no delay).
 call neomake#configure#automake('w')
 
