@@ -13,6 +13,7 @@ Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-fugitive'
 Plug 'neomake/neomake'
+Plug 'junegunn/fzf'
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'zchee/deoplete-clang'
@@ -141,6 +142,32 @@ let g:neomake_cpp_gcc_args=[
             \ ]
 "
 "END NEOMAKE
+
+"[fzf]
+map <C-m> :FZF<CR>
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+
+" The Silver Searcher
+if executable('ag')
+    let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+    set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+" ripgrep
+if executable('rg')
+    let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
+    set grepprg=rg\ --vimgrep
+    command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+endif
+
+"tab nav with shift
+nnoremap H gT
+nnoremap L gt
+"tab management with t leader
+nnoremap tn :tabnew<CR>
+nnoremap tq :tabclose<CR>
 
 " Run this command daily using vim-update-daily plugin
 let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
