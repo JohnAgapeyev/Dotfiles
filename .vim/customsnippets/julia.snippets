@@ -1,3 +1,108 @@
+
+snippet #!
+	#!/usr/bin/env julia
+
+endsnippet
+snippet fun "definition"
+	function ${1}(${2})
+		${0}
+	end
+
+endsnippet
+snippet ret "return"
+	return(${0})
+
+endsnippet
+snippet pr "print"
+	print("${1}")
+	${0}
+endsnippet
+snippet prl "line"
+	println("${1}")
+	${0}
+
+endsnippet
+snippet use "package"
+	using ${0}
+
+endsnippet
+snippet incl "code"
+	include("${1}")
+	${0}
+endsnippet
+snippet forc "container"
+	for ${1} in ${2}
+		${0}
+	end
+endsnippet
+snippet for "loop"
+	for ${1} = ${2}
+		${0}
+	end
+endsnippet
+snippet fornest "loop"
+	for ${1} = ${2}, ${3} = ${4}
+		${0}
+	end
+endsnippet
+snippet wh "loop"
+	while ${1} ${2:<=} ${3}
+		${0}
+	end
+endsnippet
+snippet if "statement"
+	if ${1}
+		${0}
+	end
+endsnippet
+snippet el "statement"
+	else
+		${0}
+
+endsnippet
+snippet eif "statement"
+	else if ${1}
+		${0}
+endsnippet
+snippet ife "if"-else statement
+	if ${1}
+		${2}
+	else
+		${0}
+	end
+endsnippet
+snippet tern "operator"
+	${1} ? ${2} : ${3:nothing}
+endsnippet
+snippet try "catch"
+	try
+		${1:${VISUAL}}
+	catch ${2}
+		${0}
+	end
+endsnippet
+snippet fin "statement"
+	finally
+		${0}
+
+endsnippet
+snippet thr "throw"
+	throw(${1})
+	${0}
+endsnippet
+snippet in
+	info("${1}")
+	${0}
+
+endsnippet
+snippet wa
+	warn("${1}")
+	${0}
+endsnippet
+snippet err
+	error("${1}")
+	${0}
+endsnippet
 # Documentation
 snippet docf "function documentation" b
 #' @description

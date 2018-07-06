@@ -1,4 +1,4 @@
-#resource controller
+
 snippet l_rsc "Laravel resource controller" b
 /*!
  * \class       $1
@@ -34,7 +34,7 @@ class ${1:`!v expand('%:t:r')`} extends ${2:BaseController} {
 }
 endsnippet
 
-#service service provider
+endsnippet
 snippet l_ssp "Laravel service provider for service" b
 <?php
 
@@ -62,7 +62,7 @@ class ${2:`!v expand('%:t:r')`} extends ServiceProvider {
 }
 endsnippet
 
-#repository service provider
+endsnippet
 snippet l_rsp "Laravel service provider for repository" b
 <?php
 
@@ -102,7 +102,7 @@ class ${3:`!v expand('%:t:r')`} extends ServiceProvider {
 }
 endsnippet
 
-#model
+endsnippet
 snippet l_md "Laravel simple model" b
 <?php
 
@@ -124,10 +124,8 @@ class ${2:`!v expand('%:t:r')`} extends \Eloquent {
     protected $hidden  = [$6];
 
     protected $guarded = [${7:'id'}];
-}
+}endsnippet
 endsnippet
-
-#abstract repository
 snippet l_ar "Laravel abstract Repository" b
 <?php
 
@@ -192,10 +190,8 @@ abstract class ${2:`!v expand('%:t:r')`} implements ${3:BaseRepositoryInterface}
     public function find($id, $columns = ['*']) {
         return $this->model->find($id, $columns);
     }
-}
+}endsnippet
 endsnippet
-
-#repository
 snippet l_r "Laravel Repository" b
 <?php
 
@@ -212,10 +208,8 @@ namespace ${1:Repositories\\$2};
 
 class ${3:`!v expand('%:t:r')`} extends \\$6 implements ${4:$3RepositoryInterface} {
     $7
-}
+}endsnippet
 endsnippet
-
-#service
 snippet l_s "Laravel Service" b
 <?php
 
@@ -240,10 +234,8 @@ class ${2:`!v expand('%:t:r')`} {
     public function __construct($4 $repo) {
         $this->$5 = $repo;
     }
-}
+}endsnippet
 endsnippet
-
-#facade
 snippet l_f "Laravel Facade" b
 <?php
 
@@ -266,5 +258,5 @@ class ${2:`!v expand('%:t:r')`} extends Facade {
      * \return      string
      */
     protected static function getFacadeAccessor() { return '${4:$3Service}'; }
-}
+}endsnippet
 endsnippet

@@ -6,6 +6,7 @@ snippet ns "Namespace" b
 {namespace ${1:name}}
 endsnippet
 
+endsnippet
 snippet tmpl "Template" b
 /**
  * ${2:TODO(`whoami`): Describe this template.}
@@ -15,22 +16,22 @@ snippet tmpl "Template" b
 {/template}
 endsnippet
 
+endsnippet
 snippet msg "Message" b
 {msg desc="${1:description}"}
 	$0
-{/msg}
+{/msg}endsnippet
 endsnippet
-
 snippet let "let command" b
 {let $${1:identifier}: ${2:expression} /}
 endsnippet
 
+endsnippet
 snippet if "if .. (if)" b
 {if ${1:expression}}
 	$0
-{/if}
+{/if}endsnippet
 endsnippet
-
 snippet ife "if .. else (ife)" b
 {if ${1:expression}}
 	$2
@@ -39,25 +40,27 @@ snippet ife "if .. else (ife)" b
 {/if}
 endsnippet
 
+endsnippet
 snippet eli "else if .. (eli)" b
 {elif ${1:expression}}
 	$0
 endsnippet
 
+endsnippet
 snippet fore "foreach command" b
 {foreach $${1:var} in ${2:ref}}
 	$0
-{/foreach}
+{/foreach}endsnippet
 endsnippet
-
 snippet for "for command" b
 {for $${1:var} in range(${2:rangeexpr})}
 	$0
 {/for}
 endsnippet
 
+endsnippet
 snippet call "template call" b
 {call ${1:tmpl}}
 	$0
-{/call}
+{/call}endsnippet
 endsnippet

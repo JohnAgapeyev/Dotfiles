@@ -1,3 +1,199 @@
+
+extends html
+
+snippet %
+	{% ${1} %}
+
+endsnippet
+snippet %%
+	{% ${1:tag_name} %}
+	${0}
+	{% end$1 %}
+
+endsnippet
+snippet {
+	{{ ${1} }}
+
+endsnippet
+snippet autoescape
+	{% autoescape ${1:off} %}
+		${0}
+	{% endautoescape %}
+
+endsnippet
+snippet block
+	{% block ${1} %}
+		${0}
+	{% endblock %}
+
+endsnippet
+snippet #
+	{# ${0:comment} #}
+
+endsnippet
+snippet comment
+	{% comment %}
+		${0}
+	{% endcomment %}
+
+endsnippet
+snippet cycle
+	{% cycle ${1:val1} ${2:val2} ${3:as ${4}} %}
+
+endsnippet
+snippet debug
+	{% debug %}
+
+endsnippet
+snippet extends
+	{% extends "${0:base.html}" %}
+
+endsnippet
+snippet filter
+	{% filter ${1} %}
+		${0}
+	{% endfilter %}
+
+endsnippet
+snippet firstof
+	{% firstof ${1} %}
+
+endsnippet
+snippet for
+	{% for ${1} in ${2} %}
+		${0}
+	{% endfor %}
+
+endsnippet
+snippet empty
+	{% empty %}
+	${0}
+endsnippet
+snippet if
+	{% if ${1} %}
+		${0}
+	{% endif %}
+endsnippet
+snippet el
+	{% else %}
+		${1}
+
+endsnippet
+snippet eif
+	{% elif ${1} %}
+		${0}
+endsnippet
+snippet ifchanged
+	{% ifchanged %}${1}{% endifchanged %}
+endsnippet
+snippet ifequal
+	{% ifequal ${1} ${2} %}
+		${0}
+	{% endifequal %}
+endsnippet
+snippet ifnotequal
+	{% ifnotequal ${1} ${2} %}
+		${0}
+	{% endifnotequal %}
+endsnippet
+snippet include
+	{% include "${0}" %}
+endsnippet
+snippet load
+	{% load ${0} %}
+endsnippet
+snippet now
+	{% now "${0:jS F Y H:i}" %}
+endsnippet
+snippet regroup
+	{% regroup ${1} by ${2} as ${0} %}
+endsnippet
+snippet spaceless
+	{% spaceless %}${0}{% endspaceless %}
+endsnippet
+snippet ssi
+	{% ssi ${0} %}
+endsnippet
+snippet trans
+	{% trans "${0:string}" %}
+endsnippet
+snippet url
+	{% url ${1} as ${0} %}
+endsnippet
+snippet widthratio
+	{% widthratio ${1:this_value} ${2:max_value} ${0:100} %}
+endsnippet
+snippet with
+	{% with ${1} as ${2} %}
+		${0}
+	{% endwith %}
+endsnippet
+snippet add
+	add:"${0}"
+endsnippet
+snippet center
+	center:"${0}"
+endsnippet
+snippet cut
+	cut:"${0}"
+endsnippet
+snippet date
+	date:"${0}"
+endsnippet
+snippet default
+	default:"${0}"
+endsnippet
+snippet defaultifnone
+	default_if_none:"${0}"
+endsnippet
+snippet dictsort
+	dictsort:"${0}"
+endsnippet
+snippet dictsortrev
+	dictsortreversed:"${0}"
+endsnippet
+snippet divisibleby
+	divisibleby:"${0}"
+endsnippet
+snippet floatformat
+	floatformat:"${0}"
+endsnippet
+snippet getdigit
+	get_digit:"${0}"
+endsnippet
+snippet join
+	join:"${0}"
+endsnippet
+snippet lengthis
+	length_is:"${0}"
+endsnippet
+snippet pluralize
+	pluralize:"${0}"
+endsnippet
+snippet removetags
+	removetags:"${0}"
+endsnippet
+snippet slice
+	slice:"${0}"
+endsnippet
+snippet stringformat
+	stringformat:"${0}"
+endsnippet
+snippet time
+	time:"${0}"
+endsnippet
+snippet truncatewords
+	truncatewords:${0}
+endsnippet
+snippet truncatewordshtml
+	truncatewords_html:${0}
+endsnippet
+snippet urlizetrunc
+	urlizetrunc:${0}
+endsnippet
+snippet wordwrap
+	wordwrap:${0}
+endsnippet
 priority -50
 
 extends html

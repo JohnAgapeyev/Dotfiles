@@ -81,3 +81,18 @@ function newhex() {
     BYTE_COUNT=$(($1 * $2))
     dd iflag=count_bytes if=/dev/urandom count=$BYTE_COUNT 2> /dev/null | xxd -g 0 -c $2 | awk '{print $2}'
 }
+
+function convertsnip () {
+    for F in "$@"
+    do
+        cat "$F" | sed -r 's/^#.*//' |  sed -r 's/(^snippet)/\nendsnippet\n\1/' | sed -r '0,/endsnippet/ s///' | sed '/^$/N;/^\n$/D'| sed -r 'N;s/\n+(endsnippet)/\1/' | sed -r 's/(snippet \w+) (\w+[ ]?)+/\1 "\2"/' > "$F".conv && echo endsnippet >> "$F".conv
+        mv "$F".conv "$F"
+    done
+}
+
+function mergefiles() {
+    for F in "$@"
+    do
+        cat $F~ >> $F
+    done
+}

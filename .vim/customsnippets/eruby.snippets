@@ -1,3 +1,237 @@
+
+extends html
+
+snippet rc
+	<% ${0} %>
+
+endsnippet
+snippet rce
+	<%= ${1} %>
+
+endsnippet
+snippet %
+	<% ${0} %>
+
+endsnippet
+snippet =
+	<%= ${1} %>
+
+endsnippet
+snippet end
+	<% end %>
+
+endsnippet
+snippet ead
+	<% ${1}.each do |${2}| %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet for
+	<% for ${2:item} in ${1} %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet rp
+	<%= render partial: '${0:item}' %>
+
+endsnippet
+snippet rpl
+	<%= render partial: '${1:item}', locals: { :${2:name} => '${3:value}'${0} } %>
+
+endsnippet
+snippet rps
+	<%= render partial: '${1:item}', status: ${0:500} %>
+
+endsnippet
+snippet rpc
+	<%= render partial: '${1:item}', collection: ${0:items} %>
+
+endsnippet
+snippet lia
+	<%= link_to '${1:link text...}', action: '${0:index}' %>
+
+endsnippet
+snippet liai
+	<%= link_to '${1:link text...}', action: '${2:edit}', id: ${0:@item} %>
+
+endsnippet
+snippet lic
+	<%= link_to '${1:link text...}', controller: '${0:items}' %>
+
+endsnippet
+snippet lica
+	<%= link_to '${1:link text...}', controller: '${2:items}', action: '${0:index}' %>
+
+endsnippet
+snippet licai
+	<%= link_to '${1:link text...}', controller: '${2:items}', action: '${3:edit}', id: ${0:@item} %>
+
+endsnippet
+snippet yield
+	<%= yield ${1::content_symbol} %>
+
+endsnippet
+snippet conf
+	<% content_for :${1:head} do %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet cs
+	<%= collection_select <+object+>, <+method+>, <+collection+>, <+value_method+>, <+text_method+><+, <+[options]+>, <+[html_options]+>+> %>
+
+endsnippet
+snippet ct
+	<%= content_tag '${1:DIV}', ${2:content}${0:,options} %>
+
+endsnippet
+snippet ff
+	<%= form_for @${1:model} do |f| %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet ffi
+	<%= ${1:f}.input :${0:attribute} %>
+
+endsnippet
+snippet ffcb
+	<%= ${1:f}.check_box :${0:attribute} %>
+
+endsnippet
+snippet ffe
+	<% error_messages_for :${1:model} %>
+
+	<%= form_for @${2:model} do |f| %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet ffff
+	<%= ${1:f}.file_field :${0:attribute} %>
+
+endsnippet
+snippet ffhf
+	<%= ${1:f}.hidden_field :${0:attribute} %>
+
+endsnippet
+snippet ffl
+	<%= ${1:f}.label :${2:attribute}, '${0:$2}' %>
+
+endsnippet
+snippet ffpf
+	<%= ${1:f}.password_field :${0:attribute} %>
+
+endsnippet
+snippet ffrb
+	<%= ${1:f}.radio_button :${2:attribute}, :${0:tag_value} %>
+
+endsnippet
+snippet ffs
+	<%= ${1:f}.submit "${0:submit}" %>
+
+endsnippet
+snippet ffta
+	<%= ${1:f}.text_area :${0:attribute} %>
+
+endsnippet
+snippet fftf
+	<%= ${1:f}.text_field :${0:attribute} %>
+
+endsnippet
+snippet fields
+	<%= fields_for :${1:model}, @$1 do |${2:f}| %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet i18
+	I18n.t('${1:type.key}')
+
+endsnippet
+snippet it
+	<%= image_tag "${1}"${0} %>
+
+endsnippet
+snippet jit
+	<%= javascript_include_tag ${0::all} %>
+
+endsnippet
+snippet jsit
+	<%= javascript_include_tag "${0}" %>
+
+endsnippet
+snippet lim
+	<%= link_to ${1:model}.${2:name}, ${3:$1}_path(${0:$1}) %>
+
+endsnippet
+snippet linp
+	<%= link_to "${1:Link text...}", ${2:parent}_${3:child}_path(${4:@$2}, ${0:@$3}) %>
+
+endsnippet
+snippet linpp
+	<%= link_to "${1:Link text...}", ${2:parent}_${3:child}_path(${0:@$2}) %>
+
+endsnippet
+snippet lip
+	<%= link_to "${1:Link text...}", ${2:model}_path(${0:@$2}) %>
+
+endsnippet
+snippet lipp
+	<%= link_to "${1:Link text...}", ${0:model}s_path %>
+
+endsnippet
+snippet lt
+	<%= link_to "${1:name}", ${0:dest} %>
+
+endsnippet
+snippet ntc
+	<%= number_to_currency(${1}) %>
+
+endsnippet
+snippet ofcfs
+	<%= options_from_collection_for_select ${1:collection}, ${2:value_method}, ${3:text_method}, ${0:selected_value} %>
+
+endsnippet
+snippet ofs
+	<%= options_for_select ${1:collection}, ${2:value_method} %>
+
+endsnippet
+snippet rf
+	<%= render file: "${1:file}"${0} %>
+
+endsnippet
+snippet rt
+	<%= render template: "${1:file}"${0} %>
+
+endsnippet
+snippet slt
+	<%= stylesheet_link_tag ${1::all}, cache: ${0:true} %>
+
+endsnippet
+snippet sslt
+	<%= stylesheet_link_tag "${0}" %>
+
+endsnippet
+snippet if
+	<% if ${1} %>
+		${0:${VISUAL}}
+	<% end %>
+
+endsnippet
+snippet ife
+	<% if ${1} %>
+		${2}
+	<% else %>
+		${0}
+	<% end %>
+
+endsnippet
+snippet pry
+	<% require 'pry'; binding.pry %>
+endsnippet
 extends html
 
 priority -50

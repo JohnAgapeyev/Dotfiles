@@ -1,3 +1,470 @@
+
+snippet nc \newcommand
+	\\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}} ${0}
+
+endsnippet
+snippet up \usepackage
+	\\usepackage[${1:options}]{${2:package}} ${0}
+
+endsnippet
+snippet nuc \newunicodechar
+	\\newunicodechar{${1}}{${2:\\ensuremath}${3:tex-substitute}}} ${0}
+
+endsnippet
+snippet dmo \DeclareMathOperator
+	\\DeclareMathOperator{${1}}{${2}} ${0}
+
+endsnippet
+snippet begin \begin{} ... \end{} block
+	\\begin{${1:env}}
+		${0:${VISUAL}}
+	\\end{$1}
+
+endsnippet
+snippet tab "tabular "(or arbitrary) environment
+	\\begin{${1:tabular}}{${2:c}}
+		${0:${VISUAL}}
+	\\end{$1}
+
+endsnippet
+snippet thm "thm "(or arbitrary) environment with optional argument
+	\\begin[${1:author}]{${2:thm}}
+		${0:${VISUAL}}
+	\\end{$2}
+
+endsnippet
+snippet center "environment"
+	\\begin{center}
+		${0:${VISUAL}}
+	\\end{center}
+
+endsnippet
+snippet ali "align"(ed) environment
+	\\begin{align${1:ed}}
+		\\label{eq:${2}}
+		${0:${VISUAL}}
+	\\end{align$1}
+endsnippet
+snippet gat "gather"(ed) environment
+	\\begin{gather${1:ed}}
+		${0:${VISUAL}}
+	\\end{gather$1}
+endsnippet
+snippet eq "environment"
+	\\begin{equation}
+		${0:${VISUAL}}
+	\\end{equation}
+endsnippet
+snippet eql "environment"
+	\\begin{equation}
+		\\label{eq:${2}}
+	${0:${VISUAL}}
+	\\end{equation}
+
+endsnippet
+snippet eq* unnumbered equation environment
+	\\begin{equation*}
+		${0:${VISUAL}}
+	\\end{equation*}
+
+endsnippet
+snippet \ unnumbered equation: \[ ... \]
+	\\[
+		${0:${VISUAL}}
+	\\]
+
+endsnippet
+snippet eqnarray "environment"
+	\\begin{eqnarray}
+		${0:${VISUAL}}
+	\\end{eqnarray}
+
+endsnippet
+snippet lab \label
+	\\label{${1:eq:}${2:fig:}${3:tab:}${0}}
+
+endsnippet
+snippet enum "environment"
+	\\begin{enumerate}
+		\\item ${0}
+	\\end{enumerate}
+
+endsnippet
+snippet enuma "environment"
+	\\begin{enumerate}[(a)]
+		\\item ${0}
+	\\end{enumerate}
+
+endsnippet
+snippet enumi "environment"
+	\\begin{enumerate}[(i)]
+		\\item ${0}
+	\\end{enumerate}
+
+endsnippet
+snippet item "environment"
+	\\begin{itemize}
+		\\item ${0}
+	\\end{itemize}
+
+endsnippet
+snippet it \item
+	\\item ${1:${VISUAL}}
+
+endsnippet
+snippet desc "environment"
+	\\begin{description}
+		\\item[${1}] ${0}
+	\\end{description}
+
+endsnippet
+snippet ]i \item (recursive)
+	\\item ${1}
+		${0:]i}
+endsnippet
+snippet mat "environment"
+	\\begin{${1:p/b/v/V/B/small}matrix}
+		${0:${VISUAL}}
+	\\end{$1matrix}
+endsnippet
+snippet cas "environment"
+	\\begin{cases}
+		${1:equation}, &\\text{ if }${2:case}\\
+		${0:${VISUAL}}
+	\\end{cases}
+
+endsnippet
+snippet spl "environment"
+	\\begin{split}
+		${0:${VISUAL}}
+	\\end{split}
+
+endsnippet
+snippet part "document "\part
+	\\part{${1:part name}} % (fold)
+	\\label{prt:${2:$1}}
+	${0}
+	% part $2 (end)
+endsnippet
+snippet cha \chapter
+	\\chapter{${1:chapter name}}
+	\\label{cha:${2:$1}}
+	${0}
+endsnippet
+snippet sec \section
+	\\section{${1:section name}}
+	\\label{sec:${2:$1}}
+	${0}
+endsnippet
+snippet sec* \section*
+	\\section*{${1:section name}}
+	\\label{sec:${2:$1}}
+	${0}
+endsnippet
+snippet sub \subsection
+	\\subsection{${1:subsection name}}
+	\\label{sub:${2:$1}}
+	${0}
+endsnippet
+snippet sub* \subsection*
+	\\subsection*{${1:subsection name}}
+	\\label{sub:${2:$1}}
+	${0}
+endsnippet
+snippet ssub \subsubsection
+	\\subsubsection{${1:subsubsection name}}
+	\\label{ssub:${2:$1}}
+	${0}
+endsnippet
+snippet ssub* \subsubsection*
+	\\subsubsection*{${1:subsubsection name}}
+	\\label{ssub:${2:$1}}
+	${0}
+endsnippet
+snippet par \paragraph
+	\\paragraph{${1:paragraph name}}
+	\\label{par:${2:$1}}
+	${0}
+endsnippet
+snippet subp \subparagraph
+	\\subparagraph{${1:subparagraph name}}
+	\\label{subp:${2:$1}}
+	${0}
+endsnippet
+snippet ni \noindent
+	\\noindent
+	${0}
+
+endsnippet
+snippet itd "description "\item
+	\\item[${1:description}] ${0:item}
+
+endsnippet
+snippet figure "figure"
+	${1:Figure}~\\ref{${2:fig:}}
+
+endsnippet
+snippet table "table"
+	${1:Table}~\\ref{${2:tab:}}
+
+endsnippet
+snippet listing "listing"
+	${1:Listing}~\\ref{${2:list}}
+
+endsnippet
+snippet section "section"
+	${1:Section}~\\ref{sec:${2}} ${0}
+
+endsnippet
+snippet page "page"
+	${1:page}~\\pageref{${2}} ${0}
+
+endsnippet
+snippet index \index
+	\\index{${1:index}} ${0}
+
+endsnippet
+snippet citen \citen
+	\\citen{${1}} ${0}
+
+endsnippet
+snippet citep \citep
+	\\citep{${1}} ${0}
+
+endsnippet
+snippet citet \citet
+	\\citet{${1}} ${0}
+
+endsnippet
+snippet cite \cite[]{}
+	\\cite[${1}]{${2}} ${0}
+
+endsnippet
+snippet citea \citeauthor
+	\\citeauthor{${1}} ${0}
+
+endsnippet
+snippet citey \citeyear
+	\\citeyear{${1}} ${0}
+
+endsnippet
+snippet fcite \footcite[]{}
+	\\footcite[${1}]{${2}}${0}
+
+endsnippet
+snippet ita "text"
+	\\textit{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet bf "text"
+	\\textbf{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet under "text"
+	\\underline{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet over "text"
+	\\overline{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet emp "text"
+	\\emph{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet sc "text"
+	\\textsc{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet sf "text"
+	\\textsf{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet rm "text"
+	\\textrm{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet tt "typewriter "(monospace) text
+	\\texttt{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet mf "mathfrak"
+	\\mathfrak{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet mc "mathcal"
+	\\mathcal{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet ms "mathscr"
+	\\mathscr{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet ft \footnote
+	\\footnote{${1:${VISUAL:text}}} ${0}
+
+endsnippet
+snippet fig "environment "(includegraphics)
+	\\begin{figure}
+	\\begin{center}
+		\\includegraphics[scale=${1}]{Figures/${2}}
+	\\end{center}
+	\\caption{${3}}
+	\\label{fig:${4}}
+	\\end{figure}
+	${0}
+endsnippet
+snippet tikz "environment "(tikzpicture)
+	\\begin{figure}[htpb]
+	\\begin{center}
+	\\begin{tikzpicture}[scale=${1:1}, transform shape]
+		${2}
+	\\end{tikzpicture}
+	\\end{center}
+	\\caption{${3}}
+	\\label{fig:${4}}
+	\\end{figure}
+	${0}
+
+endsnippet
+snippet subfig "environment"
+	\\begin{subfigure}[${1}]{${2:\\textwidth}}
+	\\begin{center}
+		${3}
+	\\end{center}
+	\\caption{${4}}
+	\\label{fig:${5}}
+	\\end{subfigure}
+	${0}
+endsnippet
+snippet tikzcd "equation"
+	\\begin{equation}
+	\\begin{tikzcd}
+		${1}
+	\\end{tikzcd}
+	\\end{equation}
+	${0}
+
+endsnippet
+snippet tikzcd* tikzcd environment in equation*
+	\\begin{equation*}
+	\\begin{tikzcd}
+		${1}
+	\\end{tikzcd}
+	\\end{equation*}
+	${0}
+endsnippet
+snippet stackrel \stackrel{}{}
+	\\stackrel{${1:above}}{${2:below}} ${0}
+endsnippet
+snippet frac \frac{}{}
+	\\frac{${1:num}}{${2:denom}} ${0}
+endsnippet
+snippet sum \sum^{}_{}
+	\\sum^{${1:n}}_{${2:i=1}} ${0}
+endsnippet
+snippet lim \lim_{}
+	\\lim_{${1:n \\to \\infty}} ${0}
+endsnippet
+snippet frame "environment"
+	\\begin{frame}[${1:t}]{${2:title}}
+		${0:${VISUAL}}
+	\\end{frame}
+endsnippet
+snippet block "environment"
+	\\begin{block}{${1:title}}
+		${0:${VISUAL}}
+	\\end{block}
+endsnippet
+snippet alert "text"
+	\\alert{${1:${VISUAL:text}}} ${0}
+endsnippet
+snippet alertblock "environment"
+	\\begin{alertblock}{${1:title}}
+		${0:${VISUAL}}
+	\\end{alertblock}
+endsnippet
+snippet example "environment"
+	\\begin{exampleblock}{${1:title}}
+		${0:${VISUAL}}
+	\\end{exampleblock}
+endsnippet
+snippet col2 "two"-column environment
+	\\begin{columns}
+		\\begin{column}{0.5\\textwidth}
+			${1}
+		\\end{column}
+		\\begin{column}{0.5\\textwidth}
+			${0}
+		\\end{column}
+	\\end{columns}
+
+endsnippet
+snippet multicol2 "two"-column environment with multicol
+	\\begin{multicols}{2}
+		${1}
+		\columnbreak
+		${0}
+	\\end{multicols}
+
+endsnippet
+snippet \{ \{ \}
+	\\{ ${0} \\}
+
+endsnippet
+snippet lr "right"
+	\\left${1} ${0} \\right$1
+
+endsnippet
+snippet lr( left( right)
+	\\left( ${0} \\right)
+
+endsnippet
+snippet lr| left| right|
+	\\left| ${0} \\right|
+
+endsnippet
+snippet lr{ left\{ right\}
+	\\left\\{ ${0} \\right\\}
+
+endsnippet
+snippet lr[ left[ right]
+	\\left[ ${0} \\right]
+
+endsnippet
+snippet lra "rangle"
+	\\langle ${0} \\rangle
+
+endsnippet
+snippet lst
+	\\begin{listing}[language=${1:language}]
+		${0:${VISUAL}}
+	\\end{listing}
+
+endsnippet
+snippet lsi
+	\\lstinline|${1}| ${0}
+
+endsnippet
+snippet url
+	\\url{${1}} ${0}
+
+endsnippet
+snippet href
+	\\href{${1}}{${2}} ${0}
+
+endsnippet
+snippet urlc
+	\\url{`@+`} ${0}
+
+endsnippet
+snippet hrefc
+	\\href{`@+`}{${1}} ${0}
+
+endsnippet
+snippet enq "enquote"
+	\\enquote{${1:${VISUAL:text}}} ${0}
+endsnippet
 priority -50
 
 extends texmath

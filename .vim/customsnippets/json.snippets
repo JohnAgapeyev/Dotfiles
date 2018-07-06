@@ -4,38 +4,37 @@ snippet s "String" b
 "${1:key}": "${0:value}",
 endsnippet
 
-snippet n "Number" b
-"${1:key}": ${0:value},
 endsnippet
-
+snippet n "Number" b
+"${1:key}": ${0:value},endsnippet
+endsnippet
 snippet a "Array" b
 [
 	${VISUAL}$0
 ],
 endsnippet
 
+endsnippet
 snippet na "Named array" b
 "${1:key}": [
 	${VISUAL}$0
-],
+],endsnippet
 endsnippet
-
 snippet o "Object" b
 {
 	${VISUAL}$0
 },
 endsnippet
 
+endsnippet
 snippet no "Named object" b
 "${1:key}": {
 	${VISUAL}$0
-},
+},endsnippet
 endsnippet
-
 snippet null "Null" b
 "${0:key}": null,
 endsnippet
-
 
 global !p
 def compB(t, opts):
@@ -45,7 +44,8 @@ def compB(t, opts):
 		return opts[0]
 	return "(" + '|'.join(opts) + ')'
 endglobal
-
+endsnippet
 snippet b "Bool" b
 "${1:key}": $2`!p snip.rv=compB(t[2], ['true', 'false'])`,
+endsnippet
 endsnippet
