@@ -41,7 +41,7 @@ function! InitializeDirectories()
                 \ 'swap':   'directory',
                 \ 'undo':   'undodir' }
 
-    let common_dir = parent . '/.' . prefix
+    let common_dir = parent . '/.' . prefix . '/'
 
     for [dirname, settingname] in items(dir_list)
         let directory = common_dir . dirname . '/'
