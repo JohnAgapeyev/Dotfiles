@@ -35,11 +35,14 @@ ${1:v}${1/^.*?(-)?(>)?$/(?2::(?1:>:.))/}begin(), $1${1/^.*?(-)?(>)?$/(?2::(?1:>:
 endsnippet
 
 snippet cl "class .. (class)"
-class ${1:`!p snip.rv = snip.basename or "name"`}
-{
+class ${1:`!p snip.rv = snip.basename or "name"`} {
 public:
-	${1/(\w+).*/$1/} (${2:arguments});
-	virtual ~${1/(\w+).*/$1/} ();
+	${1/(\w+).*/$1/}(${2:arguments});
+	~${1/(\w+).*/$1/}();
+	${1/(\w+).*/$1/}(const ${1/(\w+).*/$1/}&) = default;
+	${1/(\w+).*/$1/}(${1/(\w+).*/$1/}&&) = default;
+	${1/(\w+).*/$1/}& operator=(${1/(\w+).*/$1/}&&) = default;
+	${1/(\w+).*/$1/}& operator=(const ${1/(\w+).*/$1/}&) = default;
 
 private:
 	${0:/* data */}
@@ -47,19 +50,18 @@ private:
 endsnippet
 
 snippet ns "namespace .. (namespace)"
-namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
-{
+namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
 	${VISUAL}$0
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
 endsnippet
 
 snippet readfile "read file (readF)"
 std::vector<char> v;
-if (FILE *fp = fopen(${1:"filename"}, "r"))
-{
+if (FILE *fp = fopen(${1:"filename"}, "r")) {
 	char buf[1024];
-	while(size_t len = fread(buf, 1, sizeof(buf), fp))
+	while(size_t len = fread(buf, 1, sizeof(buf), fp)) {
 		v.insert(v.end(), buf, buf + len);
+	}
 	fclose(fp);
 }
 endsnippet
@@ -76,18 +78,25 @@ snippet tp "template <typename ..> (template)"
 template <typename ${1:_InputIter}>
 endsnippet
 
+snippet cout "std::cout (c)"
+std::cout << $0 << '\n';
+endsnippet
+
 snippet cla "An entire .h generator" b
 #ifndef ${2:`!v substitute(vim_snippets#Filename('$1_H','ClassName'),'.*','\U&\E','')`}
 #define $2
 
-class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}
-{
+class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`} {
 private:
 	$3
 
 public:
 	$1();
-	virtual ~$1();
+	~$1();
+	$1(const $1&) = default;
+	$1($1&&) = default;
+	$1& operator=($1&&) = default;
+	$1& operator=(const $1&) = default;
 };
 
 #endif /* $2 */
@@ -102,8 +111,7 @@ snippet fnc "Basic c++ doxygen function template" b
 *
 * @return: `!p snip.rv = t[1]`
 */
-${1:ReturnType} ${2:FunctionName}(${3:param})
-{
+${1:ReturnType} ${2:FunctionName}(${3:param}) {
 	${0:FunctionBody}
 }
 endsnippet
