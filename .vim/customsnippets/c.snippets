@@ -1,9 +1,3 @@
-snippet main
-int main(int argc, const char **argv) {
-	${0}
-	return 0;
-}
-endsnippet
 snippet mainn
 int main(void) {
 	${0}
@@ -16,22 +10,9 @@ endsnippet
 snippet Inc
 #include "${1:`vim_snippets#Filename("$1.h")`}"
 endsnippet
-snippet ndef
-#ifndef $1
-#define ${1:SYMBOL} ${2:value}
-#endif /* ifndef $1 */
-endsnippet
-snippet def
-#define
-endsnippet
 snippet ifdef
 #ifdef ${1:FOO}
 	${2:#define }
-#endif
-endsnippet
-snippet #if
-#if ${1:FOO}
-	${0:${VISUAL}}
 #endif
 endsnippet
 snippet once
@@ -340,17 +321,15 @@ ${VISUAL}$0
 #endif
 endsnippet
 
-snippet mark "#pragma mark (mark)"
-#if 0
-${1:#pragma mark -
-}#pragma mark $2
-#endif
-
-$0
-endsnippet
-
 snippet main "main() (main)"
 int main(int argc, char **argv) {
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet mainn "main(void) (mainn)"
+int main(void) {
 	${VISUAL}$0
 	return 0;
 }
