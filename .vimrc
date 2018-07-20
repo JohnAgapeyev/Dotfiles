@@ -25,6 +25,7 @@ endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
+Plug 'sheerun/vim-polyglot'
 
 " Track the engine.
 Plug 'SirVer/ultisnips'
