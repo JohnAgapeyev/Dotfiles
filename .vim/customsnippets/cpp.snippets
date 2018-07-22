@@ -171,8 +171,8 @@ endsnippet
 snippet cl "class .. (class)"
 class ${1:`!p snip.rv = snip.basename or "name"`} {
 public:
-	${1/(\w+).*/$1/}(${2:arguments});
-	~${1/(\w+).*/$1/}();
+	${1/(\w+).*/$1/}() = default;
+	~${1/(\w+).*/$1/}() = default;
 	${1/(\w+).*/$1/}(const ${1/(\w+).*/$1/}&) = default;
 	${1/(\w+).*/$1/}(${1/(\w+).*/$1/}&&) = default;
 	${1/(\w+).*/$1/}& operator=(${1/(\w+).*/$1/}&&) = default;
@@ -213,8 +213,8 @@ private:
 	$3
 
 public:
-	$1();
-	~$1();
+	$1() = default;
+	~$1() = default;
 	$1(const $1&) = default;
 	$1($1&&) = default;
 	$1& operator=($1&&) = default;
