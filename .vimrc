@@ -29,6 +29,9 @@ Plug 'sheerun/vim-polyglot'
 
 " Track the engine.
 Plug 'SirVer/ultisnips'
+
+Plug 'sbdchd/neoformat'
+
 call plug#end()
 
 "Create directories if they don't exist
@@ -142,6 +145,20 @@ let g:neomake_cpp_gcc_args=[
             \ ]
 "
 "END NEOMAKE
+
+map <C-f> :Neoformat<CR>
+
+let g:neoformat_c_clang_format = {
+    \ 'exe': 'clang-format',
+    \ 'args': ['-style=~/.clang-format'],
+    \ }
+let g:neoformat_cpp_clang_format = {
+    \ 'exe': 'clang-format',
+    \ 'args': ['-style=~/.clang-format'],
+    \ }
+
+let g:neoformat_enabled_c = ['clangformat']
+let g:neoformat_enabled_cpp = ['clangformat']
 
 "[fzf]
 map <C-m> :FZF<CR>
