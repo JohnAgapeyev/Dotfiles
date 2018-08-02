@@ -48,7 +48,7 @@ done
 function mvsane () {
     for F in "$@"
     do
-        mv "$F" $(echo "$F" | sed -r 's/[ ]+/_/g' | sed -r 's/[^a-zA-Z0-9_.-]//g' | sed -r 's/[_-]{2,}/-/g')
+        mv "$F" $(echo "$F" | sed -r 's/[ ]+/_/g;s/[^a-zA-Z0-9_.-]//g;s/[_-]{2,}/-/g;')
     done
 }
 
