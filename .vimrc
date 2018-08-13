@@ -17,7 +17,6 @@ Plug 'junegunn/fzf'
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'zchee/deoplete-clang'
-    Plug 'Shougo/neoinclude.vim'
 else
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
