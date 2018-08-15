@@ -93,10 +93,6 @@ function whoisport () {
     ls -l /proc/$pid/exe
 }
 
-function localscan () {
-    arp-scan --interface=$(ip link | grep 2 | awk '{print $2}' | tr -d ':') -l
-}
-
 #test truecolor support (youll know if it doesnt work)
 function truecolortest () {
     awk 'BEGIN{
