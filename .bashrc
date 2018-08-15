@@ -77,11 +77,6 @@ function hexlines() {
     fi
 }
 
-function newhex() {
-    BYTE_COUNT=$(($1 * $2))
-    dd iflag=count_bytes if=/dev/urandom count=$BYTE_COUNT 2> /dev/null | xxd -g 0 -c $2 | awk '{print $2}'
-}
-
 function convertsnip () {
     for F in "$@"
     do
@@ -90,9 +85,97 @@ function convertsnip () {
     done
 }
 
-function mergefiles() {
-    for F in "$@"
-    do
-        cat $F~ >> $F
-    done
+#thanks to this https://gist.github.com/timperez/7892680 im adding whoisport
+function whoisport () {
+    port=$1
+    pidInfo=$(fuser $port/tcp 2> /dev/null)
+    pid=$(echo $pidInfo | cut -d':' -f2)
+    ls -l /proc/$pid/exe
+}
+
+function localscan () {
+    arp-scan --interface=$(ip link | grep 2 | awk '{print $2}' | tr -d ':') -l
+}
+
+#test truecolor support (youll know if it doesnt work)
+function truecolortest () {
+    awk 'BEGIN{
+    s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+    for (colnum = 0; colnum<77; colnum++) {
+        r = 255-(colnum*255/76);
+        g = (colnum*510/76);
+        b = (colnum*255/76);
+        if (g>255) g = 510-g;
+            printf "\033[48;2;%d;%d;%dm", r,g,b;
+            printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+            printf "%s\033[0m", substr(s,colnum+1,1);
+        }
+        printf "\n";
+    }'
+}
+
+#for testing ricing colors
+function colortest () {
+    ansi_mappings=(
+    Black
+    Red
+    Green
+    Yellow
+    Blue
+    Magenta
+    Cyan
+    White
+    Bright_Black
+    Bright_Red
+    Bright_Green
+    Bright_Yellow
+    Bright_Blue
+    Bright_Magenta
+    Bright_Cyan
+    Bright_White
+    )
+    colors=(
+    base00
+    base08
+    base0B
+    base0A
+    base0D
+    base0E
+    base0C
+    base05
+    base03
+    base08
+    base0B
+    base0A
+    base0D
+    base0E
+    base0C
+    base07
+    base09
+    base0F
+    base01
+    base02
+    base04
+    base06
+    )
+    for padded_value in `seq -w 0 21`; do
+        color_variable="color${padded_value}"
+        eval current_color=\$${color_variable}
+        current_color=$(echo ${current_color//\//} | tr '[:lower:]' '[:upper:]') # get rid of slashes, and uppercase
+        non_padded_value=$((10#$padded_value))
+        base16_color_name=${colors[$non_padded_value]}
+        current_color_label=${current_color:-unknown}
+        ansi_label=${ansi_mappings[$non_padded_value]}
+        block=$(printf "\x1b[48;5;${non_padded_value}m___________________________")
+        foreground=$(printf "\x1b[38;5;${non_padded_value}m$color_variable")
+        printf "%s %s %s %-30s %s\x1b[0m\n" $foreground $base16_color_name $current_color_label ${ansi_label:-""} $block
+    done;
+}
+
+function weather () {
+    curl wttr.in
+}
+
+function background() {
+    eval "$@" &>/dev/null &disown;
 }
