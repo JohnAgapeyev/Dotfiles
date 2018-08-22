@@ -21,6 +21,7 @@
     horizontal_padding = 8
     separator_color = "#585858"
     startup_notification = false
+    timeout = 10
 
 [frame]
     width = 1
