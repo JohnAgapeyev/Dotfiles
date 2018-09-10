@@ -7,7 +7,7 @@
 
 alias ls='ls --color=auto'
 #PS1='[\u@\h \W]\$ '
-PS1="\[\e[34m\]\D{%T}\[\e[36m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[33m\]\W\[\e[m\]\$ "
+PS1="\[\e[34m\][\D{%T}]\[\e[36m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[33m\]\W\[\e[m\]\$ "
 
 export TERM=xterm-256color
 export TERMINAL=termite
