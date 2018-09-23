@@ -176,3 +176,11 @@ function weather () {
 function background() {
     eval "$@" &>/dev/null &disown;
 }
+
+#generate documentation comments for c style code
+function mkcdoc () {
+    for F in "$@"
+    do
+        sed -rf ~/.mkcdoc.sed -i $F
+    done
+}
