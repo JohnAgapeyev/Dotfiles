@@ -187,6 +187,7 @@ nnoremap tq :tabclose<CR>
 
 " Run this command daily using vim-update-daily plugin
 let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
+let g:update_noargs = 0
 
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
