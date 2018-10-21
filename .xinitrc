@@ -42,6 +42,8 @@ xscreensaver &
 xsetroot -cursor_name left_ptr &
 numlockx &
 
+lxqt-policykit-agent &
+
 xset s off -dpms
 
 exec i3
