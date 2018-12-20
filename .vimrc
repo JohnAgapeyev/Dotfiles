@@ -137,7 +137,6 @@ let g:neomake_cpp_gcc_args=[
             \ '-Wfloat-equal',
             \ '-Wshadow',
             \ '-Wcast-align',
-            \ '-Wstrict-prototypes',
             \ '-Wstrict-overflow=2',
             \ '-Wwrite-strings',
             \ '-fopenmp',
