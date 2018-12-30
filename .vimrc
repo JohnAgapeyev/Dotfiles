@@ -12,25 +12,16 @@ Plug 'junegunn/vim-plug'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-fugitive'
-Plug 'neomake/neomake'
 Plug 'junegunn/fzf'
-if has('nvim')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'zchee/deoplete-clang'
-else
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-endif
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
 Plug 'sheerun/vim-polyglot'
-
-" Track the engine.
-Plug 'SirVer/ultisnips'
-
+Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
-
+Plug 'SirVer/ultisnips'
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+Plug 'Valloric/YouCompleteMe', {'do': 'python3 install.py --clang-completer'}
 call plug#end()
 
 "Create directories if they don't exist
@@ -80,13 +71,7 @@ autocmd VimEnter *
             \|   PlugInstall --sync | q
             \| endif
 
-if has('nvim')
-    " Use deoplete.
-    let g:deoplete#enable_at_startup = 1
-    "dont require the same file type
-    let g:deoplete#buffer#require_same_filetype = 0
-    "
-endif
+let g:ycm_confirm_extra_conf = 0
 
 "Set proper python paths
 let g:python_host_prog = '/usr/bin/python2'
@@ -103,57 +88,20 @@ let g:UltiSnipsJumpBackwardTrigger="<c-h>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-"NEOMAKE
-" When writing a buffer (no delay).
-call neomake#configure#automake('w')
-
-let g:neomake_c_enabled_makers=['gcc']
-let g:neomake_cpp_enabled_makers=['gcc']
-
-let g:neomake_c_gcc_args=[
-            \ '-std=c11',
-            \ '-Wall',
-            \ '-Wextra',
-            \ '-Wpedantic',
-            \ '-Wformat=2',
-            \ '-Wuninitialized',
-            \ '-Wundef',
-            \ '-Wfloat-equal',
-            \ '-Wshadow',
-            \ '-Wcast-align',
-            \ '-Wstrict-prototypes',
-            \ '-Wstrict-overflow=2',
-            \ '-Wwrite-strings',
-            \ '-fopenmp',
-            \ ]
-let g:neomake_cpp_gcc_args=[
-            \ '-std=c++17',
-            \ '-Wall',
-            \ '-Wextra',
-            \ '-Wpedantic',
-            \ '-Wformat=2',
-            \ '-Wuninitialized',
-            \ '-Wundef',
-            \ '-Wfloat-equal',
-            \ '-Wshadow',
-            \ '-Wcast-align',
-            \ '-Wstrict-overflow=2',
-            \ '-Wwrite-strings',
-            \ '-fopenmp',
-            \ ]
-"
-"END NEOMAKE
-
 map <C-f> :Neoformat<CR>
 
+let g:neoformat_basic_format_align = 1
+let g:neoformat_basic_format_retab = 1
+let g:neoformat_basic_format_trim = 1
+
 let g:neoformat_c_clang_format = {
-    \ 'exe': 'clang-format',
-    \ 'args': ['-style=~/.clang-format'],
-    \ }
+            \ 'exe': 'clang-format',
+            \ 'args': ['-style=~/.clang-format'],
+            \ }
 let g:neoformat_cpp_clang_format = {
-    \ 'exe': 'clang-format',
-    \ 'args': ['-style=~/.clang-format'],
-    \ }
+            \ 'exe': 'clang-format',
+            \ 'args': ['-style=~/.clang-format'],
+            \ }
 
 let g:neoformat_enabled_c = ['clangformat']
 let g:neoformat_enabled_cpp = ['clangformat']
@@ -327,3 +275,9 @@ set clipboard+=unnamed
 
 "enable true 24-bit colour
 set tgc
+
+if exists('$SHELL')
+    set shell=$SHELL
+else
+    set shell=/bin/bash
+endif
