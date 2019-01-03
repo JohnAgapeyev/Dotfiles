@@ -71,22 +71,33 @@ autocmd VimEnter *
             \|   PlugInstall --sync | q
             \| endif
 
-let g:ycm_confirm_extra_conf = 0
-
 "Set proper python paths
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python3'
 
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_key_list_select_completion=["<tab>"]
+let g:ycm_key_list_previous_completion=["<S-tab>"]
+
 "ULTISNIPS
 let g:UltiSnipsUsePythonVersion = 3
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/customsnippets']
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-space>"
-let g:UltiSnipsJumpForwardTrigger="<c-l>"
-let g:UltiSnipsJumpBackwardTrigger="<c-h>"
-" If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+let g:UltiSnipsExpandTrigger="<nop>"
+let g:ulti_expand_or_jump_res = 0
+function! <SID>ExpandSnippetOrReturn()
+  let snippet = UltiSnips#ExpandSnippetOrJump()
+  if g:ulti_expand_or_jump_res > 0
+    return snippet
+  else
+    return "\<CR>"
+  endif
+endfunction
+"This and the above function are needed for YCM and Ultisnips to play nicely together
+inoremap <expr> <CR> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<CR>"
 
 map <C-f> :Neoformat<CR>
 
