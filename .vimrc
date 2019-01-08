@@ -156,7 +156,7 @@ let g:gruvbox_italic = 1
 autocmd StdinReadPre * let s:std_in=1
 autocmd vimenter * NERDTree | wincmd p
 autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
-autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 map <C-n> :NERDTreeToggle<CR>
 
 "Strip trailing whitespace on save
