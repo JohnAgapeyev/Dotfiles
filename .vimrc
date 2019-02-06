@@ -19,7 +19,6 @@ Plug 'isaacmorneau/vim-update-daily'
 Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
-Plug 'SirVer/ultisnips'
 Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
 Plug 'Valloric/YouCompleteMe', {'do': 'python3 install.py --clang-completer'}
 call plug#end()
@@ -78,26 +77,6 @@ let g:python3_host_prog = '/usr/bin/python3'
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_key_list_select_completion=["<tab>"]
 let g:ycm_key_list_previous_completion=["<S-tab>"]
-
-"ULTISNIPS
-let g:UltiSnipsUsePythonVersion = 3
-let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/customsnippets']
-let g:UltiSnipsListSnippets="<c-space>"
-let g:UltiSnipsEditSplit="vertical"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
-let g:UltiSnipsExpandTrigger="<nop>"
-let g:ulti_expand_or_jump_res = 0
-function! <SID>ExpandSnippetOrReturn()
-  let snippet = UltiSnips#ExpandSnippetOrJump()
-  if g:ulti_expand_or_jump_res > 0
-    return snippet
-  else
-    return "\<CR>"
-  endif
-endfunction
-"This and the above function are needed for YCM and Ultisnips to play nicely together
-inoremap <expr> <CR> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<CR>"
 
 map <C-f> :Neoformat<CR>
 
