@@ -11,7 +11,7 @@ call plug#begin()
 Plug 'junegunn/vim-plug'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf'
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
@@ -124,7 +124,7 @@ nnoremap tq :tabclose<CR>
 
 " Run this command daily using vim-update-daily plugin
 let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
-let g:update_noargs = 0
+let g:update_noargs = 1
 
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
@@ -147,13 +147,17 @@ autocmd CompleteDone * pclose
 "Jump to last open
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-"AIRLINE
+"[airline]
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
-
 " Show just the filename
 let g:airline#extensions#tabline#fnamemod = ':t'
-"END AIRLINE
+
+"[gitgutter]
+"these are so that gitgutter gives more snappy updates when doing lots of
+"editing by rechecking on anything to do with insert
+autocmd insertleave * nested call gitgutter#process_buffer(bufnr(''), 0)
+autocmd insertenter * nested call gitgutter#process_buffer(bufnr(''), 0)
 
 "Enable syntax highlighting
 syntax on
@@ -271,3 +275,5 @@ if exists('$SHELL')
 else
     set shell=/bin/bash
 endif
+
+set updatetime=1000
