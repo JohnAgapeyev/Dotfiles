@@ -21,6 +21,7 @@ Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
 Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
 Plug 'Valloric/YouCompleteMe', {'do': 'python3 install.py --clang-completer'}
+Plug 'isaacmorneau/vim-simple-sessions'
 call plug#end()
 
 "Create directories if they don't exist
