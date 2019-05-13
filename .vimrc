@@ -265,3 +265,6 @@ else
 endif
 
 set updatetime=1000
+
+map <C-t> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+
