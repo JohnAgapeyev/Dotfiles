@@ -268,5 +268,6 @@ set updatetime=1000
 
 "[TAGS]
 map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+map <C-[> :pop<CR>
 
 
