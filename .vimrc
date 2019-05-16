@@ -267,7 +267,12 @@ endif
 set updatetime=1000
 
 "[TAGS]
+"Regenerate tags file
 map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+"Go back one level up the tag stack
 map <C-[> :pop<CR>
+"Search for tag, jump if only one, otherwise, list options
+map <C-_> :tj<Space>
 
-
+"[Cscope]
+"TODO: Add Cscope integration
