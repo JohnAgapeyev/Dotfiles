@@ -206,6 +206,8 @@ set foldcolumn=1
 
 "Use utf8 like a normal person
 set encoding=utf8
+set fileencoding=utf-8
+set fileencodings=utf-8
 
 "LF is the only acceptable line ending
 set ffs=unix,dos,mac
