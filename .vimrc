@@ -273,8 +273,9 @@ set updatetime=1000
 map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
 "Go back one level up the tag stack
 map <C-[> :pop<CR>
-"Search for tag, jump if only one, otherwise, list options
-map <C-_> :tj<Space>
+"Search for tag using regexp, jump if only one, otherwise, list options
+map <C-_> :tj<Space>/
 
 "[Cscope]
-"TODO: Add Cscope integration
+"Regenerate cscope database
+map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
