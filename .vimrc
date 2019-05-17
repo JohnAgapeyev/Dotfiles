@@ -308,8 +308,6 @@ endif
 map <C-[> :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
 map <C-_> :tj<Space>/
-"Go to the definition of the tag under the cursor
-map <C-g> :execute ':tj '.expand('<cword>')<CR>
 
 "[Cscope]
 if filereadable("cscope.out")
@@ -322,4 +320,4 @@ else
     map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
 endif
 "Find functions calling the current word under the cursor
-map <C-h> :call FindSymbol()<CR>
+map <C-\> :call FindSymbol()<CR>
