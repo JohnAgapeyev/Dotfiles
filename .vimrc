@@ -277,6 +277,18 @@ function! CscopeExit(job_id, data, event) dict
     :cscope reset
 endfunction
 
+"Tries to find functions calling the current function
+"but will fallback to all usages if that fails
+"This is mainly for handling functions and variables/types with the same
+"command
+function! FindSymbol()
+    try
+        :cscope find c <cword>
+    catch /^Vim\%((\a\+)\)\=:E/
+        :cscope find s <cword>
+    endtry
+endfunction
+
 let ctags_callbacks = {
             \ 'on_exit': function('CtagsExit')
             \ }
@@ -310,4 +322,4 @@ else
     map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
 endif
 "Find functions calling the current word under the cursor
-map <C-h> :cscope find c <cword><CR>
+map <C-h> :call FindSymbol()<CR>
