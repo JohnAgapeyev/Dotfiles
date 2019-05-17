@@ -300,6 +300,9 @@ map <C-_> :tj<Space>/
 map <C-g> :execute ':tj '.expand('<cword>')<CR>
 
 "[Cscope]
+if filereadable("cscope.out")
+    :silent execute "normal :cscope add .\<CR>"
+endif
 "Regenerate cscope database
 if has("nvim")
     map <C-n> :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
