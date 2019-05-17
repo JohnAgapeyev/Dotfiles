@@ -268,9 +268,30 @@ endif
 
 set updatetime=1000
 
+function! CtagsExit(job_id, data, event) dict
+    echo "CTags generation complete"
+endfunction
+
+function! CscopeExit(job_id, data, event) dict
+    echo "Cscope generation complete"
+    :cscope reset
+endfunction
+
+let ctags_callbacks = {
+            \ 'on_exit': function('CtagsExit')
+            \ }
+
+let cscope_callbacks = {
+            \ 'on_exit': function('CscopeExit')
+            \ }
+
 "[TAGS]
 "Regenerate tags file
-map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+if has("nvim")
+    map <C-b> :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
+else
+    map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+endif
 "Go back one level up the tag stack
 map <C-[> :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
@@ -280,6 +301,10 @@ map <C-g> :execute ':tj '.expand('<cword>')<CR>
 
 "[Cscope]
 "Regenerate cscope database
-map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
+if has("nvim")
+    map <C-n> :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
+else
+    map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
+endif
 "Find functions calling the current word under the cursor
 map <C-h> :cscope find c <cword><CR>
