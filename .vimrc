@@ -275,7 +275,11 @@ map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
 map <C-[> :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
 map <C-_> :tj<Space>/
+"Go to the definition of the tag under the cursor
+map <C-g> :execute ':tj '.expand('<cword>')<CR>
 
 "[Cscope]
 "Regenerate cscope database
 map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
+"Find functions calling the current word under the cursor
+map <C-h> :cscope find c <cword><CR>
