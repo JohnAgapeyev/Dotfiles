@@ -268,6 +268,8 @@ endif
 
 set updatetime=1000
 
+let mapleader = ' '
+
 function! CtagsExit(job_id, data, event) dict
     echo "CTags generation complete"
 endfunction
@@ -300,14 +302,18 @@ let cscope_callbacks = {
 "[TAGS]
 "Regenerate tags file
 if has("nvim")
-    nnoremap <C-b> :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
+    nnoremap <Leader>b :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
 else
-    nnoremap <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+    nnoremap <Leader>b :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
 endif
 "Go back one level up the tag stack
 nnoremap <Leader>[ :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
-nnoremap <C-_> :tj<Space>/
+nnoremap <Leader>/ :tj<Space>/
+
+"Search for tag using regexp, jump if only one, otherwise, list options
+"nnoremap <Leader>] ':tag '.expand(<cword>).'<CR>'
+nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
 
 "[Cscope]
 if filereadable("cscope.out")
@@ -315,9 +321,9 @@ if filereadable("cscope.out")
 endif
 "Regenerate cscope database
 if has("nvim")
-    nnoremap <C-n> :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
+    nnoremap <Leader>n :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
 else
-    nnoremap <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
+    nnoremap <Leader>n :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
 endif
 "Find functions calling the current word under the cursor
-nnoremap <C-\> :call FindSymbol()<CR>
+nnoremap <Leader>\ :call FindSymbol()<CR>
