@@ -300,14 +300,14 @@ let cscope_callbacks = {
 "[TAGS]
 "Regenerate tags file
 if has("nvim")
-    map <C-b> :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
+    nnoremap <C-b> :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
 else
-    map <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+    nnoremap <C-b> :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
 endif
 "Go back one level up the tag stack
-map <C-[> :pop<CR>
+nnoremap <Leader>[ :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
-map <C-_> :tj<Space>/
+nnoremap <C-_> :tj<Space>/
 
 "[Cscope]
 if filereadable("cscope.out")
@@ -315,9 +315,9 @@ if filereadable("cscope.out")
 endif
 "Regenerate cscope database
 if has("nvim")
-    map <C-n> :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
+    nnoremap <C-n> :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
 else
-    map <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
+    nnoremap <C-n> :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
 endif
 "Find functions calling the current word under the cursor
-map <C-\> :call FindSymbol()<CR>
+nnoremap <C-\> :call FindSymbol()<CR>
