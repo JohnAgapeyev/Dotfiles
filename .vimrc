@@ -107,8 +107,12 @@ let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/
 nnoremap H gT
 nnoremap L gt
 "tab management with t leader
-nnoremap tn :tabnew<CR>
+"Open new tab at end of tab list
+nnoremap tn :$tabnew<CR>
+"Close the current tab
 nnoremap tq :tabclose<CR>
+"Open the filename under cursor at end of tab list
+nnoremap tf <C-w>gf<CR>:tabmove<CR>
 
 " Run this command daily using vim-update-daily plugin
 let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
@@ -121,10 +125,10 @@ let g:gruvbox_italic = 1
 
 "Enable nerdtree on launch and restore focus to file window
 autocmd StdinReadPre * let s:std_in=1
-autocmd vimenter * NERDTree | wincmd p
-autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
+"autocmd vimenter * NERDTree | wincmd p
+"autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
 autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-map <C-n> :NERDTreeToggle<CR>
+nnoremap <C-n> :NERDTreeToggle<CR>
 
 "Strip trailing whitespace on save
 autocmd BufEnter * EnableStripWhitespaceOnSave
@@ -312,7 +316,6 @@ nnoremap <Leader>[ :pop<CR>
 nnoremap <Leader>/ :tj<Space>/
 
 "Search for tag using regexp, jump if only one, otherwise, list options
-"nnoremap <Leader>] ':tag '.expand(<cword>).'<CR>'
 nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
 
 "[Cscope]
