@@ -103,10 +103,13 @@ set wildmode=list:longest,list:full
 set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
 let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 
-"tab nav with shift
+"Tab nav with shift
 nnoremap H gT
 nnoremap L gt
-"tab management with t leader
+"Tab move with Ctrl
+nnoremap <C-h> :tabmove -1<CR>
+nnoremap <C-l> :tabmove +1<CR>
+"Tab management with t leader
 "Open new tab at end of tab list
 nnoremap tn :$tabnew<CR>
 "Close the current tab
