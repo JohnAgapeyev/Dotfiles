@@ -277,6 +277,8 @@ set updatetime=1000
 
 let mapleader = ' '
 
+set path=**
+
 function! CtagsExit(job_id, data, event) dict
     echo "CTags generation complete"
 endfunction
