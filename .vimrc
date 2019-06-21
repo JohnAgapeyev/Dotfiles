@@ -13,6 +13,7 @@ Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'isaacmorneau/vim-update-daily'
@@ -98,10 +99,14 @@ let g:neoformat_enabled_c = ['clangformat']
 let g:neoformat_enabled_cpp = ['clangformat']
 
 "[fzf]
-map <C-m> :FZF<CR>
+nnoremap <C-m> :FZF<CR>
 set wildmode=list:longest,list:full
 set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
 let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+
+let g:fzf_action = {
+  \ 'ctrl-t': '$tab split',
+  \ 'ctrl-v': 'vsplit' }
 
 "Tab nav with shift
 nnoremap H gT
@@ -267,17 +272,24 @@ set clipboard+=unnamed
 "enable true 24-bit colour
 set tgc
 
+"Set shell to bash
 if exists('$SHELL')
     set shell=$SHELL
 else
     set shell=/bin/bash
 endif
 
+"Update things after 1 second being idle
 set updatetime=1000
 
+"Leader as space, since \ is awkward
 let mapleader = ' '
 
+"This is gross, but it lets me do stuff like "gf" to open the file under the cursor
 set path=**
+
+"New splits go on the right, I'm not an animal
+set splitright
 
 function! CtagsExit(job_id, data, event) dict
     echo "CTags generation complete"
