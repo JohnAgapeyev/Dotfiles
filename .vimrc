@@ -291,13 +291,20 @@ set path=**
 "New splits go on the right, I'm not an animal
 set splitright
 
+"Make cscope search tag files before cscope
+set cscopetagorder=1
+
 function! CtagsExit(job_id, data, event) dict
     echo "CTags generation complete"
 endfunction
 
 function! CscopeExit(job_id, data, event) dict
     echo "Cscope generation complete"
-    :cscope reset
+    try
+        :cscope add .
+    catch /^Vim\%((\a\+)\)\=:E/
+        :cscope reset
+    endtry
 endfunction
 
 "Tries to find functions calling the current function
@@ -347,3 +354,6 @@ else
 endif
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
+
+"Open the filename under cursor at end of tab list
+nnoremap <Leader>f <C-w><C-f><C-w>L
