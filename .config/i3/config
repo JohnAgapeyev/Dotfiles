@@ -143,6 +143,10 @@ bindsym XF86AudioNext exec mpc next
 #bindsym $mod+Control+l exec i3lock -e -i ~/Downloads/cryingseal.png -t -f
 bindsym $mod+Control+l exec sflock
 
+# Move the current workspace to the next output
+# (effectively toggles when you only have two outputs)
+bindsym $mod+x move workspace to output right
+
 # resize window (you can also use the mouse for that)
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
