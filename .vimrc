@@ -327,13 +327,19 @@ let cscope_callbacks = {
             \ 'on_exit': function('CscopeExit')
             \ }
 
-"[TAGS]
-"Regenerate tags file
+function! GenMetadata()
 if has("nvim")
-    nnoremap <Leader>b :call jobstart('ctags $(find $(pwd) -name \*.[ch])', ctags_callbacks)<CR>
+    call jobstart('ctags $(find $(pwd) -name \*.[ch])', g:ctags_callbacks)
+    call jobstart('cscope -bcqR', g:cscope_callbacks)
 else
-    nnoremap <Leader>b :!ctags $(find $(pwd) -name \*.[ch])<CR>
+    :!ctags $(find $(pwd) -name \*.[ch])
+    :!cscope -bcqR<CR> <Bar> :cscope reset
 endif
+endfunction
+
+"[TAGS]
+"Regenerate tags and cscope files
+nnoremap <Leader>b :call GenMetadata()<CR>
 "Go back one level up the tag stack
 nnoremap <Leader>[ :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
@@ -345,12 +351,6 @@ nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
 "[Cscope]
 if filereadable("cscope.out")
     :silent execute "normal :cscope add .\<CR>"
-endif
-"Regenerate cscope database
-if has("nvim")
-    nnoremap <Leader>n :call jobstart('cscope -bcqR', cscope_callbacks)<CR>
-else
-    nnoremap <Leader>n :!cscope -bcqR<CR> <Bar> :cscope reset<CR>
 endif
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
