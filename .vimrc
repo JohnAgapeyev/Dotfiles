@@ -330,9 +330,9 @@ let cscope_callbacks = {
 "[TAGS]
 "Regenerate tags file
 if has("nvim")
-    nnoremap <Leader>b :call jobstart('ctags $(find $(pwd) -name "*.c" -o -name "*.h" \| tr "\n" " ")', ctags_callbacks)<CR>
+    nnoremap <Leader>b :call jobstart('ctags $(find $(pwd) -name \*.[ch])', ctags_callbacks)<CR>
 else
-    nnoremap <Leader>b :!ctags $(find $(pwd) -name '*.c' -o -name '*.h' \| tr '\n' ' ')<CR>
+    nnoremap <Leader>b :!ctags $(find $(pwd) -name \*.[ch])<CR>
 endif
 "Go back one level up the tag stack
 nnoremap <Leader>[ :pop<CR>
