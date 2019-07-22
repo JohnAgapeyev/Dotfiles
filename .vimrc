@@ -357,3 +357,8 @@ nnoremap <Leader>\ :call FindSymbol()<CR>
 
 "Open the filename under cursor at end of tab list
 nnoremap <Leader>f <C-w><C-f><C-w>L
+
+"Automatically split multiple files given via command line into their own tabs
+if !&diff && argc() > 1
+	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
+endif
