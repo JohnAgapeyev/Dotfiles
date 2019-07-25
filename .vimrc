@@ -302,6 +302,7 @@ function! CscopeExit(job_id, data, event) dict
     echo "Cscope generation complete"
     try
         :cscope add .
+        :cscope reset
     catch /^Vim\%((\a\+)\)\=:E/
         :cscope reset
     endtry
