@@ -9,6 +9,13 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+alias tree='tree -C'
+
+#Disable Ctrl-S/Ctrl-Q shenanigans
+stty -ixon
+
+# **/* recurse
+shopt -s globstar
 
 PS1="\[\e[34m\][\D{%T}]\[\e[36m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[33m\]\W\[\e[m\]\$ "
 
@@ -54,11 +61,11 @@ done
 function mvsane () {
     for F in "$@"
     do
-        FP=$(realpath "$F")
-        BN=$(basename "$FP")
-        BP=$(dirname "$FP")
-        NN="${BP}/$(sed -r 's/[ ]+/_/g;s/[^a-zA-Z0-9_.-]//g;s/[_-]{2,}/-/g;' <<< \"${BN}\")"
-        mv "$FP" "$NN"
+        FP=$(realpath -- "$F")
+        BN=$(basename -- "$FP")
+        BP=$(dirname -- "$FP")
+        NN="${BP}/$(sed -r 's/[ .]+/_/g;s/[ ]*\[[^]]*\][ ]*//g;s/[^a-zA-Z0-9_-]//g;s/[_-]{2,}/_/g;s/(^[ _-]+|[ _-]+$)//g' <<< \"${BN}\")"
+        [ "$FP" != "$NN" ] && mv -T -- "$FP" "$NN"
     done
 }
 
@@ -211,4 +218,28 @@ function nvimp() {
         $vcmd
     fi
 }
+
+function localscan () {
+    arp-scan --interface=$(ip link | grep 2 | awk '{print $2}' | tr -d ':') -l
+}
+
+#sum ints one per line
+function total () {
+    awk '{s+=$1} END {print s}'
+}
+
+function bdiff () {
+    if [ $# -ne 2 ]
+    then
+        echo "usage: bdiff file1 file2"
+    else
+        diff --color=auto -c --label "$1" --label "$2" <(xxd "$1") <(xxd "$2")
+    fi
+}
+
+#all my v4 ips on all up interfaces
+function allv4 () {
+    ip addr show up | grep -v 'lo$' | grep 'inet ' | awk '{print $2}'
+}
+
 
