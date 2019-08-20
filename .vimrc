@@ -381,3 +381,9 @@ inoremap <F1> <ESC>
 nnoremap / /\v
 vnoremap / /\v
 
+"keep visual selection after shift
+vnoremap < <gv
+vnoremap > >gv
+
+"Re-select our last pasted block
+nnoremap gp `[v`]
