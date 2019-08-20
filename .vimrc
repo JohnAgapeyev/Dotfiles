@@ -330,7 +330,7 @@ let cscope_callbacks = {
 
 function! GenMetadata()
 if has("nvim")
-    call jobstart('ctags $(find $(pwd) -name \*.[ch])', g:ctags_callbacks)
+    call jobstart('rm tags; find $(pwd) -type f -name \*.[ch] -exec ctags --append=yes --sort=no {} + && sort tags -o tags', g:ctags_callbacks)
     call jobstart('cscope -bcqR', g:cscope_callbacks)
 else
     :!ctags $(find $(pwd) -name \*.[ch])
@@ -363,3 +363,21 @@ nnoremap <Leader>f <C-w><C-f><C-w>L
 if !&diff && argc() > 1
 	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
 endif
+
+"Move on visual lines, not on wrapped/real ones
+nnoremap j gj
+nnoremap k gk
+nnoremap <Up> g<Up>
+nnoremap <Down> g<Down>
+
+"when the window gets resized reset the splits
+autocmd VimResized * wincmd =
+
+"i never want the help page! i always wanted ESC
+nnoremap <F1> <ESC>
+inoremap <F1> <ESC>
+
+"how dare you not use regex by default
+nnoremap / /\v
+vnoremap / /\v
+
