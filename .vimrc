@@ -387,3 +387,6 @@ vnoremap > >gv
 
 "Re-select our last pasted block
 nnoremap gp `[v`]
+
+"We're not in the 1970's, ex is not a better ed, disable ex mode
+nnoremap Q <nop>
