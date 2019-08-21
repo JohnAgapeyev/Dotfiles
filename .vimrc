@@ -390,3 +390,6 @@ nnoremap gp `[v`]
 
 "We're not in the 1970's, ex is not a better ed, disable ex mode
 nnoremap Q <nop>
+
+" allow the . to execute once for each line of a visual selection
+vnoremap . :normal .<CR>
