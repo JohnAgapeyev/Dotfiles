@@ -392,4 +392,4 @@ nnoremap gp `[v`]
 nnoremap Q <nop>
 
 " allow the . to execute once for each line of a visual selection
-vnoremap . :normal .<CR>
+vnoremap . :normal! .<CR>
