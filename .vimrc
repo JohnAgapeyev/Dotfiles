@@ -393,3 +393,6 @@ nnoremap Q <nop>
 
 " allow the . to execute once for each line of a visual selection
 vnoremap . :normal! .<CR>
+
+"Allows a macro to easily be executed on every line of a visual selection
+vnoremap @ :'<,'>norm! @
