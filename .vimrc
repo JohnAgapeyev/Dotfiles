@@ -20,8 +20,6 @@ Plug 'isaacmorneau/vim-update-daily'
 Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
-Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
-Plug 'Valloric/YouCompleteMe', {'do': 'python3 install.py --clang-completer'}
 Plug 'isaacmorneau/vim-simple-sessions'
 call plug#end()
 
@@ -75,10 +73,6 @@ autocmd VimEnter *
 "Set proper python paths
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python3'
-
-let g:ycm_confirm_extra_conf = 0
-let g:ycm_key_list_select_completion=["<tab>"]
-let g:ycm_key_list_previous_completion=["<S-tab>"]
 
 map <C-f> :Neoformat<CR>
 
