@@ -74,84 +74,12 @@ autocmd VimEnter *
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python3'
 
-map <C-f> :Neoformat<CR>
-
-let g:neoformat_basic_format_align = 1
-let g:neoformat_basic_format_retab = 1
-let g:neoformat_basic_format_trim = 1
-
-let g:neoformat_c_clang_format = {
-            \ 'exe': 'clang-format',
-            \ 'args': ['-style=~/.clang-format'],
-            \ }
-let g:neoformat_cpp_clang_format = {
-            \ 'exe': 'clang-format',
-            \ 'args': ['-style=~/.clang-format'],
-            \ }
-
-let g:neoformat_enabled_c = ['clangformat']
-let g:neoformat_enabled_cpp = ['clangformat']
-
-"[fzf]
-nnoremap <C-m> :FZF<CR>
-set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
-let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
-
-let g:fzf_action = {
-  \ 'ctrl-t': '$tab split',
-  \ 'ctrl-v': 'vsplit' }
-
-"Tab nav with shift
-nnoremap H gT
-nnoremap L gt
-"Tab move with Ctrl
-nnoremap <C-h> :tabmove -1<CR>
-nnoremap <C-l> :tabmove +1<CR>
-"Tab management with t leader
-"Open new tab at end of tab list
-nnoremap tn :$tabnew<CR>
-"Close the current tab
-nnoremap tq :tabclose<CR>
-"Open the filename under cursor at end of tab list
-nnoremap tf <C-w>gf<CR>:tabmove<CR>
-
-" Run this command daily using vim-update-daily plugin
-let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
-let g:update_noargs = 1
-
 "Set the colorscheme and gruvbox contrast
 colorscheme gruvbox
 let g:gruvbox_contrast_dark = "hard"
 let g:gruvbox_italic = 1
 
-"Enable nerdtree on launch and restore focus to file window
-autocmd StdinReadPre * let s:std_in=1
-"autocmd vimenter * NERDTree | wincmd p
-"autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
-autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-nnoremap <C-n> :NERDTreeToggle<CR>
-
-"Strip trailing whitespace on save
-autocmd BufEnter * EnableStripWhitespaceOnSave
-
-"Close preview window after insertion completion
-autocmd CompleteDone * pclose
-
-"Jump to last open
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-"[airline]
-" Enable the list of buffers
-let g:airline#extensions#tabline#enabled = 1
-" Show just the filename
-let g:airline#extensions#tabline#fnamemod = ':t'
-
-"[gitgutter]
-"these are so that gitgutter gives more snappy updates when doing lots of
-"editing by rechecking on anything to do with insert
-autocmd insertleave * nested call gitgutter#process_buffer(bufnr(''), 0)
-autocmd insertenter * nested call gitgutter#process_buffer(bufnr(''), 0)
+"[GENERAL SETTINGS]
 
 "Enable syntax highlighting
 syntax on
@@ -285,6 +213,72 @@ set path=**
 "New splits go on the right, I'm not an animal
 set splitright
 
+
+"[BINDINGS]
+"Tab nav with shift
+nnoremap H gT
+nnoremap L gt
+"Tab move with Ctrl
+nnoremap <C-h> :tabmove -1<CR>
+nnoremap <C-l> :tabmove +1<CR>
+"Tab management with t leader
+"Open new tab at end of tab list
+nnoremap tn :$tabnew<CR>
+"Close the current tab
+nnoremap tq :tabclose<CR>
+"Open the filename under cursor at end of tab list
+nnoremap tf <C-w>gf<CR>:tabmove<CR>
+
+"Open the filename under cursor at end of tab list
+nnoremap <Leader>f <C-w><C-f><C-w>L
+
+"Automatically split multiple files given via command line into their own tabs
+if !&diff && argc() > 1
+	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
+endif
+
+"Move on visual lines, not on wrapped/real ones
+nnoremap j gj
+nnoremap k gk
+nnoremap <Up> g<Up>
+nnoremap <Down> g<Down>
+
+"when the window gets resized reset the splits
+autocmd VimResized * wincmd =
+
+"i never want the help page! i always wanted ESC
+nnoremap <F1> <ESC>
+inoremap <F1> <ESC>
+
+"how dare you not use regex by default
+nnoremap / /\v
+vnoremap / /\v
+
+"keep visual selection after shift
+vnoremap < <gv
+vnoremap > >gv
+
+"Re-select our last pasted block
+nnoremap gp `[v`]
+
+"We're not in the 1970's, ex is not a better ed, disable ex mode
+nnoremap Q <nop>
+
+" allow the . to execute once for each line of a visual selection
+vnoremap . :normal! .<CR>
+
+"Allows a macro to easily be executed on every line of a visual selection
+vnoremap @ :'<,'>norm! @
+
+
+"[AUTOCMDS]
+"Jump to last open
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+"Close preview window after insertion completion
+autocmd CompleteDone * pclose
+
+"[TAGS]
 "Make cscope search tag files before cscope
 set cscopetagorder=1
 
@@ -332,7 +326,6 @@ else
 endif
 endfunction
 
-"[TAGS]
 "Regenerate tags and cscope files
 nnoremap <Leader>b :call GenMetadata()<CR>
 "Go back one level up the tag stack
@@ -350,43 +343,60 @@ endif
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
 
-"Open the filename under cursor at end of tab list
-nnoremap <Leader>f <C-w><C-f><C-w>L
+"[PLUGIN CONFIG]
 
-"Automatically split multiple files given via command line into their own tabs
-if !&diff && argc() > 1
-	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
-endif
+"[Neoformat]
+map <C-f> :Neoformat<CR>
 
-"Move on visual lines, not on wrapped/real ones
-nnoremap j gj
-nnoremap k gk
-nnoremap <Up> g<Up>
-nnoremap <Down> g<Down>
+let g:neoformat_basic_format_align = 1
+let g:neoformat_basic_format_retab = 1
+let g:neoformat_basic_format_trim = 1
 
-"when the window gets resized reset the splits
-autocmd VimResized * wincmd =
+let g:neoformat_c_clang_format = {
+            \ 'exe': 'clang-format',
+            \ 'args': ['-style=~/.clang-format'],
+            \ }
+let g:neoformat_cpp_clang_format = {
+            \ 'exe': 'clang-format',
+            \ 'args': ['-style=~/.clang-format'],
+            \ }
 
-"i never want the help page! i always wanted ESC
-nnoremap <F1> <ESC>
-inoremap <F1> <ESC>
+let g:neoformat_enabled_c = ['clangformat']
+let g:neoformat_enabled_cpp = ['clangformat']
 
-"how dare you not use regex by default
-nnoremap / /\v
-vnoremap / /\v
+"[fzf]
+nnoremap <C-m> :FZF<CR>
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 
-"keep visual selection after shift
-vnoremap < <gv
-vnoremap > >gv
+let g:fzf_action = {
+  \ 'ctrl-t': '$tab split',
+  \ 'ctrl-v': 'vsplit' }
 
-"Re-select our last pasted block
-nnoremap gp `[v`]
+" Run this command daily using vim-update-daily plugin
+let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
+let g:update_noargs = 1
 
-"We're not in the 1970's, ex is not a better ed, disable ex mode
-nnoremap Q <nop>
+"Enable nerdtree on launch and restore focus to file window
+autocmd StdinReadPre * let s:std_in=1
+"autocmd vimenter * NERDTree | wincmd p
+"autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
+autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+nnoremap <C-n> :NERDTreeToggle<CR>
 
-" allow the . to execute once for each line of a visual selection
-vnoremap . :normal! .<CR>
+"Strip trailing whitespace on save
+autocmd BufEnter * EnableStripWhitespaceOnSave
 
-"Allows a macro to easily be executed on every line of a visual selection
-vnoremap @ :'<,'>norm! @
+"[airline]
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+"[gitgutter]
+"these are so that gitgutter gives more snappy updates when doing lots of
+"editing by rechecking on anything to do with insert
+autocmd insertleave * nested call gitgutter#process_buffer(bufnr(''), 0)
+autocmd insertenter * nested call gitgutter#process_buffer(bufnr(''), 0)
+
