@@ -105,9 +105,6 @@ set cmdheight=2
 "Show the current command
 set showcmd
 
-"Hide a buffer when it is abandoned
-set hid
-
 "Enable list mode to show whitespace
 set list
 
@@ -153,8 +150,11 @@ set shiftwidth=4
 set tabstop=4
 
 "Enable auto and smart indent
-set ai
-set si
+set autoindent
+set smartindent
+
+"When in Rome...
+set copyindent
 
 "Enable line wrapping
 set wrap
@@ -189,7 +189,7 @@ let g:scratch_persistence_file = g:scratch_dir . strftime("scratch_%Y-%m-%d")
 let g:scratch_no_mappings = 1
 
 "share vim and system clipboard
-set clipboard+=unnamed
+set clipboard+=unnamedplus
 
 "enable true 24-bit colour
 set tgc
