@@ -102,6 +102,9 @@ set ruler
 "Number of lines in cmd height
 set cmdheight=2
 
+"Hide buffers that are no longer in use (this prevents prompting to save on tag jump)
+set hid
+
 "Show the current command
 set showcmd
 
@@ -300,9 +303,6 @@ autocmd CompleteDone * pclose
 let cleanup_timer = timer_start(10000, 'DeleteInactiveBufs')
 
 "[TAGS]
-"Make cscope search tag files before cscope
-set cscopetagorder=1
-
 function! CtagsExit(job_id, data, event) dict
     echo "CTags generation complete"
 endfunction
@@ -388,7 +388,7 @@ let g:neoformat_enabled_cpp = ['clangformat']
 "[fzf]
 nnoremap <C-m> :FZF<CR>
 set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*.exe,*.elf,cscope.*
 let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 
 let g:fzf_action = {
