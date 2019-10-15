@@ -102,8 +102,8 @@ set ruler
 "Number of lines in cmd height
 set cmdheight=2
 
-"Hide buffers that are no longer in use (this prevents prompting to save on tag jump)
-set hid
+"Unload buffers that are no longer in use
+set nohidden
 
 "Show the current command
 set showcmd
@@ -273,34 +273,12 @@ vnoremap . :normal! .<CR>
 "Allows a macro to easily be executed on every line of a visual selection
 vnoremap @ :'<,'>norm! @
 
-"Modified from https://stackoverflow.com/a/7321131
-function! DeleteInactiveBufs(timer)
-    "From tabpagebuflist() help, get a list of all buffers in all tabs
-    let tablist = []
-    for i in range(tabpagenr('$'))
-        call extend(tablist, tabpagebuflist(i + 1))
-    endfor
-
-    "Below originally inspired by Hara Krishna Dara and Keith Roberts
-    "http://tech.groups.yahoo.com/group/vim/message/56425
-    for i in range(1, bufnr('$'))
-        if bufexists(i) && !getbufvar(i,"&mod") && index(tablist, i) == -1
-        "bufno exists AND isn't modified AND isn't in the list of buffers open in windows and tabs
-            silent exec 'bdelete' i
-        endif
-    endfor
-endfunction
-
 "[AUTOCMDS]
 "Jump to last open
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 "Close preview window after insertion completion
 autocmd CompleteDone * pclose
-
-"Automatically clean up all unused buffers
-"autocmd TabNewEntered * call DeleteInactiveBufs()
-let cleanup_timer = timer_start(10000, 'DeleteInactiveBufs')
 
 "[TAGS]
 function! CtagsExit(job_id, data, event) dict
