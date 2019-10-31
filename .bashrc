@@ -29,6 +29,8 @@ export CXX=/usr/bin/g++
 
 export PATH="$PATH:~/.local/bin"
 
+export GCC_COLOR=1
+
 #Set SSH to use gpg-agent
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
