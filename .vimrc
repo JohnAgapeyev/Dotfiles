@@ -230,6 +230,76 @@ set path=**
 "New splits go on the right, I'm not an animal
 set splitright
 
+set wildmode=list:longest,list:full
+set wildignore+=*.o
+set wildignore+=*.d
+set wildignore+=*.obj
+set wildignore+=*.git
+set wildignore+=*.rbc
+set wildignore+=*.pyc
+set wildignore+=__pycache__
+set wildignore+=*.exe
+set wildignore+=*.elf
+set wildignore+=cscope.*
+set wildignore+=tags*
+set wildignore+=*.svn
+set wildignore+=*.hg
+set wildignore+=build
+set wildignore+=dist
+set wildignore+=*sites/*/files/*
+set wildignore+=*/obj/*
+set wildignore+=bin
+set wildignore+=node_modules
+set wildignore+=bower_components
+set wildignore+=cache
+set wildignore+=compiled
+set wildignore+=docs
+set wildignore+=example
+set wildignore+=bundle
+set wildignore+=vendor
+set wildignore+=*.md
+set wildignore+=*-lock.json
+set wildignore+=*.lock
+set wildignore+=*bundle*.js
+set wildignore+=*build*.js
+set wildignore+=.*rc*
+set wildignore+=*.json
+set wildignore+=*.min.*
+set wildignore+=*.map
+set wildignore+=*.bak
+set wildignore+=*.zip
+set wildignore+=*.pyc
+set wildignore+=*.class
+set wildignore+=*.sln
+set wildignore+=*.Master
+set wildignore+=*.csproj
+set wildignore+=*.tmp
+set wildignore+=*.csproj.user
+set wildignore+=*.cache
+set wildignore+=*.pdb
+set wildignore+=*.css
+set wildignore+=*.less
+set wildignore+=*.scss
+set wildignore+=*.dll
+set wildignore+=*.mp3
+set wildignore+=*.ogg
+set wildignore+=*.flac
+set wildignore+=*.swp
+set wildignore+=*.swo
+set wildignore+=*.bmp
+set wildignore+=*.gif
+set wildignore+=*.ico
+set wildignore+=*.jpg
+set wildignore+=*.png
+set wildignore+=*.rar
+set wildignore+=*.zip
+set wildignore+=*.tar
+set wildignore+=*.tar.*
+set wildignore+=*.pdf
+set wildignore+=*.doc
+set wildignore+=*.docx
+set wildignore+=*.ppt
+set wildignore+=*.pptx
 
 "[BINDINGS]
 "Tab nav with shift
@@ -336,12 +406,17 @@ nnoremap <Leader>\ :call FindSymbol()<CR>
 "[Gutentags]
 let g:gutentags_modules = ['ctags', 'cscope', 'gtags_cscope']
 let g:gutentags_add_default_project_roots = 1
+let g:gutentags_generate_on_new = 0
+let g:gutentags_generate_on_empty_buffer = 0
 
 let g:gutentags_exclude_project_root = ['/usr/local', $HOME]
 
 let g:gutentags_cscope_build_inverted_index = 1
 
 set statusline+=%{gutentags#statusline()}
+
+"Maybe I'll care about other file types if I ever use tags for something not C/C++
+let g:gutentags_file_list_command = 'find . -type f -iname "*.[ch]" -o -iname "*.cpp"'
 
 "[Neoformat]
 map <C-f> :Neoformat<CR>
@@ -364,75 +439,6 @@ let g:neoformat_enabled_cpp = ['clangformat']
 
 "[fzf]
 nnoremap <C-m> :FZF<CR>
-set wildmode=list:longest,list:full
-set wildignore+=*.o
-set wildignore+=*.d
-set wildignore+=*.obj
-set wildignore+=*.git
-set wildignore+=*.rbc
-set wildignore+=*.pyc
-set wildignore+=__pycache__
-set wildignore+=*.exe
-set wildignore+=*.elf
-set wildignore+=cscope.*
-set wildignore+=tags*
-set wildignore+=*.svn
-set wildignore+=*.hg
-set wildignore+=build
-set wildignore+=dist
-set wildignore+=*sites/*/files/*
-set wildignore+=bin
-set wildignore+=node_modules
-set wildignore+=bower_components
-set wildignore+=cache
-set wildignore+=compiled
-set wildignore+=docs
-set wildignore+=example
-set wildignore+=bundle
-set wildignore+=vendor
-set wildignore+=*.md
-set wildignore+=*-lock.json
-set wildignore+=*.lock
-set wildignore+=*bundle*.js
-set wildignore+=*build*.js
-set wildignore+=.*rc*
-set wildignore+=*.json
-set wildignore+=*.min.*
-set wildignore+=*.map
-set wildignore+=*.bak
-set wildignore+=*.zip
-set wildignore+=*.pyc
-set wildignore+=*.class
-set wildignore+=*.sln
-set wildignore+=*.Master
-set wildignore+=*.csproj
-set wildignore+=*.tmp
-set wildignore+=*.csproj.user
-set wildignore+=*.cache
-set wildignore+=*.pdb
-set wildignore+=*.css
-set wildignore+=*.less
-set wildignore+=*.scss
-set wildignore+=*.dll
-set wildignore+=*.mp3
-set wildignore+=*.ogg
-set wildignore+=*.flac
-set wildignore+=*.swp
-set wildignore+=*.swo
-set wildignore+=*.bmp
-set wildignore+=*.gif
-set wildignore+=*.ico
-set wildignore+=*.jpg
-set wildignore+=*.png
-set wildignore+=*.rar
-set wildignore+=*.zip
-set wildignore+=*.tar
-set wildignore+=*.tar.*
-set wildignore+=*.pdf
-set wildignore+=*.doc
-set wildignore+=*.docx
-set wildignore+=*.ppt
-set wildignore+=*.pptx
 
 let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 if executable('rg')
