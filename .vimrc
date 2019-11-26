@@ -21,6 +21,10 @@ Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
 Plug 'isaacmorneau/vim-simple-sessions'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'tpope/vim-surround'
+Plug 'kana/vim-textobj-user'
+Plug 'Julian/vim-textobj-variable-segment'
 call plug#end()
 
 "Create directories if they don't exist
@@ -60,6 +64,16 @@ function! InitializeDirectories()
     if !isdirectory(g:scratch_dir)
         echo "Warning: Unable to create scratch directory: " . g:scratch_dir
         echo "Try: mkdir -p " . g:scratch_dir
+    endif
+    let g:gutentags_cache_dir = common_dir . 'tags'. '/'
+    if exists("*mkdir")
+        if !isdirectory(g:gutentags_cache_dir)
+            call mkdir(g:gutentags_cache_dir)
+        endif
+    endif
+    if !isdirectory(g:gutentags_cache_dir)
+        echo "Warning: Unable to create tags directory: " . g:gutentags_cache_dir
+        echo "Try: mkdir -p " . g:gutentags_cache_dir
     endif
 endfunction
 call InitializeDirectories()
@@ -307,26 +321,6 @@ function! FindSymbol()
     endtry
 endfunction
 
-let ctags_callbacks = {
-            \ 'on_exit': function('CtagsExit')
-            \ }
-
-let cscope_callbacks = {
-            \ 'on_exit': function('CscopeExit')
-            \ }
-
-function! GenMetadata()
-if has("nvim")
-    call jobstart('rm tags; find $(pwd) -type f -name \*.[ch] -exec ctags --append=yes --sort=no {} + && sort tags -o tags', g:ctags_callbacks)
-    call jobstart('cscope -bcqR', g:cscope_callbacks)
-else
-    :!ctags $(find $(pwd) -name \*.[ch])
-    :!cscope -bcqR<CR> <Bar> :cscope reset
-endif
-endfunction
-
-"Regenerate tags and cscope files
-nnoremap <Leader>b :call GenMetadata()<CR>
 "Go back one level up the tag stack
 nnoremap <Leader>[ :pop<CR>
 "Search for tag using regexp, jump if only one, otherwise, list options
@@ -334,15 +328,20 @@ nnoremap <Leader>/ :tj<Space>/
 
 "Search for tag using regexp, jump if only one, otherwise, list options
 nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
-
-"[Cscope]
-if filereadable("cscope.out")
-    :silent execute "normal :cscope add .\<CR>"
-endif
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
 
 "[PLUGIN CONFIG]
+
+"[Gutentags]
+let g:gutentags_modules = ['ctags', 'cscope', 'gtags_cscope']
+let g:gutentags_add_default_project_roots = 1
+
+let g:gutentags_exclude_project_root = ['/usr/local', $HOME]
+
+let g:gutentags_cscope_build_inverted_index = 1
+
+set statusline+=%{gutentags#statusline()}
 
 "[Neoformat]
 map <C-f> :Neoformat<CR>
@@ -366,7 +365,75 @@ let g:neoformat_enabled_cpp = ['clangformat']
 "[fzf]
 nnoremap <C-m> :FZF<CR>
 set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*.exe,*.elf,cscope.*,tags,.svn
+set wildignore+=*.o
+set wildignore+=*.d
+set wildignore+=*.obj
+set wildignore+=*.git
+set wildignore+=*.rbc
+set wildignore+=*.pyc
+set wildignore+=__pycache__
+set wildignore+=*.exe
+set wildignore+=*.elf
+set wildignore+=cscope.*
+set wildignore+=tags*
+set wildignore+=*.svn
+set wildignore+=*.hg
+set wildignore+=build
+set wildignore+=dist
+set wildignore+=*sites/*/files/*
+set wildignore+=bin
+set wildignore+=node_modules
+set wildignore+=bower_components
+set wildignore+=cache
+set wildignore+=compiled
+set wildignore+=docs
+set wildignore+=example
+set wildignore+=bundle
+set wildignore+=vendor
+set wildignore+=*.md
+set wildignore+=*-lock.json
+set wildignore+=*.lock
+set wildignore+=*bundle*.js
+set wildignore+=*build*.js
+set wildignore+=.*rc*
+set wildignore+=*.json
+set wildignore+=*.min.*
+set wildignore+=*.map
+set wildignore+=*.bak
+set wildignore+=*.zip
+set wildignore+=*.pyc
+set wildignore+=*.class
+set wildignore+=*.sln
+set wildignore+=*.Master
+set wildignore+=*.csproj
+set wildignore+=*.tmp
+set wildignore+=*.csproj.user
+set wildignore+=*.cache
+set wildignore+=*.pdb
+set wildignore+=*.css
+set wildignore+=*.less
+set wildignore+=*.scss
+set wildignore+=*.dll
+set wildignore+=*.mp3
+set wildignore+=*.ogg
+set wildignore+=*.flac
+set wildignore+=*.swp
+set wildignore+=*.swo
+set wildignore+=*.bmp
+set wildignore+=*.gif
+set wildignore+=*.ico
+set wildignore+=*.jpg
+set wildignore+=*.png
+set wildignore+=*.rar
+set wildignore+=*.zip
+set wildignore+=*.tar
+set wildignore+=*.tar.*
+set wildignore+=*.pdf
+set wildignore+=*.doc
+set wildignore+=*.docx
+set wildignore+=*.ppt
+set wildignore+=*.pptx
+
 let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 if executable('rg')
     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
@@ -419,4 +486,3 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 "editing by rechecking on anything to do with insert
 autocmd InsertLeave * nested call gitgutter#process_buffer(bufnr(''), 0)
 autocmd InsertEnter * nested call gitgutter#process_buffer(bufnr(''), 0)
-
