@@ -1,4 +1,5 @@
-set nocompatible              " be iMproved, required
+"Redundant for Neovim
+set nocompatible
 
 "Silently download and install vim-plug
 let s:vim_plug = '~/.vim/autoload/plug.vim'
@@ -180,6 +181,10 @@ set wrap
 set ssop-=options
 "Do not store folds
 set ssop-=folds
+"Do not store hidden and unloaded buffers
+set ssop-=buffers
+"Do not store the help window
+set ssop-=help
 
 "Allow me to use the mouse on terminal vim
 set mouse=a
@@ -230,6 +235,7 @@ set path=**
 "New splits go on the right, I'm not an animal
 set splitright
 
+"Let's ignore tons of garbage/binary/random files
 set wildmode=list:longest,list:full
 set wildignore+=*.o
 set wildignore+=*.d
@@ -316,7 +322,7 @@ nnoremap tq :tabclose<CR>
 "Open the filename under cursor at end of tab list
 nnoremap tf <C-w>gf<CR>:tabmove<CR>
 
-"Open the filename under cursor at end of tab list
+"Open the filename under cursor as a new window
 nnoremap <Leader>f <C-w><C-f><C-w>L
 
 "Automatically split multiple files given via command line into their own tabs
@@ -387,20 +393,6 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd CompleteDone * pclose
 
 "[TAGS]
-function! CtagsExit(job_id, data, event) dict
-    echo "CTags generation complete"
-endfunction
-
-function! CscopeExit(job_id, data, event) dict
-    echo "Cscope generation complete"
-    try
-        :cscope add .
-        :cscope reset
-    catch /^Vim\%((\a\+)\)\=:E/
-        :cscope reset
-    endtry
-endfunction
-
 "Tries to find functions calling the current function
 "but will fallback to all usages if that fails
 "This is mainly for handling functions and variables/types with the same
@@ -434,8 +426,6 @@ let g:gutentags_generate_on_empty_buffer = 0
 let g:gutentags_exclude_project_root = ['/usr/local', $HOME]
 
 let g:gutentags_cscope_build_inverted_index = 1
-
-set statusline+=%{gutentags#statusline()}
 
 "Maybe I'll care about other file types if I ever use tags for something not C/C++
 let g:gutentags_file_list_command = 'find . -type f -iname "*.[ch]" -o -iname "*.cpp"'
