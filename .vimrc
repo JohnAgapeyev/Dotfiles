@@ -357,6 +357,28 @@ vnoremap . :normal! .<CR>
 "Allows a macro to easily be executed on every line of a visual selection
 vnoremap @ :'<,'>norm! @
 
+"S and cc are duplicates so mimic the inverse of J for S
+nnoremap S :keeppatterns substitute/\s*\%#\s*/\r/e <bar> normal! ==<CR>
+
+"extend * and # to visual mode
+"found from /u/noahspurrier
+vmap <silent> * y:let @/=substitute(escape(@",'.$*[^\/~'),'\n','\\n','g')<CR>n
+vmap <silent> # y:let @/=substitute(escape(@",'.$*[^\/~'),'\n','\\n','g')<CR>N
+vnoremap <silent> * :<C-U>
+              \let old_reg=getreg('"')<bar>
+              \let old_regmode=getregtype('"')<cr>
+              \gvy/<C-R><C-R>=substitute(substitute(
+              \escape(@", '\\/.*$^~[]' ), "\n$", "", ""),
+              \"\n", '\\_[[:return:]]', "g")<cr><cr>
+              \:call setreg('"', old_reg, old_regmode)<cr>
+vnoremap <silent> # :<C-U>
+              \let old_reg=getreg('"')<bar>
+              \let old_regmode=getregtype('"')<cr>
+              \gvy?<C-R><C-R>=substitute(substitute(
+              \escape(@", '\\/.*$^~[]' ), "\n$", "", ""),
+              \"\n", '\\_[[:return:]]', "g")<cr><cr>
+              \:call setreg('"', old_reg, old_regmode)<cr>
+
 "[AUTOCMDS]
 "Jump to last open
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
