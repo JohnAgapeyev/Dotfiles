@@ -418,7 +418,11 @@ nnoremap <Leader>\ :call FindSymbol()<CR>
 "[PLUGIN CONFIG]
 
 "[Gutentags]
-let g:gutentags_modules = ['ctags', 'cscope', 'gtags_cscope']
+if executable('global')
+    let g:gutentags_modules = ['ctags', 'gtags_cscope']
+else
+    let g:gutentags_modules = ['ctags', 'cscope']
+endif
 let g:gutentags_add_default_project_roots = 1
 let g:gutentags_generate_on_new = 0
 let g:gutentags_generate_on_empty_buffer = 0
