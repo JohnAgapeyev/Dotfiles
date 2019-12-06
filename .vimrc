@@ -418,11 +418,7 @@ nnoremap <Leader>\ :call FindSymbol()<CR>
 "[PLUGIN CONFIG]
 
 "[Gutentags]
-if executable('global')
-    let g:gutentags_modules = ['ctags', 'gtags_cscope']
-else
-    let g:gutentags_modules = ['ctags', 'cscope']
-endif
+let g:gutentags_modules = ['ctags', 'cscope']
 let g:gutentags_add_default_project_roots = 1
 let g:gutentags_generate_on_new = 0
 let g:gutentags_generate_on_empty_buffer = 0
@@ -433,6 +429,9 @@ let g:gutentags_cscope_build_inverted_index = 1
 
 "Maybe I'll care about other file types if I ever use tags for something not C/C++
 let g:gutentags_file_list_command = 'find . -type f -iname "*.[ch]" -o -iname "*.cpp"'
+
+let g:gutentags_define_advanced_commands = 1
+let g:gutentags_resolve_symlinks = 0
 
 "[Neoformat]
 map <C-f> :Neoformat<CR>
@@ -488,7 +487,7 @@ let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
 let g:update_noargs = 1
 
 "Enable nerdtree on launch and restore focus to file window
-autocmd StdinReadPre * let s:std_in=1
+"autocmd StdinReadPre * let s:std_in=1
 "autocmd vimenter * NERDTree | wincmd p
 "autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
 autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
