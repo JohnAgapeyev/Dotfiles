@@ -22,7 +22,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/Colorizer'
 Plug 'sbdchd/neoformat'
 Plug 'isaacmorneau/vim-simple-sessions'
-Plug 'ludovicchabant/vim-gutentags'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user'
 Plug 'Julian/vim-textobj-variable-segment'
@@ -45,36 +44,23 @@ function! InitializeDirectories()
         let directory = common_dir . dirname . '/'
         if exists("*mkdir")
             if !isdirectory(directory)
-                call mkdir(directory)
+                call mkdir(directory, "p")
             endif
         endif
-        if !isdirectory(directory)
-            echo "Warning: Unable to create backup directory: " . directory
-            echo "Try: mkdir -p " . directory
-        else
-            let directory = substitute(directory, " ", "\\\\ ", "g")
-            exec "set " . settingname . "=" . directory
-        endif
+        let directory = substitute(directory, " ", "\\\\ ", "g")
+        exec "set " . settingname . "=" . directory
     endfor
     let g:scratch_dir = common_dir . 'scratch'. '/'
     if exists("*mkdir")
         if !isdirectory(g:scratch_dir)
-            call mkdir(g:scratch_dir)
+            call mkdir(g:scratch_dir, "p")
         endif
     endif
-    if !isdirectory(g:scratch_dir)
-        echo "Warning: Unable to create scratch directory: " . g:scratch_dir
-        echo "Try: mkdir -p " . g:scratch_dir
-    endif
-    let g:gutentags_cache_dir = common_dir . 'tags'. '/'
+    let cache_dir = common_dir . 'tags'. '/'
     if exists("*mkdir")
-        if !isdirectory(g:gutentags_cache_dir)
-            call mkdir(g:gutentags_cache_dir)
+        if !isdirectory(cache_dir)
+            call mkdir(cache_dir, "p")
         endif
-    endif
-    if !isdirectory(g:gutentags_cache_dir)
-        echo "Warning: Unable to create tags directory: " . g:gutentags_cache_dir
-        echo "Try: mkdir -p " . g:gutentags_cache_dir
     endif
 endfunction
 call InitializeDirectories()
@@ -415,23 +401,48 @@ nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
 
+function! CtagsExit(job_id, data, event) dict
+    echo "CTags generation complete"
+endfunction
+
+function! CscopeExit(job_id, data, event) dict
+    echo "Cscope generation complete"
+    try
+        :cscope add .
+        :cscope reset
+    catch /^Vim\%((\a\+)\)\=:E/
+        :cscope reset
+    endtry
+endfunction
+
+let ctags_callbacks = {
+            \ 'on_exit': function('CtagsExit')
+            \ }
+
+let cscope_callbacks = {
+            \ 'on_exit': function('CscopeExit')
+            \ }
+
+function! GenMetadata()
+    :silent !mkdir -p /tmp/custom_vimrc/
+    :silent !find $PWD -type f -regex ".*\.\(c\|h\)\(pp\)*$" -exec readlink -f {} + > /tmp/custom_vimrc/tags_files
+if has("nvim")
+    call jobstart('rm tags; ctags -L /tmp/custom_vimrc/tags_files', g:ctags_callbacks)
+    call jobstart('cscope -bq -i /tmp/custom_vimrc/tags_files', g:cscope_callbacks)
+else
+    :!rm tags; ctags -L /tmp/custom_vimrc/tags_files
+    :!cscope -bq -i /tmp/custom_vimrc/tags_files <Bar> :cscope reset
+endif
+endfunction
+
+"Regenerate tags and cscope files
+nnoremap <Leader>b :call GenMetadata()<CR>
+
+if filereadable("cscope.out")
+    :silent execute "normal :cscope add .\<CR>"
+endif
+
 "[PLUGIN CONFIG]
-
-"[Gutentags]
-let g:gutentags_modules = ['ctags', 'cscope']
-let g:gutentags_add_default_project_roots = 1
-let g:gutentags_generate_on_new = 0
-let g:gutentags_generate_on_empty_buffer = 0
-
-let g:gutentags_exclude_project_root = ['/usr/local', $HOME]
-
-let g:gutentags_cscope_build_inverted_index = 1
-
-"Maybe I'll care about other file types if I ever use tags for something not C/C++
-let g:gutentags_file_list_command = 'find . -type f -iname "*.[ch]" -o -iname "*.cpp"'
-
-let g:gutentags_define_advanced_commands = 1
-let g:gutentags_resolve_symlinks = 0
 
 "[Neoformat]
 map <C-f> :Neoformat<CR>
