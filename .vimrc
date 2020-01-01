@@ -425,7 +425,7 @@ let cscope_callbacks = {
 
 function! GenMetadata()
     :silent !mkdir -p /tmp/custom_vimrc/
-    :silent !find $PWD -type f -regex ".*\.\(c\|h\)\(pp\)*$" -exec readlink -f {} + > /tmp/custom_vimrc/tags_files
+    :silent !find $PWD -path "*bin*" -prune -o -path "*CMakeFiles*" -prune -o -type f -regex ".*\.\(c\|h\)\(pp\)*$" -exec readlink -f {} + > /tmp/custom_vimrc/tags_files
 if has("nvim")
     call jobstart('rm tags; ctags -L /tmp/custom_vimrc/tags_files', g:ctags_callbacks)
     call jobstart('cscope -bq -i /tmp/custom_vimrc/tags_files', g:cscope_callbacks)
