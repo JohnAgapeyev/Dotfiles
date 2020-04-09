@@ -397,7 +397,7 @@ nnoremap <Leader>[ :pop<CR>
 nnoremap <Leader>/ :tj<Space>/
 
 "Search for tag using regexp, jump if only one, otherwise, list options
-nnoremap <Leader>] :execute 'tag' expand('<cword>')<CR>
+nnoremap <Leader>] :execute 'tj' expand('<cword>')<CR>
 "Find functions calling the current word under the cursor
 nnoremap <Leader>\ :call FindSymbol()<CR>
 
