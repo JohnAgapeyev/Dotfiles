@@ -518,3 +518,22 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 "editing by rechecking on anything to do with insert
 autocmd InsertLeave * nested call gitgutter#process_buffer(bufnr(''), 0)
 autocmd InsertEnter * nested call gitgutter#process_buffer(bufnr(''), 0)
+
+command! -complete=shellcmd -nargs=+ Sh call s:RunShellCommand(<q-args>)
+function! s:RunShellCommand(cmdline)
+    echo a:cmdline
+    let expanded_cmdline = a:cmdline
+    for part in split(a:cmdline, ' ')
+        if part[0] =~ '\v[%#<]'
+            let expanded_part = fnameescape(expand(part))
+            let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
+        endif
+    endfor
+    botright new
+    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
+    call setline(1, 'cmd: ' .expanded_cmdline)
+    call setline(2,substitute(getline(1),'.','=','g'))
+    execute '$read !'. expanded_cmdline
+    setlocal nomodifiable
+    1
+endfunction
