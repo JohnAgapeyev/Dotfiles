@@ -33,6 +33,9 @@ export PATH="$PATH:~/.local/bin"
 
 export GCC_COLOR=1
 
+export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_SCALE_FACTOR_ROUNDING_POLICY=Round
+
 #Set SSH to use gpg-agent
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
