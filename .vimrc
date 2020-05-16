@@ -197,7 +197,11 @@ let g:scratch_persistence_file = g:scratch_dir . strftime("scratch_%Y-%m-%d")
 let g:scratch_no_mappings = 1
 
 "share vim and system clipboard
-set clipboard+=unnamedplus
+if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+else
+    set clipboard=unnamed
+endif
 
 "enable true 24-bit colour
 set tgc
