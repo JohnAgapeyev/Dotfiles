@@ -25,6 +25,7 @@ Plug 'isaacmorneau/vim-simple-sessions'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user'
 Plug 'Julian/vim-textobj-variable-segment'
+Plug 'luochen1990/rainbow'
 call plug#end()
 
 "Create directories if they don't exist
@@ -152,6 +153,9 @@ set expandtab
 set smarttab
 set shiftwidth=4
 set tabstop=4
+
+"100 char line highlight
+set colorcolumn=100
 
 "Enable auto and smart indent
 set autoindent
@@ -516,6 +520,10 @@ autocmd BufEnter * EnableStripWhitespaceOnSave
 let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
 let g:airline#extensions#tabline#fnamemod = ':t'
+
+"[rainbow]
+"Enable rainbow braces
+let g:rainbow_active = 1
 
 "[gitgutter]
 "these are so that gitgutter gives more snappy updates when doing lots of
