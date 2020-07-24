@@ -66,6 +66,50 @@ function! InitializeDirectories()
 endfunction
 call InitializeDirectories()
 
+function MoveToPrevTab()
+    "there is only one window
+    if tabpagenr('$') == 1 && winnr('$') == 1
+        return
+    endif
+    "preparing new window
+    let l:tab_nr = tabpagenr('$')
+    let l:cur_buf = bufnr('%')
+    if tabpagenr() != 1
+        close!
+        if l:tab_nr == tabpagenr('$')
+            tabprev
+        endif
+        sp
+    else
+        close!
+        exe "0tabnew"
+    endif
+    "opening current buffer in new window
+    exe "b".l:cur_buf
+endfunc
+
+function MoveToNextTab()
+    "there is only one window
+    if tabpagenr('$') == 1 && winnr('$') == 1
+        return
+    endif
+    "preparing new window
+    let l:tab_nr = tabpagenr('$')
+    let l:cur_buf = bufnr('%')
+    if tabpagenr() < tab_nr
+        close!
+        if l:tab_nr == tabpagenr('$')
+            tabnext
+        endif
+        sp
+    else
+        close!
+        tabnew
+    endif
+    "opening current buffer in new window
+    exe "b".l:cur_buf
+endfunc
+
 "Autoinstall plugins
 autocmd VimEnter *
             \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
@@ -333,6 +377,35 @@ nnoremap <Down> g<Down>
 "when the window gets resized reset the splits
 autocmd VimResized * wincmd =
 
+"[Window management]
+"Ctrl-W is stupid, just rebind it to Alt instead
+"Benefit is that Alt can be held for multiple ops
+"Basic movement
+nnoremap <A-h> <C-W>h
+nnoremap <A-j> <C-W>j
+nnoremap <A-k> <C-W>k
+nnoremap <A-l> <C-W>l
+"Window movement
+nnoremap <A-H> <C-W>H
+nnoremap <A-J> <C-W>J
+nnoremap <A-K> <C-W>K
+nnoremap <A-L> <C-W>L
+nnoremap <A-.> :call MoveToNextTab()<CR>
+nnoremap <A-,> :call MoveToPrevTab()<CR>
+"New window creation
+nnoremap <A-n> :vnew<CR>
+nnoremap <A-s> <C-W>s
+nnoremap <A-v> <C-W>v
+"Quit the current window
+nnoremap <A-q> <C-W>q
+"Resizing
+nnoremap <A--> <C-W>-
+nnoremap <A-+> <C-W>+
+nnoremap <A-<> <C-W><
+nnoremap <A->> <C-W>>
+nnoremap <A-=> <C-W>=
+nnoremap <A-_> <C-W>_
+
 "i never want the help page! i always wanted ESC
 nnoremap <F1> <ESC>
 inoremap <F1> <ESC>
@@ -499,7 +572,8 @@ let g:fzf_colors =
 
 let g:fzf_action = {
   \ 'ctrl-t': '$tab split',
-  \ 'ctrl-v': 'vsplit' }
+  \ 'ctrl-v': 'vsplit',
+  \ 'ctrl-s': 'split' }
 
 " Run this command daily using vim-update-daily plugin
 let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
