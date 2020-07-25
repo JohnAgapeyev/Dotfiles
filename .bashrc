@@ -23,7 +23,7 @@ shopt -s globstar
 PS1="\[\e[34m\][\D{%T}]\[\e[36m\]\u\[\e[m\]@\[\e[32m\]\h\[\e[m\]:\[\e[33m\]\W\[\e[m\]\$ "
 
 export TERM=xterm-256color
-export TERMINAL=termite
+export TERMINAL=alacritty
 export VISUAL=nvim
 export EDITOR=nvim
 
