@@ -4,3 +4,5 @@
 	signingkey = BC9BA90B
 [core]
 	editor = nvim
+[pull]
+	rebase = true
