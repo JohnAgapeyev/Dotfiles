@@ -8,6 +8,11 @@ if empty(glob(s:vim_plug, 1))
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+"[polyglot]
+"Plugin is good but the indentation detection is horribly fucked
+"Needs to be put before loading polyglot
+let g:polyglot_disabled = ['autoindent']
+
 call plug#begin()
 Plug 'junegunn/vim-plug'
 Plug 'morhetz/gruvbox'
