@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Needed to ensure the tablet only maps to the IPS monitor, instead of both screens at once
+xsetwacom --set "HUION Huion Tablet stylus" MapToOutput HEAD-1
+
+# Custom tablet stylus button settings
+# Eraser
+xsetwacom --set "HUION Huion Tablet stylus" "Button" "2" "key e "
+# Right click popup
+xsetwacom --set "HUION Huion Tablet stylus" "Button" "3" "button 3 "
+
+# Pan canvas
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "1" "key +space"
+# Zoom canvas
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "2" "key +ctrl +space "
+# Rotate canvas
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "3" "key +shift +space "
+# Change brush size
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "8" "key +shift "
+# Undo
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "9" "key +ctrl z -ctrl "
+# Redo
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "10" "key +ctrl +shift z -shift -ctrl "
+# Horizontal flip
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "11" "key M"
+# Reset canvas rotation
+xsetwacom --set "HUION Huion Tablet Pad pad" "Button" "12" "key 5 "
