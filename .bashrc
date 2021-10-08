@@ -27,7 +27,7 @@ export TERMINAL=alacritty
 export VISUAL=nvim
 export EDITOR=nvim
 
-export MANPAGER="nvim -c 'set ft=man' -"
+export MANPAGER='nvim +Man!'
 
 export PATH="$PATH:~/.local/bin"
 
