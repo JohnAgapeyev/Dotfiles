@@ -125,7 +125,7 @@ bindsym XF86AudioNext exec mpc next
 
 #bindsym $mod+Control+l exec i3lock -e -i ~/Downloads/cryingseal.png -t -f
 #bindsym $mod+Control+l exec sflock
-bindsym $mod+Escape exec sflock
+#bindsym $mod+Escape exec sflock
 
 # Move the current workspace to the next output
 # (effectively toggles when you only have two outputs)
@@ -170,6 +170,18 @@ exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id picom -b
 exec --no-startup-id unclutter -b
 exec_always --no-startup-id flashfocus -t 200
+exec --no-startup-id firefox
+for_window [class="firefox"] move --no-auto-back-and-forth container to workspace 11
+exec --no-startup-id spotify
+for_window [class="Spotify"] move --no-auto-back-and-forth container to workspace 15
+exec --no-startup-id signal-desktop
+for_window [class="Signal"] move --no-auto-back-and-forth container to workspace 19
+exec --no-startup-id discord
+for_window [class="discord"] move --no-auto-back-and-forth container to workspace 19
+exec --no-startup-id thunderbird
+for_window [class="Thunderbird"] move --no-auto-back-and-forth container to workspace 32
+exec --no-startup-id keepassxc
+for_window [class="(?i)keepassxc"] move --no-auto-back-and-forth container to workspace 33
 
 #the only way i could think of doing all these workspaces
 #i am so sorry, just... dont look...

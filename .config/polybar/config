@@ -59,8 +59,8 @@ tray-padding = 1
 ;override-redirect = true
 ;wm-restack = i3
 
-scroll-up = i3wm-wsnext
-scroll-down = i3wm-wsprev
+scroll-up = i3wm-wsprev
+scroll-down = i3wm-wsnext
 
 [module/xwindow]
 type = internal/xwindow
