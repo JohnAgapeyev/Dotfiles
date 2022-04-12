@@ -14,6 +14,10 @@ alias tree='tree -C'
 alias cmaker='cmake -DCMAKE_BUILD_TYPE=Release'
 alias cmaked='cmake -DCMAKE_BUILD_TYPE=Debug'
 
+alias vinit='python3 -m venv .venv'
+alias venter='source ./.venv/bin/activate'
+alias vleave='deactivate'
+
 #Disable Ctrl-S/Ctrl-Q shenanigans
 stty -ixon
 
