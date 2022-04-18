@@ -550,7 +550,7 @@ let g:neoformat_enabled_c = ['clangformat']
 let g:neoformat_enabled_cpp = ['clangformat']
 
 "[fzf]
-nnoremap <C-m> :FZF<CR>
+nnoremap <CR> :FZF<CR>
 
 let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 if executable('rg')
