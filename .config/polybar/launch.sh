@@ -12,5 +12,5 @@ export WIRE=$(ip link | awk '{print $2}' | grep -Eo '^wl[a-z0-9]*')
 for i in $(polybar -m | awk -F: '{print $1}');
 do
     export MONITOR=$i
-    polybar main -c ~/.config/polybar/config &
+    polybar main -c ~/.config/polybar/config.ini &
 done
