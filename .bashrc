@@ -34,6 +34,7 @@ export EDITOR=nvim
 export MANPAGER='nvim +Man!'
 
 export PATH="$PATH:~/.local/bin"
+export PATH="$PATH:~/.cargo/bin"
 
 export GCC_COLOR=1
 
