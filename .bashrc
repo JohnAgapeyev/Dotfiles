@@ -18,6 +18,9 @@ alias vinit='python3 -m venv .venv'
 alias venter='source ./.venv/bin/activate'
 alias vleave='deactivate'
 
+# History of a single file in a repo
+alias gitwhat='git log -p -M --follow --stat --'
+
 #Disable Ctrl-S/Ctrl-Q shenanigans
 stty -ixon
 
