@@ -2,7 +2,6 @@
     font = "Droid Sans 8"
     allow_markup = yes
     markup = yes
-    plain_text = no
     format = "<b>%s</b>\n%b"
     sort = no
     indicate_hidden = yes
@@ -13,7 +12,6 @@
     ignore_newline = no
     stack_duplicates = yes
     hide_duplicates_count = no
-    geometry = "200x5-6+30"
     transparency = 5
     idle_threshold = 0
     monitor = 0
@@ -25,7 +23,7 @@
     padding = 8
     horizontal_padding = 8
     separator_color = frame
-    startup_notification = true
+    startup_notification = false
     timeout = 10
 
 [frame]
