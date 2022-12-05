@@ -590,6 +590,7 @@ let g:update_noargs = 1
 "autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
 autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 nnoremap <C-n> :NERDTreeToggle<CR>
+let g:NERDTreeShowHidden=1
 
 "Strip trailing whitespace on save
 autocmd BufEnter * EnableStripWhitespaceOnSave
