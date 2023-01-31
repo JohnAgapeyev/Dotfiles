@@ -260,3 +260,10 @@ function allv4 () {
 }
 
 
+function mocap () {
+    range=$(slop  -lc 0.33,1,0.77,0.4 -f '-video_size %wx%h -i +%x,%y')
+    out=$(mktemp '/tmp/cap.XXXX.mp4')
+    ffmpeg -y -f x11grab -r 20 $range "$out"
+    echo "saved to $out"
+}
+
