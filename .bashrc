@@ -237,7 +237,7 @@ function nvimp() {
 }
 
 function localscan () {
-    arp-scan --interface=$(ip link | grep 2 | awk '{print $2}' | tr -d ':') -l
+    arp-scan --interface=$(ip link | grep "state UP" | head -n 1 | awk '{print $2}' | tr -d ':') -l
 }
 
 #sum ints one per line
