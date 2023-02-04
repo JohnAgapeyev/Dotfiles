@@ -259,11 +259,17 @@ function allv4 () {
     ip addr show up | grep -v 'lo$' | grep 'inet ' | awk '{print $2}'
 }
 
-
+# Quick screengrab video recording
 function mocap () {
     range=$(slop  -lc 0.33,1,0.77,0.4 -f '-video_size %wx%h -i +%x,%y')
     out=$(mktemp '/tmp/cap.XXXX.mp4')
     ffmpeg -y -f x11grab -r 20 $range "$out"
     echo "saved to $out"
 }
+
+# Grab the certificate CNs for an OpenVPN file
+function ovpncn() {
+    openssl x509 -in <(sed -rn '/<cert>/,/<\/cert/{/<\/?cert>/d;p}' < $1) -text | grep -o 'Issuer.*'
+}
+
 
