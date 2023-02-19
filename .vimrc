@@ -597,10 +597,10 @@ autocmd BufEnter * EnableStripWhitespaceOnSave
 
 "[airline]
 " Enable the list of buffers
-"let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
-"let g:airline#extensions#tabline#fnamemod = ':t'
-"let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
 "[rainbow]
 "Enable rainbow braces
