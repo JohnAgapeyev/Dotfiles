@@ -46,6 +46,14 @@ export QT_SCALE_FACTOR_ROUNDING_POLICY=Round
 
 export ANSIBLE_NOCOWS=1
 
+# Start the ssh agent on login
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > "$XDG_RUNTIME_DIR/ssh-agent.env"
+fi
+if [[ ! -f "$SSH_AUTH_SOCK" ]]; then
+    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+fi
+
 ##Set SSH to use gpg-agent
 #unset SSH_AGENT_PID
 #if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
