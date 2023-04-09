@@ -29,7 +29,13 @@ require('packer').startup(function(use)
         end,
     }
     use 'ntpeters/vim-better-whitespace'
-    use 'isaacmorneau/vim-update-daily'
+    use {
+        'isaacmorneau/vim-update-daily', config = function()
+            -- Run this command daily using vim-update-daily plugin
+            vim.g.update_daily = 'PackerSync | q'
+            vim.g.update_noargs = true
+        end,
+    }
     --use 'sheerun/vim-polyglot'
     use 'chrisbra/Colorizer'
     use {
@@ -53,7 +59,16 @@ require('packer').startup(function(use)
             vim.g.neoformat_enabled_cpp = {'clangformat'}
         end,
     }
-    --use 'isaacmorneau/vim-simple-sessions'
+    use {
+        'isaacmorneau/vim-simple-sessions', config = function()
+            vim.g.ss_auto_enter = true
+            vim.g.ss_auto_exit = false
+            vim.g.ss_auto_alias = true
+            vim.g.ss_dir = vim.fn.stdpath('data') .. '/session/'
+            -- May need to fork or tweak or submit PR to make this work nicely
+            vim.g.ss_open_with_args = false
+        end,
+    }
     use 'tpope/vim-surround'
     use 'kana/vim-textobj-user'
     use 'Julian/vim-textobj-variable-segment'
@@ -521,10 +536,6 @@ let g:fzf_action = {
   \ 'ctrl-t': '$tab split',
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-s': 'split' }
-
-" Run this command daily using vim-update-daily plugin
-let g:update_daily = 'PlugUpdate --sync | PlugUpgrade | PlugClean | q'
-let g:update_noargs = 1
 
 "Enable nerdtree on launch and restore focus to file window
 "autocmd StdinReadPre * let s:std_in=1
