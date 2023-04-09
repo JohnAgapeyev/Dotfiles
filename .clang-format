@@ -47,13 +47,20 @@ IncludeCategories:
     SortPriority: -2
     Regex: ^"(llvm|llvm-c|clang|clang-c)/
   - Priority: 3
-    #The Main include is automatically given priority 0, so negatives mean come before that
     SortPriority: -1
-    Regex: ^<
+    # Put more specialized includes after the generic ones
+    Regex: ^<\w\+/\w\+/
   - Priority: 4
+    SortPriority: -2
+    Regex: ^<\w\+/
+  - Priority: 5
+    #The Main include is automatically given priority 0, so negatives mean come before that
+    SortPriority: -3
+    Regex: ^<
+  - Priority: 6
     SortPriority: 1
     Regex: ^"
-  - Priority: 5
+  - Priority: 7
     SortPriority: 2
     Regex: .*
 IncludeIsMainRegex: (Test)?$

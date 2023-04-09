@@ -161,6 +161,8 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+bindsym $mod+Shift+b border toggle
+
 #bar {
         #status_command i3blocks
 #}
