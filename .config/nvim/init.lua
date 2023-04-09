@@ -86,6 +86,227 @@ vim.cmd([[
   augroup end
 ]])
 
+
+--Set proper python paths
+vim.g.python_host_prog = '/usr/bin/python2'
+vim.g.python3_host_prog = '/usr/bin/python3'
+
+--Use a dark background
+vim.opt.background = 'dark'
+
+--Show absolute column numbers
+vim.opt.number = true
+
+--Reread a file if Vim didn't touch it
+vim.opt.autoread = true
+
+--Display cursor position in file
+vim.opt.ruler = true
+
+--Number of lines in cmd height
+vim.opt.cmdheight = 2
+
+--Unload buffers that are no longer in use
+vim.opt.hidden = false
+
+--Show the current command
+vim.opt.showcmd = true
+
+--Enable list mode to show whitespace
+vim.opt.list = true
+
+--Don't be so pedantic about case
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+--Highlight all search matches
+vim.opt.hlsearch = true
+--Search the incremental pattern, rather than when I press enter
+vim.opt.incsearch = true
+
+--Don't repaint when executing macros
+vim.opt.lazyredraw = true
+
+--Modern magic characters instead of vi legacy cruft
+vim.opt.magic = true
+
+--Brief jump to matching brace if it's on screen
+vim.opt.showmatch = true
+
+--No sounds or flashing lights, I'm not a child
+vim.opt.errorbells = false
+vim.opt.visualbell = false
+vim.opt.belloff = 'all'
+vim.opt.tm = 500
+
+--Show open/close folds
+vim.opt.foldcolumn = '1'
+
+--Use utf8 like a normal person
+vim.opt.encoding = 'utf8'
+vim.opt.fileencoding = 'utf-8'
+vim.opt.fileencodings = 'utf-8'
+
+--LF is the only acceptable line ending
+vim.opt.ffs = unix,dos,mac
+
+--Tabs are 4 spaces
+vim.opt.expandtab = true
+vim.opt.smarttab = true
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+
+--100 char line highlight
+vim.opt.colorcolumn = '100'
+
+--Enable auto and smart indent
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+
+--When in Rome...
+vim.opt.copyindent = true
+
+--Enable line wrapping
+vim.opt.wrap = true
+
+--Do not store global and local values in a session
+--vim.opt.ssop -= options
+----Do not store folds
+--vim.opt.ssop -= folds
+----Do not store hidden and unloaded buffers
+--vim.opt.ssop -= buffers
+----Do not store the help window
+--vim.opt.ssop -= help
+
+--Allow me to use the mouse on terminal vim
+vim.opt.mouse = 'a'
+
+--Ask me if I'm doing something dumb
+vim.opt.confirm = true
+
+--Be smart about backspacing
+vim.opt.backspace='indent,eol,start'
+
+--Wildcard/enhanced menu mode
+vim.opt.wildmenu = true
+
+--Save all mistakes and edits
+vim.opt.undofile = true
+vim.opt.undolevels = 1000
+vim.opt.undoreload = 10000
+
+--visualize whitepsace
+vim.opt.listchars = 'tab:→→,trail:●,nbsp:○'
+
+--vim.opt.up scratch file saving
+--vim.g.scratch_persistence_file = vim.fn.strftime(vim.g.scratch_dir .. "scratch_%Y-%m-%d")
+vim.g.scratch_no_mappings = 1
+
+--share vim and system clipboard
+if vim.fn.has('unnamedplus') then
+    vim.opt.clipboard='unnamed,unnamedplus'
+else
+    vim.opt.clipboard='unnamed'
+end
+
+--enable true 24-bit colour
+vim.opt.tgc = true
+
+--vim.opt.shell to bash
+if vim.fn.exists('$SHELL') then
+    vim.opt.shell='$SHELL'
+else
+    vim.opt.shell='/bin/bash'
+end
+
+--Update things after 1 second being idle
+vim.opt.updatetime = 1000
+
+--Leader as space, since \ is awkward
+vim.g.mapleader = ' '
+
+--This is gross, but it lets me do stuff like "gf" to open the file under the cursor
+vim.opt.path='**'
+
+--New splits go on the right, I'm not an animal
+vim.opt.splitright = true
+
+--Let's ignore tons of garbage/binary/random files
+vim.opt.wildmode='list:longest,list:full'
+vim.opt.wildignore:append({
+    "*.o",
+    "*.d",
+    "*.obj",
+    "*.git",
+    "*.rbc",
+    "*.pyc",
+    "__pycache__",
+    "*.exe",
+    "*.elf",
+    "cscope.*",
+    "tags*",
+    "*.svn",
+    "*.hg",
+    "build",
+    "dist",
+    "*sites/*/files/*",
+    "*/obj/*",
+    "bin",
+    "node_modules",
+    "bower_components",
+    "cache",
+    "compiled",
+    "docs",
+    "example",
+    "bundle",
+    "vendor",
+    "*.md",
+    "*-lock.json",
+    "*.lock",
+    "*bundle*.js",
+    "*build*.js",
+    ".*rc*",
+    "*.json",
+    "*.min.*",
+    "*.map",
+    "*.bak",
+    "*.zip",
+    "*.pyc",
+    "*.class",
+    "*.sln",
+    "*.Master",
+    "*.csproj",
+    "*.tmp",
+    "*.csproj.user",
+    "*.cache",
+    "*.pdb",
+    "*.css",
+    "*.less",
+    "*.scss",
+    "*.dll",
+    "*.mp3",
+    "*.ogg",
+    "*.flac",
+    "*.swp",
+    "*.swo",
+    "*.bmp",
+    "*.gif",
+    "*.ico",
+    "*.jpg",
+    "*.png",
+    "*.rar",
+    "*.zip",
+    "*.tar",
+    "*.tar.*",
+    "*.pdf",
+    "*.doc",
+    "*.docx",
+    "*.ppt",
+    "*.pptx",
+})
+
+
+
 vim.cmd([[
 
 "Create directories if they don't exist
@@ -171,230 +392,6 @@ call InitializeDirectories()
 "    "opening current buffer in new window
 "    exe "b".l:cur_buf
 "endfunc
-
-"Set proper python paths
-let g:python_host_prog = '/usr/bin/python2'
-let g:python3_host_prog = '/usr/bin/python3'
-
-"[GENERAL SETTINGS]
-
-"Enable syntax highlighting
-syntax on
-
-"Set indent style from plugin
-filetype indent plugin on
-
-"Use a dark background
-set background=dark
-
-"Show absolute column numbers
-set number
-
-"Reread a file if Vim didn't touch it
-set autoread
-
-"Display cursor position in file
-set ruler
-
-"Number of lines in cmd height
-set cmdheight=2
-
-"Unload buffers that are no longer in use
-set nohidden
-
-"Show the current command
-set showcmd
-
-"Enable list mode to show whitespace
-set list
-
-"Don't be so pedantic about case
-set ignorecase
-set smartcase
-
-"Highlight all search matches
-set hlsearch
-"Search the incremental pattern, rather than when I press enter
-set incsearch
-
-"Don't repaint when executing macros
-set lazyredraw
-
-"Modern magic characters instead of vi legacy cruft
-set magic
-
-"Brief jump to matching brace if it's on screen
-set showmatch
-
-"No sounds or flashing lights, I'm not a child
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
-
-"Show open/close folds
-set foldcolumn=1
-
-"Use utf8 like a normal person
-set encoding=utf8
-set fileencoding=utf-8
-set fileencodings=utf-8
-
-"LF is the only acceptable line ending
-set ffs=unix,dos,mac
-
-"Tabs are 4 spaces
-set expandtab
-set smarttab
-set shiftwidth=4
-set tabstop=4
-
-"100 char line highlight
-set colorcolumn=100
-
-"Enable auto and smart indent
-set autoindent
-set smartindent
-
-"When in Rome...
-set copyindent
-
-"Enable line wrapping
-set wrap
-
-"Do not store global and local values in a session
-set ssop-=options
-"Do not store folds
-set ssop-=folds
-"Do not store hidden and unloaded buffers
-set ssop-=buffers
-"Do not store the help window
-set ssop-=help
-
-"Allow me to use the mouse on terminal vim
-set mouse=a
-
-"Ask me if I'm doing something dumb
-set confirm
-
-"Be smart about backspacing
-set backspace=indent,eol,start
-
-"Wildcard/enhanced menu mode
-set wildmenu
-
-"Save all mistakes and edits
-set undofile
-set undolevels=1000
-set undoreload=10000
-
-"visualize whitepsace
-set listchars=tab:→→,trail:●,nbsp:○
-
-"Set up scratch file saving
-let g:scratch_persistence_file = g:scratch_dir . strftime("scratch_%Y-%m-%d")
-let g:scratch_no_mappings = 1
-
-"share vim and system clipboard
-if has('unnamedplus')
-    set clipboard=unnamed,unnamedplus
-else
-    set clipboard=unnamed
-endif
-
-"enable true 24-bit colour
-set tgc
-
-"Set shell to bash
-if exists('$SHELL')
-    set shell=$SHELL
-else
-    set shell=/bin/bash
-endif
-
-"Update things after 1 second being idle
-set updatetime=1000
-
-"Leader as space, since \ is awkward
-let mapleader = ' '
-
-"This is gross, but it lets me do stuff like "gf" to open the file under the cursor
-set path=**
-
-"New splits go on the right, I'm not an animal
-set splitright
-
-"Let's ignore tons of garbage/binary/random files
-set wildmode=list:longest,list:full
-set wildignore+=*.o
-set wildignore+=*.d
-set wildignore+=*.obj
-set wildignore+=*.git
-set wildignore+=*.rbc
-set wildignore+=*.pyc
-set wildignore+=__pycache__
-set wildignore+=*.exe
-set wildignore+=*.elf
-set wildignore+=cscope.*
-set wildignore+=tags*
-set wildignore+=*.svn
-set wildignore+=*.hg
-set wildignore+=build
-set wildignore+=dist
-set wildignore+=*sites/*/files/*
-set wildignore+=*/obj/*
-set wildignore+=bin
-set wildignore+=node_modules
-set wildignore+=bower_components
-set wildignore+=cache
-set wildignore+=compiled
-set wildignore+=docs
-set wildignore+=example
-set wildignore+=bundle
-set wildignore+=vendor
-set wildignore+=*.md
-set wildignore+=*-lock.json
-set wildignore+=*.lock
-set wildignore+=*bundle*.js
-set wildignore+=*build*.js
-set wildignore+=.*rc*
-set wildignore+=*.json
-set wildignore+=*.min.*
-set wildignore+=*.map
-set wildignore+=*.bak
-set wildignore+=*.zip
-set wildignore+=*.pyc
-set wildignore+=*.class
-set wildignore+=*.sln
-set wildignore+=*.Master
-set wildignore+=*.csproj
-set wildignore+=*.tmp
-set wildignore+=*.csproj.user
-set wildignore+=*.cache
-set wildignore+=*.pdb
-set wildignore+=*.css
-set wildignore+=*.less
-set wildignore+=*.scss
-set wildignore+=*.dll
-set wildignore+=*.mp3
-set wildignore+=*.ogg
-set wildignore+=*.flac
-set wildignore+=*.swp
-set wildignore+=*.swo
-set wildignore+=*.bmp
-set wildignore+=*.gif
-set wildignore+=*.ico
-set wildignore+=*.jpg
-set wildignore+=*.png
-set wildignore+=*.rar
-set wildignore+=*.zip
-set wildignore+=*.tar
-set wildignore+=*.tar.*
-set wildignore+=*.pdf
-set wildignore+=*.doc
-set wildignore+=*.docx
-set wildignore+=*.ppt
-set wildignore+=*.pptx
 
 "[BINDINGS]
 "Tab nav with shift
