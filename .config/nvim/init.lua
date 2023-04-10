@@ -184,14 +184,16 @@ vim.opt.copyindent = true
 --Enable line wrapping
 vim.opt.wrap = true
 
+vim.opt.ssop:remove({
 --Do not store global and local values in a session
---vim.opt.ssop -= options
+    'options',
 ----Do not store folds
---vim.opt.ssop -= folds
+    'folds',
 ----Do not store hidden and unloaded buffers
---vim.opt.ssop -= buffers
+    'buffers',
 ----Do not store the help window
---vim.opt.ssop -= help
+    'help',
+})
 
 --Allow me to use the mouse on terminal vim
 vim.opt.mouse = 'a'
