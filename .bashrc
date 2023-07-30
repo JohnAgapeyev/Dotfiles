@@ -18,6 +18,8 @@ alias vinit='python3 -m venv .venv'
 alias venter='source ./.venv/bin/activate'
 alias vleave='deactivate'
 
+alias pylint='pylint -j0'
+
 # History of a single file in a repo
 alias gitwhat='git log -p -M --follow --stat --'
 
@@ -130,9 +132,9 @@ function convertsnip () {
 #thanks to this https://gist.github.com/timperez/7892680 im adding whoisport
 function whoisport () {
     port=$1
-    pidInfo=$(fuser $port/tcp 2> /dev/null)
+    pidInfo=$(sudo fuser $port/tcp 2> /dev/null)
     pid=$(echo $pidInfo | cut -d':' -f2)
-    ls -l /proc/$pid/exe
+    sudo ls -l /proc/$pid/exe
 }
 
 #test truecolor support (youll know if it doesnt work)
