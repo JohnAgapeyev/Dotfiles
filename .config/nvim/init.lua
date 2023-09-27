@@ -37,6 +37,10 @@ require("lazy").setup({
     },
     {
         "morhetz/gruvbox",
+        -- Don't lazy load my main colorscheme
+        lazy = false,
+        -- Load this before any other plugins
+        priority = 1000,
         init = function()
             vim.g.gruvbox_contrast_dark = "hard"
             vim.g.gruvbox_italic = 1
@@ -93,6 +97,12 @@ require("lazy").setup({
             -- May need to fork or tweak or submit PR to make this work nicely
             vim.g.ss_open_with_args = false
         end,
+    },
+},
+-- Lazy plugin manager config
+{
+    checker = {
+        enabled = true,
     },
 })
 
@@ -224,8 +234,8 @@ end
 vim.opt.tgc = true
 
 --vim.opt.shell to bash
-if vim.fn.exists('$SHELL') then
-    vim.opt.shell='$SHELL'
+if vim.env.SHELL then
+    vim.opt.shell=vim.env.SHELL
 else
     vim.opt.shell='/bin/bash'
 end
@@ -317,6 +327,35 @@ vim.opt.wildignore:append({
 })
 
 
+-- [BINDINGS]
+-- Tab nav with shift
+vim.keymap.set('n', 'H', 'gT')
+vim.keymap.set('n', 'L', 'gt')
+-- Tab move with Ctrl
+vim.keymap.set('n', "<C-h>", function()
+    vim.cmd.tabmove("-1")
+end)
+vim.keymap.set('n', "<C-l>", function()
+    vim.cmd.tabmove("+1")
+end)
+-- Tab management with t leader
+-- Open new tab at end of tab list
+vim.keymap.set('n', "tn", function()
+    vim.cmd.tabnew("$")
+end)
+-- Close the current tab
+vim.keymap.set('n', "tq", vim.cmd.tabclose)
+-- Open the filename under cursor at end of tab list
+vim.keymap.set('n', "tf", "<C-w>gf<CR>:tabmove<CR>")
+
+-- Open the filename under cursor as a new window
+vim.keymap.set('n', "<Leader>f", "<C-w><C-f><C-w>L")
+
+-- Move on visual lines, not on wrapped/real ones
+vim.keymap.set('n', "j", "gj")
+vim.keymap.set('n', "k", "gk")
+vim.keymap.set('n', "<Up>", "g<Up>")
+vim.keymap.set('n', "<Down>", "g<Down>")
 
 vim.cmd([[
 
@@ -405,33 +444,10 @@ call InitializeDirectories()
 "endfunc
 
 "[BINDINGS]
-"Tab nav with shift
-nnoremap H gT
-nnoremap L gt
-"Tab move with Ctrl
-nnoremap <C-h> :tabmove -1<CR>
-nnoremap <C-l> :tabmove +1<CR>
-"Tab management with t leader
-"Open new tab at end of tab list
-nnoremap tn :$tabnew<CR>
-"Close the current tab
-nnoremap tq :tabclose<CR>
-"Open the filename under cursor at end of tab list
-nnoremap tf <C-w>gf<CR>:tabmove<CR>
-
-"Open the filename under cursor as a new window
-nnoremap <Leader>f <C-w><C-f><C-w>L
-
 "Automatically split multiple files given via command line into their own tabs
 if !&diff && argc() > 1
 	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
 endif
-
-"Move on visual lines, not on wrapped/real ones
-nnoremap j gj
-nnoremap k gk
-nnoremap <Up> g<Up>
-nnoremap <Down> g<Down>
 
 "when the window gets resized reset the splits
 autocmd VimResized * wincmd =
