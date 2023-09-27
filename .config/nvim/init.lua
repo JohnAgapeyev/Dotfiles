@@ -1,45 +1,69 @@
-local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
-    return true
-  end
-  return false
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
-
-local packer_bootstrap = ensure_packer()
-
+vim.opt.rtp:prepend(lazypath)
 
 
-require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
-    use 'scrooloose/nerdtree'
-    use 'airblade/vim-gitgutter'
-    use 'junegunn/fzf'
-    use 'junegunn/fzf.vim'
-    use {
-        'vim-airline/vim-airline', config = function()
+require("lazy").setup({
+    "scrooloose/nerdtree",
+    "airblade/vim-gitgutter",
+    "junegunn/fzf",
+    "junegunn/fzf.vim",
+    "ntpeters/vim-better-whitespace",
+    --use "sheerun/vim-polyglot",
+    "chrisbra/Colorizer",
+    "tpope/vim-surround",
+    "kana/vim-textobj-user",
+    {
+        "Julian/vim-textobj-variable-segment",
+        dependencies = {
+            "kana/vim-textobj-user",
+        },
+    },
+    {
+        "luochen1990/rainbow",
+        init = function()
+            -- Enable rainbow braces
+            vim.g.rainbow_active = 1
+        end,
+    },
+    {
+        "morhetz/gruvbox",
+        init = function()
+            vim.g.gruvbox_contrast_dark = "hard"
+            vim.g.gruvbox_italic = 1
+            vim.cmd.colorscheme("gruvbox")
+        end,
+    },
+    {
+        "vim-airline/vim-airline",
+        init = function()
             -- Enable the list of buffers
             vim.g['airline#extensions#tabline#enabled'] = 1
             -- Show just the filename
             vim.g['airline#extensions#tabline#fnamemod'] = ':t'
             vim.g['airline#extensions#tabline#formatter'] = 'unique_tail_improved'
         end,
-    }
-    use 'ntpeters/vim-better-whitespace'
-    use {
-        'isaacmorneau/vim-update-daily', config = function()
-            -- Run this command daily using vim-update-daily plugin
-            vim.g.update_daily = 'PackerSync | q'
-            vim.g.update_noargs = true
-        end,
-    }
-    --use 'sheerun/vim-polyglot'
-    use 'chrisbra/Colorizer'
-    use {
-        'sbdchd/neoformat', config = function()
+    },
+    --{
+    --    "isaacmorneau/vim-update-daily",
+    --        init = function()
+    --        -- Run this command daily using vim-update-daily plugin
+    --        vim.g.update_daily = 'PackerSync | q'
+    --        vim.g.update_noargs = true
+    --    end,
+    --},
+    {
+        "sbdchd/neoformat",
+        init = function()
             vim.keymap.set('', '<C-f>', vim.cmd.Neoformat)
 
             vim.g.neoformat_basic_format_align = 1
@@ -58,9 +82,10 @@ require('packer').startup(function(use)
             vim.g.neoformat_enabled_c = {'clangformat'}
             vim.g.neoformat_enabled_cpp = {'clangformat'}
         end,
-    }
-    use {
-        'isaacmorneau/vim-simple-sessions', config = function()
+    },
+    {
+        "isaacmorneau/vim-simple-sessions",
+        init = function()
             vim.g.ss_auto_enter = true
             vim.g.ss_auto_exit = false
             vim.g.ss_auto_alias = true
@@ -68,39 +93,8 @@ require('packer').startup(function(use)
             -- May need to fork or tweak or submit PR to make this work nicely
             vim.g.ss_open_with_args = false
         end,
-    }
-    use 'tpope/vim-surround'
-    use 'kana/vim-textobj-user'
-    use 'Julian/vim-textobj-variable-segment'
-    use {
-        'luochen1990/rainbow', config = function()
-            -- Enable rainbow braces
-            vim.g.rainbow_active = 1
-        end,
-    }
-
-    use {
-        'morhetz/gruvbox', config = function()
-            vim.g.gruvbox_contrast_dark = "hard"
-            vim.g.gruvbox_italic = 1
-            vim.cmd.colorscheme("gruvbox")
-        end,
-    }
-
-  -- Automatically set up your configuration after cloning packer.nvim
-  -- Put this at the end after all plugins
-  if packer_bootstrap then
-    require('packer').sync()
-  end
-end)
-
-vim.cmd([[
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost init.lua source <afile> | PackerCompile
-  augroup end
-]])
-
+    },
+})
 
 --Set proper python paths
 vim.g.python_host_prog = '/usr/bin/python2'
