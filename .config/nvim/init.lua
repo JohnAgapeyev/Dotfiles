@@ -18,7 +18,7 @@ require("lazy").setup({
     "junegunn/fzf",
     "junegunn/fzf.vim",
     "ntpeters/vim-better-whitespace",
-    --use "sheerun/vim-polyglot",
+    "sheerun/vim-polyglot",
     "chrisbra/Colorizer",
     "tpope/vim-surround",
     "kana/vim-textobj-user",
@@ -97,6 +97,48 @@ require("lazy").setup({
             -- May need to fork or tweak or submit PR to make this work nicely
             vim.g.ss_open_with_args = false
         end,
+    },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        config = function ()
+            local configs = require("nvim-treesitter.configs")
+
+            configs.setup({
+                ensure_installed = {
+                    "c",
+                    "cpp",
+                    "rust",
+                    "lua",
+                    "vim",
+                    "vimdoc",
+                    -- Treesitter Query Language
+                    "query",
+                    "javascript",
+                    "typescript",
+                    "html",
+                    "css",
+                    "sql",
+                    "bash",
+                    "csv",
+                    "json",
+                    "cmake",
+                    "make",
+                    "python",
+                    "regex",
+                    "toml",
+                    "yaml",
+                },
+                -- Allows async installs
+                sync_install = false,
+                -- Requires tree-sitter CLI tool installed for it to be enabled
+                auto_install = false,
+                -- Currently not a fan of the highlighting with gruvbox, need to refine it
+                highlight = { enable = false },
+                -- Indents are currently broken af at least for C++ that I tested
+                indent = { enable = false },
+            })
+        end
     },
 },
 -- Lazy plugin manager config
