@@ -11,13 +11,41 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-
 require("lazy").setup({
-    "scrooloose/nerdtree",
+    {
+        "scrooloose/nerdtree",
+        init = function()
+            --Enable nerdtree on launch and restore focus to file window
+            --autocmd StdinReadPre * let s:std_in=1
+            --autocmd vimenter * NERDTree | wincmd p
+            --autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
+            vim.cmd([[
+            autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+            ]])
+            vim.keymap.set('n', '<C-n>', vim.cmd.NERDTreeToggle)
+            vim.g.NERDTreeShowHidden = 1
+        end,
+    },
     "airblade/vim-gitgutter",
     "junegunn/fzf",
-    "junegunn/fzf.vim",
-    "ntpeters/vim-better-whitespace",
+    {
+        "junegunn/fzf.vim",
+        dependencies = {
+            "junegunn/fzf",
+        },
+        init = function()
+            vim.keymap.set('n', '<CR>', vim.cmd.FZF)
+        end,
+    },
+    {
+        "ntpeters/vim-better-whitespace",
+        init = function()
+            -- Enable stripping trailing whitespace on save
+            vim.api.nvim_create_autocmd({"BufEnter"}, {
+              command = "EnableStripWhitespaceOnSave"
+            })
+        end,
+    },
     "sheerun/vim-polyglot",
     "chrisbra/Colorizer",
     "tpope/vim-surround",
@@ -399,6 +427,29 @@ vim.keymap.set('n', "k", "gk")
 vim.keymap.set('n', "<Up>", "g<Up>")
 vim.keymap.set('n', "<Down>", "g<Down>")
 
+-- [AUTOCOMMANDS]
+
+-- when the window gets resized reset the splits
+vim.api.nvim_create_autocmd({"VimResized"}, {
+  command = "wincmd ="
+})
+
+
+-- Jump to last open
+-- Too many nested quotes that make it difficult to translate directly
+vim.cmd([[
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+]])
+
+vim.api.nvim_create_autocmd({"VimResized"}, {
+  command = "wincmd ="
+})
+
+-- Close preview window after insertion completion
+vim.api.nvim_create_autocmd({"CompleteDone"}, {
+  command = "pclose"
+})
+
 vim.cmd([[
 
 "Create directories if they don't exist
@@ -491,9 +542,6 @@ if !&diff && argc() > 1
 	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
 endif
 
-"when the window gets resized reset the splits
-autocmd VimResized * wincmd =
-
 "[Window management]
 "Ctrl-W is stupid, just rebind it to Alt instead
 "Benefit is that Alt can be held for multiple ops
@@ -551,17 +599,9 @@ vnoremap @ :'<,'>norm! @
 nnoremap S :keeppatterns substitute/\s*\%#\s*/\r/e <bar> normal! ==<CR>
 
 
-"[AUTOCMDS]
-"Jump to last open
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-"Close preview window after insertion completion
-autocmd CompleteDone * pclose
-
 "[PLUGIN CONFIG]
 
 "[fzf]
-nnoremap <CR> :FZF<CR>
 
 let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 if executable('rg')
@@ -590,17 +630,6 @@ let g:fzf_action = {
   \ 'ctrl-t': '$tab split',
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-s': 'split' }
-
-"Enable nerdtree on launch and restore focus to file window
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd vimenter * NERDTree | wincmd p
-"autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
-autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-nnoremap <C-n> :NERDTreeToggle<CR>
-let g:NERDTreeShowHidden=1
-
-"Strip trailing whitespace on save
-autocmd BufEnter * EnableStripWhitespaceOnSave
 
 "[gitgutter]
 "these are so that gitgutter gives more snappy updates when doing lots of
