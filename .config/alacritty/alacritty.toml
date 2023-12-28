@@ -1,0 +1,53 @@
+[bell]
+duration = 0
+
+[colors.bright]
+black = "#969896"
+blue = "#3971ed"
+cyan = "#27f7d4"
+green = "#198844"
+magenta = "#a36ac7"
+red = "#cc342b"
+white = "#ffffff"
+yellow = "#fba922"
+
+[colors.normal]
+black = "#1d1f21"
+blue = "#3971ed"
+cyan = "#27f7d4"
+green = "#198844"
+magenta = "#a36ac7"
+red = "#cc342b"
+white = "#c5c8c6"
+yellow = "#fba922"
+
+[colors.primary]
+background = "#1d1f21"
+bright_foreground = "#ffffff"
+foreground = "#c5c8c6"
+
+[font]
+size = 9.0
+
+[font.bold]
+family = "DejaVu Sans Mono"
+style = "Bold"
+
+[font.bold_italic]
+family = "DejaVu Sans Mono"
+style = "Bold Oblique"
+
+[font.italic]
+family = "DejaVu Sans Mono"
+style = "Oblique"
+
+[font.normal]
+family = "DejaVu Sans Mono"
+style = "Regular"
+
+[[mouse.bindings]]
+action = "PasteSelection"
+mouse = "Middle"
+
+[scrolling]
+history = 50000
