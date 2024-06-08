@@ -331,26 +331,26 @@ vim.opt.wildignore:append({
     "*.git",
     "*.rbc",
     "*.pyc",
-    "__pycache__",
+    "__pycache__/**",
     "*.exe",
     "*.elf",
     "cscope.*",
     "tags*",
     "*.svn",
     "*.hg",
-    "build",
-    "dist",
-    "*sites/*/files/*",
-    "*/obj/*",
-    "bin",
-    "node_modules",
-    "bower_components",
-    "cache",
-    "compiled",
-    "docs",
-    "example",
-    "bundle",
-    "vendor",
+    "build/**",
+    "dist/**",
+    "*sites/*/files/**",
+    "*/obj/**",
+    "bin/**",
+    "node_modules/**",
+    "bower_components/**",
+    "cache/**",
+    "compiled/**",
+    "docs/**",
+    "example/**",
+    "bundle/**",
+    "vendor/**",
     "*.md",
     "*-lock.json",
     "*.lock",
@@ -426,6 +426,22 @@ vim.keymap.set('n', "j", "gj")
 vim.keymap.set('n', "k", "gk")
 vim.keymap.set('n', "<Up>", "g<Up>")
 vim.keymap.set('n', "<Down>", "g<Down>")
+
+-- how dare you not use regex by default
+vim.keymap.set('n', '/', '/\\v')
+vim.keymap.set('v', '/', '/\\v')
+
+-- keep visual selection after shift
+vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv')
+
+-- i never want the help page! i always wanted ESC
+vim.keymap.set('n', '<F1>', '<ESC>')
+vim.keymap.set('i', '<F1>', '<ESC>')
+
+-- We're not in the 1970's, ex is not a better ed, disable ex mode
+vim.keymap.set('n', 'Q', '<nop>')
+
 
 -- [AUTOCOMMANDS]
 
@@ -571,23 +587,8 @@ nnoremap <A->> <C-W>>
 nnoremap <A-=> <C-W>=
 nnoremap <A-_> <C-W>_
 
-"i never want the help page! i always wanted ESC
-nnoremap <F1> <ESC>
-inoremap <F1> <ESC>
-
-"how dare you not use regex by default
-nnoremap / /\v
-vnoremap / /\v
-
-"keep visual selection after shift
-vnoremap < <gv
-vnoremap > >gv
-
 "Re-select our last pasted block
 nnoremap gp `[v`]
-
-"We're not in the 1970's, ex is not a better ed, disable ex mode
-nnoremap Q <nop>
 
 " allow the . to execute once for each line of a visual selection
 vnoremap . :normal! .<CR>
