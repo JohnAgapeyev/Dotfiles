@@ -44,7 +44,41 @@ require("lazy").setup({
         },
         init = function()
             vim.keymap.set('n', '<CR>', vim.cmd.FZF)
-        end,
+
+            -- Need to use ["ctrl-t"] instead of literally ctrl-t because the dict key has a
+            -- special character that needs escaping
+            vim.g.fzf_action = {
+                ["ctrl-t"] = '$tab split',
+                ["ctrl-v"] = 'vsplit',
+                ["ctrl-s"] = 'split',
+            }
+
+            -- match current color scheme
+            vim.g.fzf_colors = {
+                fg = {'fg', 'Normal'},
+                bg = {'bg', 'Normal'},
+                hl = {'fg', 'Comment'},
+                ["fg+"] = {'fg', 'CursorLine', 'CursorColumn', 'Normal'},
+                ["bg+"] = {'bg', 'CursorLine', 'CursorColumn'},
+                ["hl+"] = {'fg', 'Statement'},
+                info = {'fg', 'PreProc'},
+                border = {'fg', 'Ignore'},
+                prompt = {'fg', 'Conditional'},
+                pointer = {'fg', 'Exception'},
+                marker = {'fg', 'Keyword'},
+                spinner = {'fg', 'Label'},
+                header = {'fg', 'Comment'}
+            }
+
+            vim.cmd([[
+                let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+                if executable('rg')
+                    let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
+                    set grepprg=rg\ --vimgrep
+                    command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+                endif
+            ]])
+            end,
     },
     {
         "ntpeters/vim-better-whitespace",
@@ -620,36 +654,6 @@ nnoremap <A-,> :call MoveToPrevTab()<CR>
 
 
 "[PLUGIN CONFIG]
-
-"[fzf]
-
-let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
-if executable('rg')
-    let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
-    set grepprg=rg\ --vimgrep
-    command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
-endif
-
-"match current color scheme
-let g:fzf_colors =
-  \ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
-
-let g:fzf_action = {
-  \ 'ctrl-t': '$tab split',
-  \ 'ctrl-v': 'vsplit',
-  \ 'ctrl-s': 'split' }
 
 command! -complete=shellcmd -nargs=+ Sh call s:RunShellCommand(<q-args>)
 function! s:RunShellCommand(cmdline)
