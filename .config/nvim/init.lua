@@ -11,6 +11,84 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Defined here to initialize it early and reuse it in multiple places
+-- This is the main list of globs to ignore files for, which is used for both wildignore
+-- and for building out the FZF default command arguments with the same data
+local ignoreglobs = {
+    "*.o",
+    "*.d",
+    "*.obj",
+    "*.git",
+    "*.rbc",
+    "*.pyc",
+    "__pycache__/**",
+    "*.exe",
+    "*.elf",
+    "cscope.*",
+    "tags*",
+    "*.svn",
+    "*.hg",
+    "build/**",
+    "dist/**",
+    "*sites/*/files/**",
+    "**/obj/**",
+    "bin/**",
+    "**/node_modules/**",
+    "bower_components/**",
+    "cache/**",
+    "compiled/**",
+    "docs/**",
+    "example/**",
+    "bundle/**",
+    "vendor/**",
+    "*.md",
+    "*-lock.json",
+    "*.lock",
+    "*bundle*.js",
+    "*build*.js",
+    ".*rc*",
+    "*.json",
+    "*.min.*",
+    "*.map",
+    "*.bak",
+    "*.zip",
+    "*.pyc",
+    "*.class",
+    "*.sln",
+    "*.Master",
+    "*.csproj",
+    "*.tmp",
+    "*.csproj.user",
+    "*.cache",
+    "*.pdb",
+    "*.css",
+    "*.less",
+    "*.scss",
+    "*.dll",
+    "*.mp3",
+    "*.ogg",
+    "*.flac",
+    "*.swp",
+    "*.swo",
+    "*.bmp",
+    "*.gif",
+    "*.ico",
+    "*.jpg",
+    "*.png",
+    "*.rar",
+    "*.zip",
+    "*.tar",
+    "*.tar.*",
+    "*.pdf",
+    "*.doc",
+    "*.docx",
+    "*.ppt",
+    "*.pptx",
+    "venv/**",
+    ".venv/**",
+    ".mypy_cache/**",
+}
+
 require("lazy").setup({
     {
         "scrooloose/nerdtree",
@@ -70,9 +148,32 @@ require("lazy").setup({
                 header = {'fg', 'Comment'}
             }
 
-            vim.env.FZF_DEFAULT_COMMAND = "find . -path '*/\\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+            -- This whole chunk is to make the FZF searcher aware of my wildignore globs
             if (vim.fn.executable('rg')) then
-                vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
+                local formatted_globs = {}
+                for i,glob in ipairs(ignoreglobs) do
+                    formatted_globs[i] = ' --glob !' .. tostring(glob)
+                end
+                -- Should be good, but this is the old version in case I need to revert
+                --vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
+                vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore ' .. tostring(table.concat(formatted_globs, ''))
+            else
+                local formatted_globs = {}
+                -- Lua is 1-indexed, not 0-indexed
+                local idx = 1
+                for i,glob in ipairs(ignoreglobs) do
+                    -- Only use the globs that contain "**" which would indicate a recursive folder glob
+                    if string.match(glob, '[*][*]') then
+                        formatted_globs[idx] = ' -path ' .. tostring(glob) .. ' -prune -o '
+                        idx = idx + 1
+                    end
+                end
+                -- Should be good, but this is the old version in case I need to revert
+                vim.env.FZF_DEFAULT_COMMAND = "find . -path '*/\\.git/*' -prune -o -path '**/node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o -path '*bin/**' -prune -o -path '*__pycache__*' -prune -o -type f -print -o -type l -print 2> /dev/null"
+                -- This is good, but runs into "Argument list too long" errors, so I'm keeping the hardcoded version
+                --
+                --vim.env.FZF_DEFAULT_COMMAND = "find . " .. tostring(table.concat(formatted_globs, '')) .. " -type f -print -o -type l -print 2> /dev/null"
+                --vim.print(vim.env.FZF_DEFAULT_COMMAND)
             end
 
             vim.cmd([[
@@ -369,83 +470,12 @@ vim.opt.splitright = true
 
 --Let's ignore tons of garbage/binary/random files
 vim.opt.wildmode='list:longest,list:full'
-vim.opt.wildignore:append({
-    "*.o",
-    "*.d",
-    "*.obj",
-    "*.git",
-    "*.rbc",
-    "*.pyc",
-    "__pycache__/**",
-    "*.exe",
-    "*.elf",
-    "cscope.*",
-    "tags*",
-    "*.svn",
-    "*.hg",
-    "build/**",
-    "dist/**",
-    "*sites/*/files/**",
-    "*/obj/**",
-    "bin/**",
-    "node_modules/**",
-    "bower_components/**",
-    "cache/**",
-    "compiled/**",
-    "docs/**",
-    "example/**",
-    "bundle/**",
-    "vendor/**",
-    "*.md",
-    "*-lock.json",
-    "*.lock",
-    "*bundle*.js",
-    "*build*.js",
-    ".*rc*",
-    "*.json",
-    "*.min.*",
-    "*.map",
-    "*.bak",
-    "*.zip",
-    "*.pyc",
-    "*.class",
-    "*.sln",
-    "*.Master",
-    "*.csproj",
-    "*.tmp",
-    "*.csproj.user",
-    "*.cache",
-    "*.pdb",
-    "*.css",
-    "*.less",
-    "*.scss",
-    "*.dll",
-    "*.mp3",
-    "*.ogg",
-    "*.flac",
-    "*.swp",
-    "*.swo",
-    "*.bmp",
-    "*.gif",
-    "*.ico",
-    "*.jpg",
-    "*.png",
-    "*.rar",
-    "*.zip",
-    "*.tar",
-    "*.tar.*",
-    "*.pdf",
-    "*.doc",
-    "*.docx",
-    "*.ppt",
-    "*.pptx",
-})
+vim.opt.wildignore:append(ignoreglobs)
 
 -- Prefer using rg for vim grepping if it exists on the system
 if (vim.fn.executable('rg')) then
     vim.g.grepprg='rg --vimgrep'
 end
-
 
 -- [BINDINGS]
 -- Tab nav with shift
