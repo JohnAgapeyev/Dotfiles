@@ -26,7 +26,16 @@ require("lazy").setup({
             vim.g.NERDTreeShowHidden = 1
         end,
     },
-    "airblade/vim-gitgutter",
+    {
+        "airblade/vim-gitgutter",
+        init = function()
+            -- these are so that gitgutter gives more snappy updates when doing lots of
+            -- editing by rechecking on anything to do with insert
+            vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
+                command = "GitGutter"
+            })
+        end,
+    },
     "junegunn/fzf",
     {
         "junegunn/fzf.vim",
@@ -641,12 +650,6 @@ let g:fzf_action = {
   \ 'ctrl-t': '$tab split',
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-s': 'split' }
-
-"[gitgutter]
-"these are so that gitgutter gives more snappy updates when doing lots of
-"editing by rechecking on anything to do with insert
-autocmd InsertLeave * nested call gitgutter#process_buffer(bufnr(''), 0)
-autocmd InsertEnter * nested call gitgutter#process_buffer(bufnr(''), 0)
 
 command! -complete=shellcmd -nargs=+ Sh call s:RunShellCommand(<q-args>)
 function! s:RunShellCommand(cmdline)
