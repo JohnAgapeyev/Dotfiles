@@ -74,7 +74,6 @@ require("lazy").setup({
                 let $FZF_DEFAULT_COMMAND =  "find . -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
                 if executable('rg')
                     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
-                    set grepprg=rg\ --vimgrep
                     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
                 endif
             ]])
@@ -438,6 +437,11 @@ vim.opt.wildignore:append({
     "*.ppt",
     "*.pptx",
 })
+
+-- Prefer using rg for vim grepping if it exists on the system
+if (vim.fn.executable('rg')) then
+    vim.g.grepprg='rg --vimgrep'
+end
 
 
 -- [BINDINGS]
