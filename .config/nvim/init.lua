@@ -442,6 +442,52 @@ vim.keymap.set('i', '<F1>', '<ESC>')
 -- We're not in the 1970's, ex is not a better ed, disable ex mode
 vim.keymap.set('n', 'Q', '<nop>')
 
+-- [Window management]
+-- Ctrl-W is stupid, just rebind it to Alt instead
+-- Benefit is that Alt can be held for multiple ops
+
+-- Basic movement
+vim.keymap.set('n', '<A-h>', '<C-W>h')
+vim.keymap.set('n', '<A-j>', '<C-W>j')
+vim.keymap.set('n', '<A-k>', '<C-W>k')
+vim.keymap.set('n', '<A-l>', '<C-W>l')
+
+-- Window movement
+vim.keymap.set('n', '<A-H>', '<C-W>H')
+vim.keymap.set('n', '<A-J>', '<C-W>J')
+vim.keymap.set('n', '<A-K>', '<C-W>K')
+vim.keymap.set('n', '<A-L>', '<C-W>L')
+
+-- New window creation
+vim.keymap.set('n', '<A-n>', vim.cmd.vnew)
+vim.keymap.set('n', '<A-s>', '<C-W>s')
+vim.keymap.set('n', '<A-v>', '<C-W>v')
+
+-- Quit the current window
+vim.keymap.set('n', '<A-q>', '<C-W>q')
+
+-- Resizing
+vim.keymap.set('n', '<A-->', '<C-W>-')
+vim.keymap.set('n', '<A-+>', '<C-W>+')
+vim.keymap.set('n', '<A-<>', '<C-W><')
+vim.keymap.set('n', '<A->>', '<C-W>>')
+vim.keymap.set('n', '<A-=>', '<C-W>=')
+vim.keymap.set('n', '<A-_>', '<C-W>_')
+
+-- Re-select our last pasted block
+vim.keymap.set('n', 'gp', '`[v`]')
+
+-- allow the . to execute once for each line of a visual selection
+vim.cmd('vnoremap . :normal! .<CR>')
+--vim.keymap.set('v', '.', vim.cmd(':normal! .<CR>'))
+
+-- Allows a macro to easily be executed on every line of a visual selection
+vim.cmd("vnoremap @ :'<,'>norm! @")
+-- vim.keymap.set('v', '@', vim.cmd(":'<,'>norm! @"))
+
+-- S and cc are duplicates so mimic the inverse of J for S
+vim.cmd('nnoremap S :keeppatterns substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>')
+--vim.keymap.set('n', 'S', vim.cmd{'substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>', keeppatterns = true})
 
 -- [AUTOCOMMANDS]
 
@@ -559,45 +605,9 @@ if !&diff && argc() > 1
 endif
 
 "[Window management]
-"Ctrl-W is stupid, just rebind it to Alt instead
-"Benefit is that Alt can be held for multiple ops
-"Basic movement
-nnoremap <A-h> <C-W>h
-nnoremap <A-j> <C-W>j
-nnoremap <A-k> <C-W>k
-nnoremap <A-l> <C-W>l
 "Window movement
-nnoremap <A-H> <C-W>H
-nnoremap <A-J> <C-W>J
-nnoremap <A-K> <C-W>K
-nnoremap <A-L> <C-W>L
 nnoremap <A-.> :call MoveToNextTab()<CR>
 nnoremap <A-,> :call MoveToPrevTab()<CR>
-"New window creation
-nnoremap <A-n> :vnew<CR>
-nnoremap <A-s> <C-W>s
-nnoremap <A-v> <C-W>v
-"Quit the current window
-nnoremap <A-q> <C-W>q
-"Resizing
-nnoremap <A--> <C-W>-
-nnoremap <A-+> <C-W>+
-nnoremap <A-<> <C-W><
-nnoremap <A->> <C-W>>
-nnoremap <A-=> <C-W>=
-nnoremap <A-_> <C-W>_
-
-"Re-select our last pasted block
-nnoremap gp `[v`]
-
-" allow the . to execute once for each line of a visual selection
-vnoremap . :normal! .<CR>
-
-"Allows a macro to easily be executed on every line of a visual selection
-vnoremap @ :'<,'>norm! @
-
-"S and cc are duplicates so mimic the inverse of J for S
-nnoremap S :keeppatterns substitute/\s*\%#\s*/\r/e <bar> normal! ==<CR>
 
 
 "[PLUGIN CONFIG]
