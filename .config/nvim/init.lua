@@ -281,6 +281,8 @@ require("lazy").setup(
                     python = { "black", "isort" },
                     rust = { "rustfmt", lsp_format = "fallback" },
                     javascript = { "prettierd", "prettier", stop_after_first = true },
+                    c = { "clang-format" },
+                    cpp = { "clang-format" },
                 },
                 default_format_opts = {
                     lsp_format = "fallback",
@@ -418,7 +420,13 @@ require("lazy").setup(
                     },
                 })
                 configs.clangd.setup({
-                    cmd = { "clangd", "--background-index", "--clang-tidy", "--log=verbose" },
+                    cmd = {
+                        "clangd",
+                        "--compile-commands-dir=./bin/",
+                        "--background-index",
+                        "--clang-tidy",
+                        "--log=verbose",
+                    },
                     init_options = {
                         fallbackFlags = {
                             "-std=c++17",
