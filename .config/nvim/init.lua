@@ -393,10 +393,6 @@ require("lazy").setup(
                             vim.keymap.set("n", "<Leader>/", ":tj<Space>/")
                             -- Search for tag using regexp, jump if only one, otherwise, list options
                             vim.keymap.set("n", "<Leader>]", ':execute "tj" expand("<cword>")<CR>')
-                            vim.cmd([[
-                    "Find functions calling the current word under the cursor
-                    " nnoremap <Leader>\ :call FindSymbol()<CR>
-                  ]])
                         end
                     end,
                 })
@@ -432,6 +428,12 @@ require("lazy").setup(
                             "-std=c++17",
                             "-Wall",
                         },
+                    },
+                })
+                configs.eslint.setup({
+                    cmd = {
+                        "eslint-language-server",
+                        "--stdio",
                     },
                 })
             end,
