@@ -28,26 +28,23 @@ local ignoreglobs = {
     "tags*",
     "*.svn",
     "*.hg",
-    "build/**",
-    "dist/**",
+    "**/build/**",
+    "**/dist/**",
     "*sites/*/files/**",
     "**/obj/**",
-    "bin/**",
+    "**/bin/**",
+    "**/target/**",
     "**/node_modules/**",
-    "bower_components/**",
-    "cache/**",
-    "compiled/**",
-    "docs/**",
-    "example/**",
-    "bundle/**",
-    "vendor/**",
-    "*.md",
-    "*-lock.json",
+    "**/bower_components/**",
+    "**/cache/**",
+    "**/compiled/**",
+    "**/docs/**",
+    "**/example/**",
+    "**/bundle/**",
+    "**/vendor/**",
     "*.lock",
     "*bundle*.js",
     "*build*.js",
-    ".*rc*",
-    "*.json",
     "*.min.*",
     "*.map",
     "*.bak",
@@ -61,7 +58,6 @@ local ignoreglobs = {
     "*.csproj.user",
     "*.cache",
     "*.pdb",
-    "*.css",
     "*.less",
     "*.scss",
     "*.dll",
@@ -156,7 +152,7 @@ require("lazy").setup({
                 end
                 -- Should be good, but this is the old version in case I need to revert
                 --vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
-                vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore ' .. tostring(table.concat(formatted_globs, ''))
+                vim.env.FZF_DEFAULT_COMMAND = 'rg --files -uu ' .. tostring(table.concat(formatted_globs, ''))
             else
                 local formatted_globs = {}
                 -- Lua is 1-indexed, not 0-indexed
@@ -313,6 +309,70 @@ require("lazy").setup({
                 indent = { enable = false },
             })
         end
+    },
+    {
+        "neovim/nvim-lspconfig",
+        config = function()
+            local configs = require("lspconfig")
+
+            vim.api.nvim_create_autocmd("LspAttach", {
+              callback = function(args)
+                local client = vim.lsp.get_client_by_id(args.data.client_id)
+                if client.supports_method("textDocument/implementation") then
+                  -- Create a keymap for vim.lsp.buf.implementation
+                end
+                if client.supports_method("textDocument/completion") then
+                  -- Enable auto-completion
+                  -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+                end
+                if client.supports_method("textDocument/formatting") then
+                  -- Format the current buffer on save
+                  vim.api.nvim_create_autocmd("BufWritePre", {
+                    buffer = args.buf,
+                    callback = function()
+                        -- vim.lsp.buf.format({bufnr = args.buf, id = client.id})
+                    end,
+                  })
+                end
+                if client.supports_method("textDocument/definition") then
+                  -- Enable jump to definition
+
+                  -- Go back one level up the tag stack
+                  vim.keymap.set('n', '<Leader>[', ':pop<CR>')
+                  -- Search for tag using regexp, jump if only one, otherwise, list options
+                  vim.keymap.set('n', '<Leader>/', ':tj<Space>/')
+                  -- Search for tag using regexp, jump if only one, otherwise, list options
+                  vim.keymap.set('n', '<Leader>]', ':execute "tj" expand("<cword>")<CR>')
+                  vim.cmd([[
+                    "Find functions calling the current word under the cursor
+                    " nnoremap <Leader>\ :call FindSymbol()<CR>
+                  ]])
+                end
+              end,
+            });
+
+            configs.rust_analyzer.setup{
+                settings = {
+                    ["rust-analyzer"] = {
+                        cargo = {
+                            features = "all";
+                        },
+                        diagnostics = {
+                            enable = true;
+                        },
+                    }
+                }
+            }
+            configs.clangd.setup{
+                cmd = {"clangd", "--background-index", "--clang-tidy", "--log=verbose"},
+                init_options = {
+                    fallbackFlags = {
+                        "-std=c++17",
+                        "-Wall",
+                    },
+                },
+            }
+        end,
     },
 },
 -- Lazy plugin manager config
