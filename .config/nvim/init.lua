@@ -1,13 +1,13 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -85,315 +85,364 @@ local ignoreglobs = {
     ".mypy_cache/**",
 }
 
-require("lazy").setup({
+require("lazy").setup(
     {
-        "scrooloose/nerdtree",
-        init = function()
-            --Enable nerdtree on launch and restore focus to file window
-            --autocmd StdinReadPre * let s:std_in=1
-            --autocmd vimenter * NERDTree | wincmd p
-            --autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
-            vim.cmd([[
+        {
+            "scrooloose/nerdtree",
+            init = function()
+                --Enable nerdtree on launch and restore focus to file window
+                --autocmd StdinReadPre * let s:std_in=1
+                --autocmd vimenter * NERDTree | wincmd p
+                --autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
+                vim.cmd([[
             autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
             ]])
-            vim.keymap.set('n', '<C-n>', vim.cmd.NERDTreeToggle)
-            vim.g.NERDTreeShowHidden = 1
-        end,
-    },
-    {
-        "airblade/vim-gitgutter",
-        init = function()
-            -- these are so that gitgutter gives more snappy updates when doing lots of
-            -- editing by rechecking on anything to do with insert
-            vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
-                command = "GitGutter"
-            })
-        end,
-    },
-    "junegunn/fzf",
-    {
-        "junegunn/fzf.vim",
-        dependencies = {
-            "junegunn/fzf",
+                vim.keymap.set("n", "<C-n>", vim.cmd.NERDTreeToggle)
+                vim.g.NERDTreeShowHidden = 1
+            end,
         },
-        init = function()
-            vim.keymap.set('n', '<CR>', vim.cmd.FZF)
+        {
+            "airblade/vim-gitgutter",
+            init = function()
+                -- these are so that gitgutter gives more snappy updates when doing lots of
+                -- editing by rechecking on anything to do with insert
+                vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
+                    command = "GitGutter",
+                })
+            end,
+        },
+        "junegunn/fzf",
+        {
+            "junegunn/fzf.vim",
+            dependencies = {
+                "junegunn/fzf",
+            },
+            init = function()
+                vim.keymap.set("n", "<CR>", vim.cmd.FZF)
 
-            -- Need to use ["ctrl-t"] instead of literally ctrl-t because the dict key has a
-            -- special character that needs escaping
-            vim.g.fzf_action = {
-                ["ctrl-t"] = '$tab split',
-                ["ctrl-v"] = 'vsplit',
-                ["ctrl-s"] = 'split',
-            }
+                -- Need to use ["ctrl-t"] instead of literally ctrl-t because the dict key has a
+                -- special character that needs escaping
+                vim.g.fzf_action = {
+                    ["ctrl-t"] = "$tab split",
+                    ["ctrl-v"] = "vsplit",
+                    ["ctrl-s"] = "split",
+                }
 
-            -- match current color scheme
-            vim.g.fzf_colors = {
-                fg = {'fg', 'Normal'},
-                bg = {'bg', 'Normal'},
-                hl = {'fg', 'Comment'},
-                ["fg+"] = {'fg', 'CursorLine', 'CursorColumn', 'Normal'},
-                ["bg+"] = {'bg', 'CursorLine', 'CursorColumn'},
-                ["hl+"] = {'fg', 'Statement'},
-                info = {'fg', 'PreProc'},
-                border = {'fg', 'Ignore'},
-                prompt = {'fg', 'Conditional'},
-                pointer = {'fg', 'Exception'},
-                marker = {'fg', 'Keyword'},
-                spinner = {'fg', 'Label'},
-                header = {'fg', 'Comment'}
-            }
+                -- match current color scheme
+                vim.g.fzf_colors = {
+                    fg = { "fg", "Normal" },
+                    bg = { "bg", "Normal" },
+                    hl = { "fg", "Comment" },
+                    ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
+                    ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
+                    ["hl+"] = { "fg", "Statement" },
+                    info = { "fg", "PreProc" },
+                    border = { "fg", "Ignore" },
+                    prompt = { "fg", "Conditional" },
+                    pointer = { "fg", "Exception" },
+                    marker = { "fg", "Keyword" },
+                    spinner = { "fg", "Label" },
+                    header = { "fg", "Comment" },
+                }
 
-            -- This whole chunk is to make the FZF searcher aware of my wildignore globs
-            if (vim.fn.executable('rg')) then
-                local formatted_globs = {}
-                for i,glob in ipairs(ignoreglobs) do
-                    formatted_globs[i] = ' --glob !' .. tostring(glob)
-                end
-                -- Should be good, but this is the old version in case I need to revert
-                --vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
-                vim.env.FZF_DEFAULT_COMMAND = 'rg --files -uu ' .. tostring(table.concat(formatted_globs, ''))
-            else
-                local formatted_globs = {}
-                -- Lua is 1-indexed, not 0-indexed
-                local idx = 1
-                for i,glob in ipairs(ignoreglobs) do
-                    -- Only use the globs that contain "**" which would indicate a recursive folder glob
-                    if string.match(glob, '[*][*]') then
-                        formatted_globs[idx] = ' -path ' .. tostring(glob) .. ' -prune -o '
-                        idx = idx + 1
+                -- This whole chunk is to make the FZF searcher aware of my wildignore globs
+                if vim.fn.executable("rg") then
+                    local formatted_globs = {}
+                    for i, glob in ipairs(ignoreglobs) do
+                        formatted_globs[i] = " --glob !" .. tostring(glob)
                     end
+                    -- Should be good, but this is the old version in case I need to revert
+                    --vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
+                    vim.env.FZF_DEFAULT_COMMAND = "rg --files -uu " .. tostring(table.concat(formatted_globs, ""))
+                else
+                    local formatted_globs = {}
+                    -- Lua is 1-indexed, not 0-indexed
+                    local idx = 1
+                    for i, glob in ipairs(ignoreglobs) do
+                        -- Only use the globs that contain "**" which would indicate a recursive folder glob
+                        if string.match(glob, "[*][*]") then
+                            formatted_globs[idx] = " -path " .. tostring(glob) .. " -prune -o "
+                            idx = idx + 1
+                        end
+                    end
+                    -- Should be good, but this is the old version in case I need to revert
+                    vim.env.FZF_DEFAULT_COMMAND =
+                        "find . -path '*/\\.git/*' -prune -o -path '**/node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o -path '*bin/**' -prune -o -path '*__pycache__*' -prune -o -type f -print -o -type l -print 2> /dev/null"
+                    -- This is good, but runs into "Argument list too long" errors, so I'm keeping the hardcoded version
+                    --
+                    --vim.env.FZF_DEFAULT_COMMAND = "find . " .. tostring(table.concat(formatted_globs, '')) .. " -type f -print -o -type l -print 2> /dev/null"
+                    --vim.print(vim.env.FZF_DEFAULT_COMMAND)
                 end
-                -- Should be good, but this is the old version in case I need to revert
-                vim.env.FZF_DEFAULT_COMMAND = "find . -path '*/\\.git/*' -prune -o -path '**/node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o -path '*bin/**' -prune -o -path '*__pycache__*' -prune -o -type f -print -o -type l -print 2> /dev/null"
-                -- This is good, but runs into "Argument list too long" errors, so I'm keeping the hardcoded version
-                --
-                --vim.env.FZF_DEFAULT_COMMAND = "find . " .. tostring(table.concat(formatted_globs, '')) .. " -type f -print -o -type l -print 2> /dev/null"
-                --vim.print(vim.env.FZF_DEFAULT_COMMAND)
-            end
 
-            vim.cmd([[
+                vim.cmd([[
                 if executable('rg')
                     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
                 endif
             ]])
             end,
-    },
-    {
-        "ntpeters/vim-better-whitespace",
-        init = function()
-            -- Enable stripping trailing whitespace on save
-            vim.api.nvim_create_autocmd({"BufEnter"}, {
-              command = "EnableStripWhitespaceOnSave"
-            })
-        end,
-    },
-    "sheerun/vim-polyglot",
-    "chrisbra/Colorizer",
-    "tpope/vim-surround",
-    "kana/vim-textobj-user",
-    {
-        "Julian/vim-textobj-variable-segment",
-        dependencies = {
-            "kana/vim-textobj-user",
         },
-    },
-    {
-        "luochen1990/rainbow",
-        init = function()
-            -- Enable rainbow braces
-            vim.g.rainbow_active = 1
-        end,
-    },
-    {
-        "morhetz/gruvbox",
-        -- Don't lazy load my main colorscheme
-        lazy = false,
-        -- Load this before any other plugins
-        priority = 1000,
-        init = function()
-            vim.g.gruvbox_contrast_dark = "hard"
-            vim.g.gruvbox_italic = 1
-            vim.cmd.colorscheme("gruvbox")
-        end,
-    },
-    {
-        "vim-airline/vim-airline",
-        init = function()
-            -- Enable the list of buffers
-            vim.g['airline#extensions#tabline#enabled'] = 1
-            -- Show just the filename
-            vim.g['airline#extensions#tabline#fnamemod'] = ':t'
-            vim.g['airline#extensions#tabline#formatter'] = 'unique_tail_improved'
-        end,
-    },
-    --{
-    --    "isaacmorneau/vim-update-daily",
-    --        init = function()
-    --        -- Run this command daily using vim-update-daily plugin
-    --        vim.g.update_daily = 'PackerSync | q'
-    --        vim.g.update_noargs = true
-    --    end,
-    --},
-    {
-        "sbdchd/neoformat",
-        init = function()
-            vim.keymap.set('', '<C-f>', vim.cmd.Neoformat)
+        {
+            "ntpeters/vim-better-whitespace",
+            init = function()
+                -- Enable stripping trailing whitespace on save
+                vim.api.nvim_create_autocmd({ "BufEnter" }, {
+                    command = "EnableStripWhitespaceOnSave",
+                })
+            end,
+        },
+        "sheerun/vim-polyglot",
+        "chrisbra/Colorizer",
+        "tpope/vim-surround",
+        "kana/vim-textobj-user",
+        {
+            "Julian/vim-textobj-variable-segment",
+            dependencies = {
+                "kana/vim-textobj-user",
+            },
+        },
+        {
+            "luochen1990/rainbow",
+            init = function()
+                -- Enable rainbow braces
+                vim.g.rainbow_active = 1
+            end,
+        },
+        {
+            "morhetz/gruvbox",
+            -- Don't lazy load my main colorscheme
+            lazy = false,
+            -- Load this before any other plugins
+            priority = 1000,
+            init = function()
+                vim.g.gruvbox_contrast_dark = "hard"
+                vim.g.gruvbox_italic = 1
+                vim.cmd.colorscheme("gruvbox")
+            end,
+        },
+        {
+            "vim-airline/vim-airline",
+            init = function()
+                -- Enable the list of buffers
+                vim.g["airline#extensions#tabline#enabled"] = 1
+                -- Show just the filename
+                vim.g["airline#extensions#tabline#fnamemod"] = ":t"
+                vim.g["airline#extensions#tabline#formatter"] = "unique_tail_improved"
+            end,
+        },
+        --{
+        --    "isaacmorneau/vim-update-daily",
+        --        init = function()
+        --        -- Run this command daily using vim-update-daily plugin
+        --        vim.g.update_daily = 'PackerSync | q'
+        --        vim.g.update_noargs = true
+        --    end,
+        --},
+        --{
+        --    "sbdchd/neoformat",
+        --    init = function()
+        --        vim.keymap.set('', '<C-f>', vim.cmd.Neoformat)
 
-            vim.g.neoformat_basic_format_align = 1
-            vim.g.neoformat_basic_format_retab = 1
-            vim.g.neoformat_basic_format_trim = 1
+        --        vim.g.neoformat_basic_format_align = 1
+        --        vim.g.neoformat_basic_format_retab = 1
+        --        vim.g.neoformat_basic_format_trim = 1
 
-            vim.g.neoformat_c_clang_format = {
-                 exe = 'clang-format',
-                 args = {'-style=~/.clang-format'},
-             }
-            vim.g.neoformat_cpp_clang_format = {
-                 exe = 'clang-format',
-                 args = {'-style=~/.clang-format'},
-             }
+        --        vim.g.neoformat_c_clang_format = {
+        --             exe = 'clang-format',
+        --             args = {'-style=~/.clang-format'},
+        --         }
+        --        vim.g.neoformat_cpp_clang_format = {
+        --             exe = 'clang-format',
+        --             args = {'-style=~/.clang-format'},
+        --         }
 
-            vim.g.neoformat_enabled_c = {'clangformat'}
-            vim.g.neoformat_enabled_cpp = {'clangformat'}
-        end,
-    },
-    {
-        "isaacmorneau/vim-simple-sessions",
-        init = function()
-            vim.g.ss_auto_enter = true
-            vim.g.ss_auto_exit = false
-            vim.g.ss_auto_alias = true
-            vim.g.ss_dir = vim.fn.stdpath('data') .. '/session/'
-            -- May need to fork or tweak or submit PR to make this work nicely
-            vim.g.ss_open_with_args = false
-        end,
-    },
-    {
-        "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate",
-        config = function ()
-            local configs = require("nvim-treesitter.configs")
-
-            configs.setup({
-                ensure_installed = {
-                    "c",
-                    "cpp",
-                    "rust",
-                    "lua",
-                    "vim",
-                    "vimdoc",
-                    -- Treesitter Query Language
-                    "query",
-                    "javascript",
-                    "typescript",
-                    "html",
-                    "css",
-                    "sql",
-                    "bash",
-                    "csv",
-                    "json",
-                    "cmake",
-                    "make",
-                    "python",
-                    "regex",
-                    "toml",
-                    "yaml",
-                },
-                -- Allows async installs
-                sync_install = false,
-                -- Requires tree-sitter CLI tool installed for it to be enabled
-                auto_install = false,
-                -- Currently not a fan of the highlighting with gruvbox, need to refine it
-                highlight = { enable = false },
-                -- Indents are currently broken af at least for C++ that I tested
-                indent = { enable = false },
-            })
-        end
-    },
-    {
-        "neovim/nvim-lspconfig",
-        config = function()
-            local configs = require("lspconfig")
-
-            vim.api.nvim_create_autocmd("LspAttach", {
-              callback = function(args)
-                local client = vim.lsp.get_client_by_id(args.data.client_id)
-                if client.supports_method("textDocument/implementation") then
-                  -- Create a keymap for vim.lsp.buf.implementation
-                end
-                if client.supports_method("textDocument/completion") then
-                  -- Enable auto-completion
-                  -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
-                end
-                if client.supports_method("textDocument/formatting") then
-                  -- Format the current buffer on save
-                  vim.api.nvim_create_autocmd("BufWritePre", {
-                    buffer = args.buf,
-                    callback = function()
-                        -- vim.lsp.buf.format({bufnr = args.buf, id = client.id})
+        --        vim.g.neoformat_enabled_c = {'clangformat'}
+        --        vim.g.neoformat_enabled_cpp = {'clangformat'}
+        --    end,
+        --},
+        {
+            "stevearc/conform.nvim",
+            cmd = { "ConformInfo" },
+            keys = {
+                {
+                    "<C-f>",
+                    function()
+                        require("conform").format({ async = true })
                     end,
-                  })
-                end
-                if client.supports_method("textDocument/definition") then
-                  -- Enable jump to definition
+                    mode = "",
+                    desc = "Format buffer",
+                },
+            },
+            -- This will provide type hinting with LuaLS
+            --- @module "conform"
+            --- @type conform.setupOpts
+            opts = {
+                formatters_by_ft = {
+                    lua = { "stylua" },
+                    python = { "black", "isort" },
+                    rust = { "rustfmt", lsp_format = "fallback" },
+                    javascript = { "prettierd", "prettier", stop_after_first = true },
+                },
+                default_format_opts = {
+                    lsp_format = "fallback",
+                },
+                formatters = {
+                    stylua = {
+                        prepend_args = {
+                            "--indent-type",
+                            "Spaces",
+                            "--indent-width",
+                            "4",
+                            "--line-endings",
+                            "Unix",
+                            "--quote-style",
+                            "AutoPreferDouble",
+                            "--sort-requires",
+                        },
+                    },
+                },
+            },
+            init = function()
+                vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+            end,
+        },
+        {
+            "isaacmorneau/vim-simple-sessions",
+            init = function()
+                vim.g.ss_auto_enter = true
+                vim.g.ss_auto_exit = false
+                vim.g.ss_auto_alias = true
+                vim.g.ss_dir = vim.fn.stdpath("data") .. "/session/"
+                -- May need to fork or tweak or submit PR to make this work nicely
+                vim.g.ss_open_with_args = false
+            end,
+        },
+        {
+            "nvim-treesitter/nvim-treesitter",
+            build = ":TSUpdate",
+            config = function()
+                local configs = require("nvim-treesitter.configs")
 
-                  -- Go back one level up the tag stack
-                  vim.keymap.set('n', '<Leader>[', ':pop<CR>')
-                  -- Search for tag using regexp, jump if only one, otherwise, list options
-                  vim.keymap.set('n', '<Leader>/', ':tj<Space>/')
-                  -- Search for tag using regexp, jump if only one, otherwise, list options
-                  vim.keymap.set('n', '<Leader>]', ':execute "tj" expand("<cword>")<CR>')
-                  vim.cmd([[
+                configs.setup({
+                    ensure_installed = {
+                        "c",
+                        "cpp",
+                        "rust",
+                        "lua",
+                        "vim",
+                        "vimdoc",
+                        -- Treesitter Query Language
+                        "query",
+                        "javascript",
+                        "typescript",
+                        "html",
+                        "css",
+                        "sql",
+                        "bash",
+                        "csv",
+                        "json",
+                        "cmake",
+                        "make",
+                        "python",
+                        "regex",
+                        "toml",
+                        "yaml",
+                    },
+                    -- Allows async installs
+                    sync_install = false,
+                    -- Requires tree-sitter CLI tool installed for it to be enabled
+                    auto_install = false,
+                    -- Currently not a fan of the highlighting with gruvbox, need to refine it
+                    highlight = { enable = false },
+                    -- Indents are currently broken af at least for C++ that I tested
+                    indent = { enable = false },
+                })
+            end,
+        },
+        {
+            "neovim/nvim-lspconfig",
+            config = function()
+                local configs = require("lspconfig")
+
+                vim.api.nvim_create_autocmd("LspAttach", {
+                    callback = function(args)
+                        local client = vim.lsp.get_client_by_id(args.data.client_id)
+                        if client.supports_method("textDocument/implementation") then
+                            -- Create a keymap for vim.lsp.buf.implementation
+                        end
+                        if client.supports_method("textDocument/completion") then
+                            -- Enable auto-completion
+                            -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+                        end
+                        if client.supports_method("textDocument/formatting") then
+                            -- Format the current buffer on save
+                            vim.api.nvim_create_autocmd("BufWritePre", {
+                                buffer = args.buf,
+                                callback = function()
+                                    -- vim.lsp.buf.format({bufnr = args.buf, id = client.id})
+                                end,
+                            })
+                        end
+                        if client.supports_method("textDocument/definition") then
+                            -- Enable jump to definition
+
+                            -- Go back one level up the tag stack
+                            vim.keymap.set("n", "<Leader>[", ":pop<CR>")
+                            -- Search for tag using regexp, jump if only one, otherwise, list options
+                            vim.keymap.set("n", "<Leader>/", ":tj<Space>/")
+                            -- Search for tag using regexp, jump if only one, otherwise, list options
+                            vim.keymap.set("n", "<Leader>]", ':execute "tj" expand("<cword>")<CR>')
+                            vim.cmd([[
                     "Find functions calling the current word under the cursor
                     " nnoremap <Leader>\ :call FindSymbol()<CR>
                   ]])
-                end
-              end,
-            });
+                        end
+                    end,
+                })
 
-            configs.rust_analyzer.setup{
-                on_attach = function(client, bufnr)
-                    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-                end,
-                settings = {
-                    ["rust-analyzer"] = {
-                        check = {
-                            command = "clippy";
+                configs.rust_analyzer.setup({
+                    on_attach = function(client, bufnr)
+                        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                    end,
+                    settings = {
+                        ["rust-analyzer"] = {
+                            check = {
+                                command = "clippy",
+                            },
+                            cargo = {
+                                features = "all",
+                            },
+                            diagnostics = {
+                                enable = true,
+                            },
                         },
-                        cargo = {
-                            features = "all";
-                        },
-                        diagnostics = {
-                            enable = true;
-                        },
-                    }
-                }
-            }
-            configs.clangd.setup{
-                cmd = {"clangd", "--background-index", "--clang-tidy", "--log=verbose"},
-                init_options = {
-                    fallbackFlags = {
-                        "-std=c++17",
-                        "-Wall",
                     },
-                },
-            }
-        end,
+                })
+                configs.clangd.setup({
+                    cmd = { "clangd", "--background-index", "--clang-tidy", "--log=verbose" },
+                    init_options = {
+                        fallbackFlags = {
+                            "-std=c++17",
+                            "-Wall",
+                        },
+                    },
+                })
+            end,
+        },
     },
-},
--- Lazy plugin manager config
-{
-    checker = {
-        enabled = true,
-    },
-})
+    -- Lazy plugin manager config
+    {
+        checker = {
+            enabled = true,
+        },
+    }
+)
 
 --Set proper python paths
-vim.g.python_host_prog = '/usr/bin/python2'
-vim.g.python3_host_prog = '/usr/bin/python3'
+vim.g.python_host_prog = "/usr/bin/python2"
+vim.g.python3_host_prog = "/usr/bin/python3"
 
 --Use a dark background
-vim.opt.background = 'dark'
+vim.opt.background = "dark"
 
 --Show absolute column numbers
 vim.opt.number = true
@@ -437,19 +486,19 @@ vim.opt.showmatch = true
 --No sounds or flashing lights, I'm not a child
 vim.opt.errorbells = false
 vim.opt.visualbell = false
-vim.opt.belloff = 'all'
+vim.opt.belloff = "all"
 vim.opt.tm = 500
 
 --Show open/close folds
-vim.opt.foldcolumn = '1'
+vim.opt.foldcolumn = "1"
 
 --Use utf8 like a normal person
-vim.opt.encoding = 'utf8'
-vim.opt.fileencoding = 'utf-8'
-vim.opt.fileencodings = 'utf-8'
+vim.opt.encoding = "utf8"
+vim.opt.fileencoding = "utf-8"
+vim.opt.fileencodings = "utf-8"
 
 --LF is the only acceptable line ending
-vim.opt.ffs = unix,dos,mac
+vim.opt.ffs = unix, dos, mac
 
 --Tabs are 4 spaces
 vim.opt.expandtab = true
@@ -458,7 +507,7 @@ vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 
 --100 char line highlight
-vim.opt.colorcolumn = '100'
+vim.opt.colorcolumn = "100"
 
 --Enable auto and smart indent
 vim.opt.autoindent = true
@@ -471,24 +520,24 @@ vim.opt.copyindent = true
 vim.opt.wrap = true
 
 vim.opt.ssop:remove({
---Do not store global and local values in a session
-    'options',
-----Do not store folds
-    'folds',
-----Do not store hidden and unloaded buffers
-    'buffers',
-----Do not store the help window
-    'help',
+    --Do not store global and local values in a session
+    "options",
+    ----Do not store folds
+    "folds",
+    ----Do not store hidden and unloaded buffers
+    "buffers",
+    ----Do not store the help window
+    "help",
 })
 
 --Allow me to use the mouse on terminal vim
-vim.opt.mouse = 'a'
+vim.opt.mouse = "a"
 
 --Ask me if I'm doing something dumb
 vim.opt.confirm = true
 
 --Be smart about backspacing
-vim.opt.backspace='indent,eol,start'
+vim.opt.backspace = "indent,eol,start"
 
 --Wildcard/enhanced menu mode
 vim.opt.wildmenu = true
@@ -499,17 +548,17 @@ vim.opt.undolevels = 1000
 vim.opt.undoreload = 10000
 
 --visualize whitepsace
-vim.opt.listchars = 'tab:→→,trail:●,nbsp:○'
+vim.opt.listchars = "tab:→→,trail:●,nbsp:○"
 
 --vim.opt.up scratch file saving
 --vim.g.scratch_persistence_file = vim.fn.strftime(vim.g.scratch_dir .. "scratch_%Y-%m-%d")
 vim.g.scratch_no_mappings = 1
 
 --share vim and system clipboard
-if vim.fn.has('unnamedplus') then
-    vim.opt.clipboard='unnamed,unnamedplus'
+if vim.fn.has("unnamedplus") then
+    vim.opt.clipboard = "unnamed,unnamedplus"
 else
-    vim.opt.clipboard='unnamed'
+    vim.opt.clipboard = "unnamed"
 end
 
 --enable true 24-bit colour
@@ -517,114 +566,114 @@ vim.opt.tgc = true
 
 --vim.opt.shell to bash
 if vim.env.SHELL then
-    vim.opt.shell=vim.env.SHELL
+    vim.opt.shell = vim.env.SHELL
 else
-    vim.opt.shell='/bin/bash'
+    vim.opt.shell = "/bin/bash"
 end
 
 --Update things after 1 second being idle
 vim.opt.updatetime = 1000
 
 --Leader as space, since \ is awkward
-vim.g.mapleader = ' '
+vim.g.mapleader = " "
 
 --This is gross, but it lets me do stuff like "gf" to open the file under the cursor
-vim.opt.path='**'
+vim.opt.path = "**"
 
 --New splits go on the right, I'm not an animal
 vim.opt.splitright = true
 
 --Let's ignore tons of garbage/binary/random files
-vim.opt.wildmode='list:longest,list:full'
+vim.opt.wildmode = "list:longest,list:full"
 vim.opt.wildignore:append(ignoreglobs)
 
 -- Prefer using rg for vim grepping if it exists on the system
-if (vim.fn.executable('rg')) then
-    vim.g.grepprg='rg --vimgrep'
+if vim.fn.executable("rg") then
+    vim.g.grepprg = "rg --vimgrep"
 end
 
 -- [BINDINGS]
 -- Tab nav with shift
-vim.keymap.set('n', 'H', 'gT')
-vim.keymap.set('n', 'L', 'gt')
+vim.keymap.set("n", "H", "gT")
+vim.keymap.set("n", "L", "gt")
 -- Tab move with Ctrl
-vim.keymap.set('n', "<C-h>", function()
+vim.keymap.set("n", "<C-h>", function()
     vim.cmd.tabmove("-1")
 end)
-vim.keymap.set('n', "<C-l>", function()
+vim.keymap.set("n", "<C-l>", function()
     vim.cmd.tabmove("+1")
 end)
 -- Tab management with t leader
 -- Open new tab at end of tab list
-vim.keymap.set('n', "tn", function()
+vim.keymap.set("n", "tn", function()
     vim.cmd.tabnew("$")
 end)
 -- Close the current tab
-vim.keymap.set('n', "tq", vim.cmd.tabclose)
+vim.keymap.set("n", "tq", vim.cmd.tabclose)
 -- Open the filename under cursor at end of tab list
-vim.keymap.set('n', "tf", "<C-w>gf<CR>:tabmove<CR>")
+vim.keymap.set("n", "tf", "<C-w>gf<CR>:tabmove<CR>")
 
 -- Open the filename under cursor as a new window
-vim.keymap.set('n', "<Leader>f", "<C-w><C-f><C-w>L")
+vim.keymap.set("n", "<Leader>f", "<C-w><C-f><C-w>L")
 
 -- Move on visual lines, not on wrapped/real ones
-vim.keymap.set('n', "j", "gj")
-vim.keymap.set('n', "k", "gk")
-vim.keymap.set('n', "<Up>", "g<Up>")
-vim.keymap.set('n', "<Down>", "g<Down>")
+vim.keymap.set("n", "j", "gj")
+vim.keymap.set("n", "k", "gk")
+vim.keymap.set("n", "<Up>", "g<Up>")
+vim.keymap.set("n", "<Down>", "g<Down>")
 
 -- how dare you not use regex by default
-vim.keymap.set('n', '/', '/\\v')
-vim.keymap.set('v', '/', '/\\v')
+vim.keymap.set("n", "/", "/\\v")
+vim.keymap.set("v", "/", "/\\v")
 
 -- keep visual selection after shift
-vim.keymap.set('v', '<', '<gv')
-vim.keymap.set('v', '>', '>gv')
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
 
 -- i never want the help page! i always wanted ESC
-vim.keymap.set('n', '<F1>', '<ESC>')
-vim.keymap.set('i', '<F1>', '<ESC>')
+vim.keymap.set("n", "<F1>", "<ESC>")
+vim.keymap.set("i", "<F1>", "<ESC>")
 
 -- We're not in the 1970's, ex is not a better ed, disable ex mode
-vim.keymap.set('n', 'Q', '<nop>')
+vim.keymap.set("n", "Q", "<nop>")
 
 -- [Window management]
 -- Ctrl-W is stupid, just rebind it to Alt instead
 -- Benefit is that Alt can be held for multiple ops
 
 -- Basic movement
-vim.keymap.set('n', '<A-h>', '<C-W>h')
-vim.keymap.set('n', '<A-j>', '<C-W>j')
-vim.keymap.set('n', '<A-k>', '<C-W>k')
-vim.keymap.set('n', '<A-l>', '<C-W>l')
+vim.keymap.set("n", "<A-h>", "<C-W>h")
+vim.keymap.set("n", "<A-j>", "<C-W>j")
+vim.keymap.set("n", "<A-k>", "<C-W>k")
+vim.keymap.set("n", "<A-l>", "<C-W>l")
 
 -- Window movement
-vim.keymap.set('n', '<A-H>', '<C-W>H')
-vim.keymap.set('n', '<A-J>', '<C-W>J')
-vim.keymap.set('n', '<A-K>', '<C-W>K')
-vim.keymap.set('n', '<A-L>', '<C-W>L')
+vim.keymap.set("n", "<A-H>", "<C-W>H")
+vim.keymap.set("n", "<A-J>", "<C-W>J")
+vim.keymap.set("n", "<A-K>", "<C-W>K")
+vim.keymap.set("n", "<A-L>", "<C-W>L")
 
 -- New window creation
-vim.keymap.set('n', '<A-n>', vim.cmd.vnew)
-vim.keymap.set('n', '<A-s>', '<C-W>s')
-vim.keymap.set('n', '<A-v>', '<C-W>v')
+vim.keymap.set("n", "<A-n>", vim.cmd.vnew)
+vim.keymap.set("n", "<A-s>", "<C-W>s")
+vim.keymap.set("n", "<A-v>", "<C-W>v")
 
 -- Quit the current window
-vim.keymap.set('n', '<A-q>', '<C-W>q')
+vim.keymap.set("n", "<A-q>", "<C-W>q")
 
 -- Resizing
-vim.keymap.set('n', '<A-->', '<C-W>-')
-vim.keymap.set('n', '<A-+>', '<C-W>+')
-vim.keymap.set('n', '<A-<>', '<C-W><')
-vim.keymap.set('n', '<A->>', '<C-W>>')
-vim.keymap.set('n', '<A-=>', '<C-W>=')
-vim.keymap.set('n', '<A-_>', '<C-W>_')
+vim.keymap.set("n", "<A-->", "<C-W>-")
+vim.keymap.set("n", "<A-+>", "<C-W>+")
+vim.keymap.set("n", "<A-<>", "<C-W><")
+vim.keymap.set("n", "<A->>", "<C-W>>")
+vim.keymap.set("n", "<A-=>", "<C-W>=")
+vim.keymap.set("n", "<A-_>", "<C-W>_")
 
 -- Re-select our last pasted block
-vim.keymap.set('n', 'gp', '`[v`]')
+vim.keymap.set("n", "gp", "`[v`]")
 
 -- allow the . to execute once for each line of a visual selection
-vim.cmd('vnoremap . :normal! .<CR>')
+vim.cmd("vnoremap . :normal! .<CR>")
 --vim.keymap.set('v', '.', vim.cmd(':normal! .<CR>'))
 
 -- Allows a macro to easily be executed on every line of a visual selection
@@ -632,16 +681,15 @@ vim.cmd("vnoremap @ :'<,'>norm! @")
 -- vim.keymap.set('v', '@', vim.cmd(":'<,'>norm! @"))
 
 -- S and cc are duplicates so mimic the inverse of J for S
-vim.cmd('nnoremap S :keeppatterns substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>')
+vim.cmd("nnoremap S :keeppatterns substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>")
 --vim.keymap.set('n', 'S', vim.cmd{'substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>', keeppatterns = true})
 
 -- [AUTOCOMMANDS]
 
 -- when the window gets resized reset the splits
-vim.api.nvim_create_autocmd({"VimResized"}, {
-  command = "wincmd ="
+vim.api.nvim_create_autocmd({ "VimResized" }, {
+    command = "wincmd =",
 })
-
 
 -- Jump to last open
 -- Too many nested quotes that make it difficult to translate directly
@@ -649,13 +697,13 @@ vim.cmd([[
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 ]])
 
-vim.api.nvim_create_autocmd({"VimResized"}, {
-  command = "wincmd ="
+vim.api.nvim_create_autocmd({ "VimResized" }, {
+    command = "wincmd =",
 })
 
 -- Close preview window after insertion completion
-vim.api.nvim_create_autocmd({"CompleteDone"}, {
-  command = "pclose"
+vim.api.nvim_create_autocmd({ "CompleteDone" }, {
+    command = "pclose",
 })
 
 vim.cmd([[
@@ -747,7 +795,7 @@ call InitializeDirectories()
 "[BINDINGS]
 "Automatically split multiple files given via command line into their own tabs
 if !&diff && argc() > 1
-	autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
+    autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
 endif
 
 "[Window management]
