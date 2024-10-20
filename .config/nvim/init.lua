@@ -352,8 +352,14 @@ require("lazy").setup({
             });
 
             configs.rust_analyzer.setup{
+                on_attach = function(client, bufnr)
+                    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                end,
                 settings = {
                     ["rust-analyzer"] = {
+                        check = {
+                            command = "clippy";
+                        },
                         cargo = {
                             features = "all";
                         },
