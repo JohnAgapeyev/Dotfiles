@@ -40,6 +40,7 @@ export MANPAGER='nvim +Man!'
 
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 export GCC_COLOR=1
 
@@ -282,4 +283,21 @@ function ovpncn() {
     openssl x509 -in <(sed -rn '/<cert>/,/<\/cert/{/<\/?cert>/d;p}' < $1) -text | grep -o 'Issuer.*'
 }
 
+function noaudiofiles () {
+    for F in "$@"
+    do
+        bash -c "ffprobe -i $F -show_streams -select_streams a 2>/dev/null | wc -l; echo '$F'" | rg "^0" -A 1 | rg -v "^0"
+    done
+}
 
+function dockernuke () {
+    docker system prune -af
+    if [[ $(docker container ls -aq | wc -l) -ne 0 ]]; then
+        docker container ls -aq | xargs docker container rm;
+    fi
+    if [[ $(docker images -q | wc -l) -ne 0 ]]; then
+        docker images -q | xargs docker rmi;
+    fi
+}
+
+source /usr/share/nvm/init-nvm.sh
