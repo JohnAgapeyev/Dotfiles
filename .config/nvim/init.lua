@@ -415,6 +415,15 @@ require("lazy").setup(
                         },
                     },
                 })
+                configs.ruff.setup({
+                    init_options = {
+                        settings = {
+                            -- Prioritize filesystem config files over editor settings when present
+                            configurationPreference = "filesystemFirst",
+                            lineLength = 100,
+                        },
+                    },
+                })
                 configs.clangd.setup({
                     cmd = {
                         "clangd",
