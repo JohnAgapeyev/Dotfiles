@@ -83,6 +83,8 @@ local ignoreglobs = {
     "venv/**",
     ".venv/**",
     ".mypy_cache/**",
+    ".pytest_cache/**",
+    ".ruff_cache/**",
 }
 
 require("lazy").setup(
