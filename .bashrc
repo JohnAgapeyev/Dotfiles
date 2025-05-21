@@ -287,7 +287,7 @@ function noaudiofiles () {
     for F in "$@"
     do
         #bash -c "ffprobe -i '$F' -show_streams -select_streams a 2>/dev/null | wc -l; echo '$F'" | rg "^0" -A 1 | rg -v "^0"
-        bash -c "ffmpeg -i '$F' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo -e '$F'\n" | rg "^1$" -A 1 | rg -v "^1$"
+        bash -c "ffmpeg -i '$F' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo '$F'" | rg "^1$" -A 1 | rg -v "^1$"
     done
 }
 
