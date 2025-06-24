@@ -38,7 +38,7 @@ local ignoreglobs = {
     "**/bower_components/**",
     "**/cache/**",
     "**/compiled/**",
-    "**/docs/**",
+    -- "**/docs/**",
     "**/example/**",
     "**/bundle/**",
     "**/vendor/**",
@@ -148,7 +148,7 @@ require("lazy").setup(
                 }
 
                 -- This whole chunk is to make the FZF searcher aware of my wildignore globs
-                if vim.fn.executable("rg") then
+                if vim.fn.executable("rg") == 1 then
                     local formatted_globs = {}
                     for i, glob in ipairs(ignoreglobs) do
                         formatted_globs[i] = " --glob !" .. tostring(glob)
@@ -278,16 +278,17 @@ require("lazy").setup(
             --- @module "conform"
             --- @type conform.setupOpts
             opts = {
+                default_format_opts = {
+                    -- Better to use the LSP to keep relevant configs all in one place
+                    lsp_format = "prefer",
+                },
                 formatters_by_ft = {
                     lua = { "stylua" },
-                    python = { "black", "isort" },
+                    python = { "ruff", "black", "isort", stop_after_first = true },
                     rust = { "rustfmt", lsp_format = "fallback" },
                     javascript = { "prettierd", "prettier", stop_after_first = true },
                     c = { "clang-format" },
                     cpp = { "clang-format" },
-                },
-                default_format_opts = {
-                    lsp_format = "fallback",
                 },
                 formatters = {
                     stylua = {
@@ -349,6 +350,7 @@ require("lazy").setup(
                         "python",
                         "regex",
                         "toml",
+                        "xml",
                         "yaml",
                     },
                     -- Allows async installs
@@ -365,19 +367,32 @@ require("lazy").setup(
         {
             "neovim/nvim-lspconfig",
             config = function()
-                local configs = require("lspconfig")
+                -- Globally static LSP config
+                vim.lsp.config('*', {
+                     -- capabilities = {
+                         -- offsetEncoding = {"utf-8", "utf-16"},
+                         -- textDocument = {
+                         --     semanticTokens = {
+                         --         multilineTokenSupport = true,
+                         --     }
+                         -- }
+                     -- },
+                     root_markers = { '.git' },
+                })
 
+                -- Globally dynamic LSP config running once the LSP attaches
                 vim.api.nvim_create_autocmd("LspAttach", {
                     callback = function(args)
+                        -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
                         local client = vim.lsp.get_client_by_id(args.data.client_id)
-                        if client.supports_method("textDocument/implementation") then
+                        if client:supports_method("textDocument/implementation") then
                             -- Create a keymap for vim.lsp.buf.implementation
                         end
-                        if client.supports_method("textDocument/completion") then
+                        if client:supports_method("textDocument/completion") then
                             -- Enable auto-completion
                             -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
                         end
-                        if client.supports_method("textDocument/formatting") then
+                        if client:supports_method("textDocument/formatting") then
                             -- Format the current buffer on save
                             vim.api.nvim_create_autocmd("BufWritePre", {
                                 buffer = args.buf,
@@ -386,7 +401,7 @@ require("lazy").setup(
                                 end,
                             })
                         end
-                        if client.supports_method("textDocument/definition") then
+                        if client:supports_method("textDocument/definition") then
                             -- Enable jump to definition
 
                             -- Go back one level up the tag stack
@@ -399,7 +414,10 @@ require("lazy").setup(
                     end,
                 })
 
-                configs.rust_analyzer.setup({
+                if vim.fn.executable("rust-analyzer") == 1 then
+                    vim.lsp.enable('rust_analyzer')
+                end
+                vim.lsp.config('rust_analyzer', {
                     on_attach = function(client, bufnr)
                         vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
                     end,
@@ -417,16 +435,79 @@ require("lazy").setup(
                         },
                     },
                 })
-                configs.ruff.setup({
+                if vim.fn.executable('ruff') == 1 then
+                    vim.lsp.enable('ruff')
+                end
+                vim.lsp.config('ruff', {
                     init_options = {
                         settings = {
                             -- Prioritize filesystem config files over editor settings when present
                             configurationPreference = "filesystemFirst",
                             lineLength = 100,
+                            lint = {
+                                ignore = {
+                                    -- from {name} import * used; unable to detect undefined names
+                                    "F403",
+                                    -- {name} may be undefined, or defined from star imports
+                                    "F405",
+                                },
+                            },
                         },
                     },
                 })
-                configs.clangd.setup({
+                -- if vim.fn.executable('pyright') == 1 then
+                --     vim.lsp.enable('pyright')
+                -- end
+                -- vim.lsp.config('pyright', {
+                --     offset_encoding = "utf-8",
+                --     trace = "debug",
+                --     settings = {
+                --         python = {
+                --             analysis = {
+                --                 logLevel = "Information",
+                --                 typeCheckingMode = "off",
+                --                 autoSearchPaths = true,
+                --                 useLibraryCodeForTypes = true,
+                --                 diagnosticMode = "off",
+                --                 diagnosticMode = "workspace",
+                --                 autoImportCompletions = true,
+                --             },
+                --             linting = {
+                --                 -- I'm using ruff to lint, so don't do double-duty
+                --                 enabled = false,
+                --             }
+                --         }
+                --     },
+                --     -- Disable all diagnostics from Pyright
+                --     -- handlers = {
+                --     --   ["textDocument/publishDiagnostics"] = function() end,
+                --     -- }
+                -- })
+
+                if vim.fn.executable('jedi-language-server') == 1 then
+                    vim.lsp.enable('jedi_language_server')
+                end
+                vim.lsp.config('jedi_language_server', {
+                    init_options = {
+                        diagnostics = {
+                            enable = false,
+                            --logLevel = "Information",
+                            --typeCheckingMode = "off",
+                            --autoSearchPaths = true,
+                            --useLibraryCodeForTypes = true,
+                            --diagnosticMode = "off",
+                            --diagnosticMode = "workspace",
+                            --autoImportCompletions = true,
+                        },
+                        jediSettings = {
+                            debug = true,
+                        }
+                    },
+                })
+                if vim.fn.executable('clangd') == 1 then
+                    vim.lsp.enable('clangd')
+                end
+                vim.lsp.config('clangd', {
                     cmd = {
                         "clangd",
                         "--compile-commands-dir=./bin/",
@@ -436,12 +517,15 @@ require("lazy").setup(
                     },
                     init_options = {
                         fallbackFlags = {
-                            "-std=c++17",
+                            "-std=gnu99",
                             "-Wall",
                         },
                     },
                 })
-                configs.eslint.setup({
+                if vim.fn.executable('eslint-language-server') == 1 then
+                    vim.lsp.enable('eslint')
+                end
+                vim.lsp.config('eslint', {
                     cmd = {
                         "eslint-language-server",
                         "--stdio",
@@ -609,7 +693,7 @@ vim.opt.wildmode = "list:longest,list:full"
 vim.opt.wildignore:append(ignoreglobs)
 
 -- Prefer using rg for vim grepping if it exists on the system
-if vim.fn.executable("rg") then
+if vim.fn.executable("rg") == 1 then
     vim.g.grepprg = "rg --vimgrep"
 end
 
