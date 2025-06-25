@@ -11,6 +11,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Leader as space, since \ is awkward
+-- Needs to be defined up here for any keybinds that use it lower down
+vim.g.mapleader = " "
+
+
 -- Defined here to initialize it early and reuse it in multiple places
 -- This is the main list of globs to ignore files for, which is used for both wildignore
 -- and for building out the FZF default command arguments with the same data
@@ -113,6 +118,49 @@ require("lazy").setup(
                 })
             end,
         },
+        -- "nvim-lua/plenary.nvim",
+        -- {
+        --     "nvim-telescope/telescope.nvim",
+        --     tag = "0.1.8",
+        --     dependencies = {
+        --         "nvim-lua/plenary.nvim",
+        --         -- So my reuse of FZF_DEFAULT_COMMAND overriding works correctly
+        --         "junegunn/fzf.vim",
+        --     },
+        --     opts = {
+        --         pickers = {
+        --             find_files = {
+        --                 find_command = vim.env.FZF_DEFAULT_COMMAND,
+        --             },
+        --             git_files = {
+        --                 find_command = vim.env.FZF_DEFAULT_COMMAND,
+        --             },
+        --         },
+        --         extensions = {
+        --             fzf = {
+        --                 fuzzy = true,                    -- false will only do exact matching
+        --                 override_generic_sorter = true,  -- override the generic sorter
+        --                 override_file_sorter = true,     -- override the file sorter
+        --                 case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+        --                 -- the default case_mode is "smart_case"
+        --             }
+        --         },
+        --     },
+        --     config = function()
+        --         -- vim.keymap.set("n", "<CR>", vim.cmd.FZF)
+        --         local builtin = require('telescope.builtin')
+        --         -- vim.keymap.set("n", "<CR>", builtin.find_files, { find_command = vim.env.FZF_DEFAULT_COMMAND, desc = "Telescope find files" })
+        --         --vim.keymap.set("n", "<CR>", builtin.find_files, { desc = "Telescope find files" })
+        --         vim.keymap.set("n", "<CR>", builtin.git_files, { desc = "Telescope find files" })
+        --         -- vim.keymap.set("n", "<Leader>\\", builtin.lsp_references, { desc = "Telescope find references from LSP"})
+        --         vim.keymap.set("n", "<Leader>/", builtin.lsp_references, { desc = "Telescope find references from LSP"})
+        --         require('telescope').load_extension('fzf')
+        --     end,
+        -- },
+        -- {
+        --     'nvim-telescope/telescope-fzf-native.nvim',
+        --     build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
+        -- },
         "junegunn/fzf",
         {
             "junegunn/fzf.vim",
@@ -120,8 +168,6 @@ require("lazy").setup(
                 "junegunn/fzf",
             },
             init = function()
-                vim.keymap.set("n", "<CR>", vim.cmd.FZF)
-
                 -- Need to use ["ctrl-t"] instead of literally ctrl-t because the dict key has a
                 -- special character that needs escaping
                 vim.g.fzf_action = {
@@ -155,7 +201,7 @@ require("lazy").setup(
                     end
                     -- Should be good, but this is the old version in case I need to revert
                     --vim.env.FZF_DEFAULT_COMMAND = 'rg --files --hidden --no-ignore --glob "!.git/*"'
-                    vim.env.FZF_DEFAULT_COMMAND = "rg --files -uu " .. tostring(table.concat(formatted_globs, ""))
+                    vim.env.FZF_DEFAULT_COMMAND = "rg --sort path --files -uu " .. tostring(table.concat(formatted_globs, ""))
                 else
                     local formatted_globs = {}
                     -- Lua is 1-indexed, not 0-indexed
@@ -181,6 +227,12 @@ require("lazy").setup(
                     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
                 endif
             ]])
+            end,
+            config = function()
+                vim.keymap.set("n", "<CR>", vim.cmd.FZF)
+                -- Use <Leader>+backslash to start a ripgrep on the word under the cursor
+                -- RG reruns ripgrep every keystroke, Rg uses the internal FZF logic to rerun
+                vim.keymap.set("n", "<Leader>\\", function() vim.cmd.RG(vim.fn.expand("<cword>")) end)
             end,
         },
         {
@@ -310,17 +362,17 @@ require("lazy").setup(
                 vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
             end,
         },
-        {
-            "isaacmorneau/vim-simple-sessions",
-            init = function()
-                vim.g.ss_auto_enter = true
-                vim.g.ss_auto_exit = false
-                vim.g.ss_auto_alias = true
-                vim.g.ss_dir = vim.fn.stdpath("data") .. "/session/"
-                -- May need to fork or tweak or submit PR to make this work nicely
-                vim.g.ss_open_with_args = false
-            end,
-        },
+        -- {
+        --     "isaacmorneau/vim-simple-sessions",
+        --     init = function()
+        --         vim.g.ss_auto_enter = true
+        --         vim.g.ss_auto_exit = false
+        --         vim.g.ss_auto_alias = true
+        --         vim.g.ss_dir = vim.fn.stdpath("data") .. "/session/"
+        --         -- May need to fork or tweak or submit PR to make this work nicely
+        --         vim.g.ss_open_with_args = false
+        --     end,
+        -- },
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -390,16 +442,18 @@ require("lazy").setup(
                         end
                         if client:supports_method("textDocument/completion") then
                             -- Enable auto-completion
-                            -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+                            vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
                         end
                         if client:supports_method("textDocument/formatting") then
                             -- Format the current buffer on save
-                            vim.api.nvim_create_autocmd("BufWritePre", {
-                                buffer = args.buf,
-                                callback = function()
-                                    -- vim.lsp.buf.format({bufnr = args.buf, id = client.id})
-                                end,
-                            })
+                            -- Currently handled by Conform in its config
+                            --
+                            -- vim.api.nvim_create_autocmd("BufWritePre", {
+                            --     buffer = args.buf,
+                            --     callback = function()
+                            --         -- vim.lsp.buf.format({bufnr = args.buf, id = client.id})
+                            --     end,
+                            -- })
                         end
                         if client:supports_method("textDocument/definition") then
                             -- Enable jump to definition
@@ -407,9 +461,9 @@ require("lazy").setup(
                             -- Go back one level up the tag stack
                             vim.keymap.set("n", "<Leader>[", ":pop<CR>")
                             -- Search for tag using regexp, jump if only one, otherwise, list options
-                            vim.keymap.set("n", "<Leader>/", ":tj<Space>/")
-                            -- Search for tag using regexp, jump if only one, otherwise, list options
-                            vim.keymap.set("n", "<Leader>]", ':execute "tj" expand("<cword>")<CR>')
+                            -- vim.keymap.set("n", "<Leader>/", ":tj<Space>/")
+                            -- vim.lsp.buf.definition will jump to the definition of the symbol under the cursor
+                            vim.keymap.set("n", "<Leader>]", vim.lsp.buf.definition)
                         end
                     end,
                 })
@@ -455,53 +509,51 @@ require("lazy").setup(
                         },
                     },
                 })
-                -- if vim.fn.executable('pyright') == 1 then
-                --     vim.lsp.enable('pyright')
-                -- end
-                -- vim.lsp.config('pyright', {
-                --     offset_encoding = "utf-8",
-                --     trace = "debug",
-                --     settings = {
-                --         python = {
-                --             analysis = {
-                --                 logLevel = "Information",
-                --                 typeCheckingMode = "off",
-                --                 autoSearchPaths = true,
-                --                 useLibraryCodeForTypes = true,
-                --                 diagnosticMode = "off",
-                --                 diagnosticMode = "workspace",
-                --                 autoImportCompletions = true,
-                --             },
-                --             linting = {
-                --                 -- I'm using ruff to lint, so don't do double-duty
-                --                 enabled = false,
-                --             }
-                --         }
-                --     },
-                --     -- Disable all diagnostics from Pyright
-                --     -- handlers = {
-                --     --   ["textDocument/publishDiagnostics"] = function() end,
-                --     -- }
-                -- })
-
                 if vim.fn.executable('jedi-language-server') == 1 then
                     vim.lsp.enable('jedi_language_server')
                 end
                 vim.lsp.config('jedi_language_server', {
                     init_options = {
-                        diagnostics = {
-                            enable = false,
-                            --logLevel = "Information",
-                            --typeCheckingMode = "off",
-                            --autoSearchPaths = true,
-                            --useLibraryCodeForTypes = true,
-                            --diagnosticMode = "off",
-                            --diagnosticMode = "workspace",
-                            --autoImportCompletions = true,
+                        settings = {
+                            diagnostics = {
+                                enable = false,
+                                --logLevel = "Information",
+                                --typeCheckingMode = "off",
+                                --autoSearchPaths = true,
+                                --useLibraryCodeForTypes = true,
+                                --diagnosticMode = "off",
+                                --diagnosticMode = "workspace",
+                                --autoImportCompletions = true,
+                            },
+                            workspace = {
+                                symbols = {
+                                    ignoreFolders = {
+                                        "__pycache__",
+                                        "build",
+                                        "dist",
+                                        "obj",
+                                        "bin",
+                                        "target",
+                                        "node_modules",
+                                        "bower_components",
+                                        "cache",
+                                        "compiled",
+                                        "example",
+                                        "bundle",
+                                        "vendor",
+                                        "venv",
+                                        ".venv",
+                                        ".mypy_cache",
+                                        ".pytest_cache",
+                                        ".ruff_cache",
+                                    },
+                                    -- maxSymbols = 0,
+                                }
+                            },
+                            jediSettings = {
+                                debug = true,
+                            }
                         },
-                        jediSettings = {
-                            debug = true,
-                        }
                     },
                 })
                 if vim.fn.executable('clangd') == 1 then
@@ -678,9 +730,6 @@ end
 
 --Update things after 1 second being idle
 vim.opt.updatetime = 1000
-
---Leader as space, since \ is awkward
-vim.g.mapleader = " "
 
 --This is gross, but it lets me do stuff like "gf" to open the file under the cursor
 vim.opt.path = "**"
