@@ -341,6 +341,7 @@ require("lazy").setup(
                     javascript = { "prettierd", "prettier", stop_after_first = true },
                     c = { "clang-format" },
                     cpp = { "clang-format" },
+                    go = { "gofmt", lsp_format = "fallback"},
                 },
                 formatters = {
                     stylua = {
@@ -404,6 +405,7 @@ require("lazy").setup(
                         "toml",
                         "xml",
                         "yaml",
+                        "go",
                     },
                     -- Allows async installs
                     sync_install = false,
@@ -442,7 +444,8 @@ require("lazy").setup(
                         end
                         if client:supports_method("textDocument/completion") then
                             -- Enable auto-completion
-                            vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+                            -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
+                            vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = false})
                         end
                         if client:supports_method("textDocument/formatting") then
                             -- Format the current buffer on save
@@ -581,6 +584,14 @@ require("lazy").setup(
                     cmd = {
                         "eslint-language-server",
                         "--stdio",
+                    },
+                })
+                if vim.fn.executable('gopls') == 1 then
+                    vim.lsp.enable('gopls')
+                end
+                vim.lsp.config('gopls', {
+                    cmd = {
+                        "gopls",
                     },
                 })
             end,
