@@ -284,11 +284,19 @@ function ovpncn() {
 }
 
 function noaudiofiles () {
-    for F in "$@"
-    do
-        #bash -c "ffprobe -i '$F' -show_streams -select_streams a 2>/dev/null | wc -l; echo '$F'" | rg "^0" -A 1 | rg -v "^0"
-        bash -c "ffmpeg -i '$F' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo '$F'" | rg "^1$" -A 1 | rg -v "^1$"
-    done
+    ##bash -c "ffprobe -i '$1' -show_streams -select_streams a 2>/dev/null | wc -l; echo '$1'" | rg "^0" -A 1 | rg -v "^0"
+    #bash -c "ffmpeg -i '$1' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo '$1'" | rg "^1$" -A 1 | rg -v "^1$"
+
+    #printf '%s\0' "$@" | xargs -0 -I{} bash -c "ffmpeg -i '{}' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo '{}'" | rg "^1$" -A 1 | rg -v "^1$"
+    printf '%s\0' "$@" | xargs -0 -P 32 -I{} bash -c "ffmpeg -i '{}' -filter:a volumedetect -f null /dev/null 2>&1 | rg -q \"mean_volume: -91.0 dB\" && echo '{}'"
+
+    #printf '%s\0' "$@" | xargs -0 -I{} bash -c "ffprobe -i '{}' -show_streams -select_streams a 2>/dev/null | wc -l; echo '{}'" | rg "^0" -A 1 | rg -v "^0"
+
+    #for F in "$@"
+    #do
+    #    #bash -c "ffprobe -i '$F' -show_streams -select_streams a 2>/dev/null | wc -l; echo '$F'" | rg "^0" -A 1 | rg -v "^0"
+    #    bash -c "ffmpeg -i '$F' -filter:a volumedetect -f null /dev/null 2>&1 | rg \"mean_volume: -91.0 dB\" | wc -l; echo '$F'" | rg "^1$" -A 1 | rg -v "^1$"
+    #done
 }
 
 function dockernuke () {
@@ -301,4 +309,23 @@ function dockernuke () {
     fi
 }
 
+function untar () {
+    if [ $# -ne 1]; then
+        echo "Usage: untar <tarball>"
+        return
+    fi
+
+    local tarball=$1
+
+    # Create a directory based on the tarball name (without extension)
+    dirname="$(basename "$tarball" .tar)"
+    dirname="${dirname%.tar.*}" # Handle .tar.gz, .tar.xz, etc.
+
+    mkdir -p "$dirname"
+
+    # Extract the tarball into the new directory
+    tar xaf "$tarball" -C "$dirname"
+}
+
 source /usr/share/nvm/init-nvm.sh
+#source /etc/profile.d/google-cloud-cli.sh
