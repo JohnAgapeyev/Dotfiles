@@ -489,6 +489,15 @@ require("lazy").setup(
                             diagnostics = {
                                 enable = true,
                             },
+                            procMacro = {
+                                ignored = {
+                                    leptos_macro = {
+                                        -- optional: --
+                                        -- "component",
+                                        "server",
+                                    },
+                                },
+                            },
                         },
                     },
                 })
