@@ -1,5 +1,5 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
         "git",
         "clone",
@@ -101,66 +101,48 @@ require("lazy").setup(
                 --autocmd StdinReadPre * let s:std_in=1
                 --autocmd vimenter * NERDTree | wincmd p
                 --autocmd TabEnter * NERDTreeFocus | NERDTreeMirror | wincmd p
-                vim.cmd([[
-            autocmd BufEnter * nested if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-            ]])
-                vim.keymap.set("n", "<C-n>", vim.cmd.NERDTreeToggle)
+                vim.api.nvim_create_autocmd("BufEnter", {
+                    nested = true,
+                    desc = "Close NERDTree if it is the last window",
+                    command = [[if winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree() | q | endif]],
+                })
+                vim.keymap.set("n", "<C-n>", vim.cmd.NERDTreeToggle, { desc = "Toggle NERDTree" })
                 vim.g.NERDTreeShowHidden = 1
             end,
         },
         {
-            "airblade/vim-gitgutter",
-            init = function()
-                -- these are so that gitgutter gives more snappy updates when doing lots of
-                -- editing by rechecking on anything to do with insert
-                vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
-                    command = "GitGutter",
-                })
-            end,
+            "lewis6991/gitsigns.nvim",
+            opts = {
+                signs = {
+                    add = { text = "│" },
+                    change = { text = "│" },
+                    delete = { text = "_" },
+                    topdelete = { text = "‾" },
+                    changedelete = { text = "~" },
+                },
+                current_line_blame = true,
+                on_attach = function(bufnr)
+                    local gitsigns = require("gitsigns")
+                    local opts = function(desc)
+                        return { buffer = bufnr, desc = desc }
+                    end
+                    vim.keymap.set("n", "]c", function()
+                        if vim.wo.diff then return "]c" end
+                        vim.schedule(function() gitsigns.next_hunk() end)
+                        return "<Ignore>"
+                    end, { buffer = bufnr, expr = true, desc = "Next git hunk" })
+                    vim.keymap.set("n", "[c", function()
+                        if vim.wo.diff then return "[c" end
+                        vim.schedule(function() gitsigns.prev_hunk() end)
+                        return "<Ignore>"
+                    end, { buffer = bufnr, expr = true, desc = "Previous git hunk" })
+                    vim.keymap.set("n", "<Leader>hs", gitsigns.stage_hunk, opts("Stage hunk"))
+                    vim.keymap.set("n", "<Leader>hr", gitsigns.reset_hunk, opts("Reset hunk"))
+                    vim.keymap.set("n", "<Leader>hp", gitsigns.preview_hunk, opts("Preview hunk"))
+                    vim.keymap.set("n", "<Leader>hb", function() gitsigns.blame_line({ full = true }) end, opts("Blame line"))
+                end,
+            },
         },
-        -- "nvim-lua/plenary.nvim",
-        -- {
-        --     "nvim-telescope/telescope.nvim",
-        --     tag = "0.1.8",
-        --     dependencies = {
-        --         "nvim-lua/plenary.nvim",
-        --         -- So my reuse of FZF_DEFAULT_COMMAND overriding works correctly
-        --         "junegunn/fzf.vim",
-        --     },
-        --     opts = {
-        --         pickers = {
-        --             find_files = {
-        --                 find_command = vim.env.FZF_DEFAULT_COMMAND,
-        --             },
-        --             git_files = {
-        --                 find_command = vim.env.FZF_DEFAULT_COMMAND,
-        --             },
-        --         },
-        --         extensions = {
-        --             fzf = {
-        --                 fuzzy = true,                    -- false will only do exact matching
-        --                 override_generic_sorter = true,  -- override the generic sorter
-        --                 override_file_sorter = true,     -- override the file sorter
-        --                 case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
-        --                 -- the default case_mode is "smart_case"
-        --             }
-        --         },
-        --     },
-        --     config = function()
-        --         -- vim.keymap.set("n", "<CR>", vim.cmd.FZF)
-        --         local builtin = require('telescope.builtin')
-        --         -- vim.keymap.set("n", "<CR>", builtin.find_files, { find_command = vim.env.FZF_DEFAULT_COMMAND, desc = "Telescope find files" })
-        --         --vim.keymap.set("n", "<CR>", builtin.find_files, { desc = "Telescope find files" })
-        --         vim.keymap.set("n", "<CR>", builtin.git_files, { desc = "Telescope find files" })
-        --         -- vim.keymap.set("n", "<Leader>\\", builtin.lsp_references, { desc = "Telescope find references from LSP"})
-        --         vim.keymap.set("n", "<Leader>/", builtin.lsp_references, { desc = "Telescope find references from LSP"})
-        --         require('telescope').load_extension('fzf')
-        --     end,
-        -- },
-        -- {
-        --     'nvim-telescope/telescope-fzf-native.nvim',
-        --     build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
-        -- },
         "junegunn/fzf",
         {
             "junegunn/fzf.vim",
@@ -229,10 +211,10 @@ require("lazy").setup(
             ]])
             end,
             config = function()
-                vim.keymap.set("n", "<CR>", vim.cmd.FZF)
+                vim.keymap.set("n", "<CR>", vim.cmd.FZF, { desc = "Open FZF file finder" })
                 -- Use <Leader>+backslash to start a ripgrep on the word under the cursor
                 -- RG reruns ripgrep every keystroke, Rg uses the internal FZF logic to rerun
-                vim.keymap.set("n", "<Leader>\\", function() vim.cmd.RG(vim.fn.expand("<cword>")) end)
+                vim.keymap.set("n", "<Leader>\\", function() vim.cmd.RG(vim.fn.expand("<cword>")) end, { desc = "Ripgrep word under cursor" })
             end,
         },
         {
@@ -244,7 +226,6 @@ require("lazy").setup(
                 })
             end,
         },
-        "sheerun/vim-polyglot",
         "chrisbra/Colorizer",
         "tpope/vim-surround",
         "kana/vim-textobj-user",
@@ -262,57 +243,47 @@ require("lazy").setup(
             end,
         },
         {
-            "morhetz/gruvbox",
+            "ellisonleao/gruvbox.nvim",
             -- Don't lazy load my main colorscheme
             lazy = false,
             -- Load this before any other plugins
             priority = 1000,
-            init = function()
-                vim.g.gruvbox_contrast_dark = "hard"
-                vim.g.gruvbox_italic = 1
+            opts = {
+                contrast = "hard",
+                italic = {
+                    strings = false,
+                    emphasis = true,
+                    comments = true,
+                    operators = false,
+                },
+            },
+            config = function(_, opts)
+                require("gruvbox").setup(opts)
                 vim.cmd.colorscheme("gruvbox")
             end,
         },
         {
-            "vim-airline/vim-airline",
-            init = function()
-                -- Enable the list of buffers
-                vim.g["airline#extensions#tabline#enabled"] = 1
-                -- Show just the filename
-                vim.g["airline#extensions#tabline#fnamemod"] = ":t"
-                vim.g["airline#extensions#tabline#formatter"] = "unique_tail_improved"
-            end,
+            "nvim-lualine/lualine.nvim",
+            opts = {
+                options = {
+                    theme = "gruvbox",
+                    component_separators = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
+                },
+                sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch", "diff", "diagnostics" },
+                    lualine_c = { { "filename", path = 1 } },
+                    lualine_x = { "encoding", "fileformat", "filetype" },
+                    lualine_y = { "progress" },
+                    lualine_z = { "location" },
+                },
+                tabline = {
+                    lualine_a = { { "tabs", mode = 2, max_length = vim.o.columns } },
+                    lualine_z = { { "filename", path = 1 } },
+                },
+            },
         },
-        --{
-        --    "isaacmorneau/vim-update-daily",
-        --        init = function()
-        --        -- Run this command daily using vim-update-daily plugin
-        --        vim.g.update_daily = 'PackerSync | q'
-        --        vim.g.update_noargs = true
-        --    end,
-        --},
-        --{
-        --    "sbdchd/neoformat",
-        --    init = function()
-        --        vim.keymap.set('', '<C-f>', vim.cmd.Neoformat)
-
-        --        vim.g.neoformat_basic_format_align = 1
-        --        vim.g.neoformat_basic_format_retab = 1
-        --        vim.g.neoformat_basic_format_trim = 1
-
-        --        vim.g.neoformat_c_clang_format = {
-        --             exe = 'clang-format',
-        --             args = {'-style=~/.clang-format'},
-        --         }
-        --        vim.g.neoformat_cpp_clang_format = {
-        --             exe = 'clang-format',
-        --             args = {'-style=~/.clang-format'},
-        --         }
-
-        --        vim.g.neoformat_enabled_c = {'clangformat'}
-        --        vim.g.neoformat_enabled_cpp = {'clangformat'}
-        --    end,
-        --},
         {
             "stevearc/conform.nvim",
             cmd = { "ConformInfo" },
@@ -341,7 +312,7 @@ require("lazy").setup(
                     javascript = { "prettierd", "prettier", stop_after_first = true },
                     c = { "clang-format" },
                     cpp = { "clang-format" },
-                    go = { "gofmt", lsp_format = "fallback"},
+                    go = { "gofmt", lsp_format = "fallback" },
                 },
                 formatters = {
                     stylua = {
@@ -363,17 +334,6 @@ require("lazy").setup(
                 vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
             end,
         },
-        -- {
-        --     "isaacmorneau/vim-simple-sessions",
-        --     init = function()
-        --         vim.g.ss_auto_enter = true
-        --         vim.g.ss_auto_exit = false
-        --         vim.g.ss_auto_alias = true
-        --         vim.g.ss_dir = vim.fn.stdpath("data") .. "/session/"
-        --         -- May need to fork or tweak or submit PR to make this work nicely
-        --         vim.g.ss_open_with_args = false
-        --     end,
-        -- },
         {
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
@@ -411,8 +371,8 @@ require("lazy").setup(
                     sync_install = false,
                     -- Requires tree-sitter CLI tool installed for it to be enabled
                     auto_install = false,
-                    -- Currently not a fan of the highlighting with gruvbox, need to refine it
-                    highlight = { enable = false },
+                    -- Treesitter highlighting (gruvbox.nvim has native treesitter support)
+                    highlight = { enable = true },
                     -- Indents are currently broken af at least for C++ that I tested
                     indent = { enable = false },
                 })
@@ -439,12 +399,8 @@ require("lazy").setup(
                     callback = function(args)
                         -- vim.lsp.set_log_level(vim.log.levels.DEBUG)
                         local client = vim.lsp.get_client_by_id(args.data.client_id)
-                        if client:supports_method("textDocument/implementation") then
-                            -- Create a keymap for vim.lsp.buf.implementation
-                        end
                         if client:supports_method("textDocument/completion") then
                             -- Enable auto-completion
-                            -- vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
                             vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = false})
                         end
                         if client:supports_method("textDocument/formatting") then
@@ -462,11 +418,11 @@ require("lazy").setup(
                             -- Enable jump to definition
 
                             -- Go back one level up the tag stack
-                            vim.keymap.set("n", "<Leader>[", ":pop<CR>")
+                            vim.keymap.set("n", "<Leader>[", ":pop<CR>", { buffer = args.buf, desc = "Go back in tag stack" })
                             -- Search for tag using regexp, jump if only one, otherwise, list options
                             -- vim.keymap.set("n", "<Leader>/", ":tj<Space>/")
                             -- vim.lsp.buf.definition will jump to the definition of the symbol under the cursor
-                            vim.keymap.set("n", "<Leader>]", vim.lsp.buf.definition)
+                            vim.keymap.set("n", "<Leader>]", vim.lsp.buf.definition, { buffer = args.buf, desc = "Jump to LSP definition" })
                         end
                     end,
                 })
@@ -563,7 +519,7 @@ require("lazy").setup(
                                 }
                             },
                             jediSettings = {
-                                debug = true,
+                                debug = false,
                             }
                         },
                     },
@@ -605,6 +561,25 @@ require("lazy").setup(
                 })
             end,
         },
+        "github/copilot.vim",
+        {
+            "lukas-reineke/indent-blankline.nvim",
+            main = "ibl",
+            opts = {
+                indent = { char = "│" },
+                scope = { enabled = true },
+            },
+        },
+        {
+            "folke/trouble.nvim",
+            cmd = "Trouble",
+            keys = {
+                { "<Leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+                { "<Leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer diagnostics (Trouble)" },
+                { "<Leader>xl", "<cmd>Trouble lsp toggle focus=false<cr>", desc = "LSP definitions/references (Trouble)" },
+            },
+            opts = {},
+        },
     },
     -- Lazy plugin manager config
     {
@@ -614,15 +589,22 @@ require("lazy").setup(
     }
 )
 
---Set proper python paths
-vim.g.python_host_prog = "/usr/bin/python2"
+--Set proper python path
+--vim.g.python_host_prog = "/usr/bin/python2"
 vim.g.python3_host_prog = "/usr/bin/python3"
 
 --Use a dark background
 vim.opt.background = "dark"
 
---Show absolute column numbers
+--Show line numbers with relative numbering for easier motions (e.g., 5j, 12k)
 vim.opt.number = true
+vim.opt.relativenumber = true
+
+--Highlight the current line
+vim.opt.cursorline = true
+
+--Prevent sign column from shifting text
+vim.opt.signcolumn = "yes"
 
 --Reread a file if Vim didn't touch it
 vim.opt.autoread = true
@@ -670,12 +652,11 @@ vim.opt.tm = 500
 vim.opt.foldcolumn = "1"
 
 --Use utf8 like a normal person
-vim.opt.encoding = "utf8"
 vim.opt.fileencoding = "utf-8"
 vim.opt.fileencodings = "utf-8"
 
 --LF is the only acceptable line ending
-vim.opt.ffs = unix, dos, mac
+vim.opt.ffs = "unix,dos,mac"
 
 --Tabs are 4 spaces
 vim.opt.expandtab = true
@@ -724,15 +705,11 @@ vim.opt.undofile = true
 vim.opt.undolevels = 1000
 vim.opt.undoreload = 10000
 
---visualize whitepsace
+--visualize whitespace
 vim.opt.listchars = "tab:→→,trail:●,nbsp:○"
 
---vim.opt.up scratch file saving
---vim.g.scratch_persistence_file = vim.fn.strftime(vim.g.scratch_dir .. "scratch_%Y-%m-%d")
-vim.g.scratch_no_mappings = 1
-
 --share vim and system clipboard
-if vim.fn.has("unnamedplus") then
+if vim.fn.has("unnamedplus") == 1 then
     vim.opt.clipboard = "unnamed,unnamedplus"
 else
     vim.opt.clipboard = "unnamed"
@@ -754,8 +731,12 @@ vim.opt.updatetime = 1000
 --This is gross, but it lets me do stuff like "gf" to open the file under the cursor
 vim.opt.path = "**"
 
---New splits go on the right, I'm not an animal
+--New splits go on the right and below, I'm not an animal
 vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+--Keep context visible when scrolling
+vim.opt.scrolloff = 8
 
 --Let's ignore tons of garbage/binary/random files
 vim.opt.wildmode = "list:longest,list:full"
@@ -763,240 +744,239 @@ vim.opt.wildignore:append(ignoreglobs)
 
 -- Prefer using rg for vim grepping if it exists on the system
 if vim.fn.executable("rg") == 1 then
-    vim.g.grepprg = "rg --vimgrep"
+    vim.o.grepprg = "rg --vimgrep"
+    vim.o.grepformat = "%f:%l:%c:%m"
 end
+
+-- Configure diagnostic display
+vim.diagnostic.config({
+    virtual_text = { spacing = 4, prefix = "●" },
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    float = { border = "rounded" },
+})
 
 -- [BINDINGS]
 -- Tab nav with shift
-vim.keymap.set("n", "H", "gT")
-vim.keymap.set("n", "L", "gt")
+vim.keymap.set("n", "H", "gT", { desc = "Previous tab" })
+vim.keymap.set("n", "L", "gt", { desc = "Next tab" })
 -- Tab move with Ctrl
 vim.keymap.set("n", "<C-h>", function()
-    vim.cmd.tabmove("-1")
-end)
+    if vim.fn.tabpagenr() > 1 then
+        vim.cmd.tabmove("-1")
+    end
+end, { desc = "Move tab left" })
 vim.keymap.set("n", "<C-l>", function()
-    vim.cmd.tabmove("+1")
-end)
+    if vim.fn.tabpagenr() < vim.fn.tabpagenr("$") then
+        vim.cmd.tabmove("+1")
+    end
+end, { desc = "Move tab right" })
 -- Tab management with t leader
 -- Open new tab at end of tab list
 vim.keymap.set("n", "tn", function()
     vim.cmd.tabnew("$")
-end)
+end, { desc = "Open new tab" })
 -- Close the current tab
-vim.keymap.set("n", "tq", vim.cmd.tabclose)
+vim.keymap.set("n", "tq", vim.cmd.tabclose, { desc = "Close current tab" })
 -- Open the filename under cursor at end of tab list
-vim.keymap.set("n", "tf", "<C-w>gf<CR>:tabmove<CR>")
+vim.keymap.set("n", "tf", "<C-w>gf<CR>:tabmove<CR>", { desc = "Open file under cursor in new tab" })
 
 -- Open the filename under cursor as a new window
-vim.keymap.set("n", "<Leader>f", "<C-w><C-f><C-w>L")
+vim.keymap.set("n", "<Leader>f", "<C-w><C-f><C-w>L", { desc = "Open file under cursor in split" })
 
 -- Move on visual lines, not on wrapped/real ones
-vim.keymap.set("n", "j", "gj")
-vim.keymap.set("n", "k", "gk")
-vim.keymap.set("n", "<Up>", "g<Up>")
-vim.keymap.set("n", "<Down>", "g<Down>")
+vim.keymap.set("n", "j", "gj", { desc = "Move down (visual line)" })
+vim.keymap.set("n", "k", "gk", { desc = "Move up (visual line)" })
+vim.keymap.set("n", "<Up>", "g<Up>", { desc = "Move up (visual line)" })
+vim.keymap.set("n", "<Down>", "g<Down>", { desc = "Move down (visual line)" })
 
 -- how dare you not use regex by default
-vim.keymap.set("n", "/", "/\\v")
-vim.keymap.set("v", "/", "/\\v")
+vim.keymap.set("n", "/", "/\\v", { desc = "Search with very magic" })
+vim.keymap.set("v", "/", "/\\v", { desc = "Search with very magic" })
 
 -- keep visual selection after shift
-vim.keymap.set("v", "<", "<gv")
-vim.keymap.set("v", ">", ">gv")
+vim.keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
+vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 -- i never want the help page! i always wanted ESC
-vim.keymap.set("n", "<F1>", "<ESC>")
-vim.keymap.set("i", "<F1>", "<ESC>")
+vim.keymap.set("n", "<F1>", "<ESC>", { desc = "Escape (remap from help)" })
+vim.keymap.set("i", "<F1>", "<ESC>", { desc = "Escape (remap from help)" })
 
 -- We're not in the 1970's, ex is not a better ed, disable ex mode
-vim.keymap.set("n", "Q", "<nop>")
+vim.keymap.set("n", "Q", "<nop>", { desc = "Disable ex mode" })
 
 -- [Window management]
 -- Ctrl-W is stupid, just rebind it to Alt instead
 -- Benefit is that Alt can be held for multiple ops
 
 -- Basic movement
-vim.keymap.set("n", "<A-h>", "<C-W>h")
-vim.keymap.set("n", "<A-j>", "<C-W>j")
-vim.keymap.set("n", "<A-k>", "<C-W>k")
-vim.keymap.set("n", "<A-l>", "<C-W>l")
+vim.keymap.set("n", "<A-h>", "<C-W>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<A-j>", "<C-W>j", { desc = "Move to below window" })
+vim.keymap.set("n", "<A-k>", "<C-W>k", { desc = "Move to above window" })
+vim.keymap.set("n", "<A-l>", "<C-W>l", { desc = "Move to right window" })
 
 -- Window movement
-vim.keymap.set("n", "<A-H>", "<C-W>H")
-vim.keymap.set("n", "<A-J>", "<C-W>J")
-vim.keymap.set("n", "<A-K>", "<C-W>K")
-vim.keymap.set("n", "<A-L>", "<C-W>L")
+vim.keymap.set("n", "<A-H>", "<C-W>H", { desc = "Move window to far left" })
+vim.keymap.set("n", "<A-J>", "<C-W>J", { desc = "Move window to bottom" })
+vim.keymap.set("n", "<A-K>", "<C-W>K", { desc = "Move window to top" })
+vim.keymap.set("n", "<A-L>", "<C-W>L", { desc = "Move window to far right" })
 
 -- New window creation
-vim.keymap.set("n", "<A-n>", vim.cmd.vnew)
-vim.keymap.set("n", "<A-s>", "<C-W>s")
-vim.keymap.set("n", "<A-v>", "<C-W>v")
+vim.keymap.set("n", "<A-n>", vim.cmd.vnew, { desc = "New vertical split" })
+vim.keymap.set("n", "<A-s>", "<C-W>s", { desc = "Horizontal split" })
+vim.keymap.set("n", "<A-v>", "<C-W>v", { desc = "Vertical split" })
 
 -- Quit the current window
-vim.keymap.set("n", "<A-q>", "<C-W>q")
+vim.keymap.set("n", "<A-q>", "<C-W>q", { desc = "Quit current window" })
 
 -- Resizing
-vim.keymap.set("n", "<A-->", "<C-W>-")
-vim.keymap.set("n", "<A-+>", "<C-W>+")
-vim.keymap.set("n", "<A-<>", "<C-W><")
-vim.keymap.set("n", "<A->>", "<C-W>>")
-vim.keymap.set("n", "<A-=>", "<C-W>=")
-vim.keymap.set("n", "<A-_>", "<C-W>_")
+vim.keymap.set("n", "<A-->", "<C-W>-", { desc = "Decrease window height" })
+vim.keymap.set("n", "<A-+>", "<C-W>+", { desc = "Increase window height" })
+vim.keymap.set("n", "<A-<>", "<C-W><", { desc = "Decrease window width" })
+vim.keymap.set("n", "<A->>", "<C-W>>", { desc = "Increase window width" })
+vim.keymap.set("n", "<A-=>", "<C-W>=", { desc = "Equalize window sizes" })
+vim.keymap.set("n", "<A-_>", "<C-W>_", { desc = "Maximize window height" })
 
 -- Re-select our last pasted block
-vim.keymap.set("n", "gp", "`[v`]")
+vim.keymap.set("n", "gp", "`[v`]", { desc = "Reselect last pasted block" })
 
 -- allow the . to execute once for each line of a visual selection
-vim.cmd("vnoremap . :normal! .<CR>")
---vim.keymap.set('v', '.', vim.cmd(':normal! .<CR>'))
+vim.keymap.set("v", ".", ":normal! .<CR>", { desc = "Execute . for each line in visual selection" })
 
 -- Allows a macro to easily be executed on every line of a visual selection
-vim.cmd("vnoremap @ :'<,'>norm! @")
--- vim.keymap.set('v', '@', vim.cmd(":'<,'>norm! @"))
+vim.keymap.set("v", "@", ":'<,'>norm! @", { desc = "Execute macro on each line of visual selection" })
 
 -- S and cc are duplicates so mimic the inverse of J for S
-vim.cmd("nnoremap S :keeppatterns substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>")
---vim.keymap.set('n', 'S', vim.cmd{'substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>', keeppatterns = true})
+vim.keymap.set("n", "S", ":keeppatterns substitute/\\s*\\%#\\s*/\\r/e <bar> normal! ==<CR>", { desc = "Split line at cursor (inverse of J)" })
 
 -- [AUTOCOMMANDS]
 
 -- when the window gets resized reset the splits
 vim.api.nvim_create_autocmd({ "VimResized" }, {
+    desc = "Equalize splits on window resize",
     command = "wincmd =",
 })
 
--- Jump to last open
--- Too many nested quotes that make it difficult to translate directly
-vim.cmd([[
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-]])
-
-vim.api.nvim_create_autocmd({ "VimResized" }, {
-    command = "wincmd =",
+-- Jump to last cursor position when reopening a file
+vim.api.nvim_create_autocmd("BufReadPost", {
+    desc = "Jump to last cursor position when reopening file",
+    callback = function()
+        local mark = vim.api.nvim_buf_get_mark(0, '"')
+        local line_count = vim.api.nvim_buf_line_count(0)
+        if mark[1] > 1 and mark[1] <= line_count then
+            pcall(vim.api.nvim_win_set_cursor, 0, mark)
+        end
+    end,
 })
 
 -- Close preview window after insertion completion
 vim.api.nvim_create_autocmd({ "CompleteDone" }, {
+    desc = "Close preview window after completion",
     command = "pclose",
 })
 
-vim.cmd([[
+-- Create directories for backup/swap/undo/views if they don't exist
+local function initialize_directories()
+    local common_dir = vim.env.HOME .. "/.vim/"
+    local dir_list = {
+        { dir = "backup", opt = "backupdir" },
+        { dir = "views", opt = "viewdir" },
+        { dir = "swap", opt = "directory" },
+        { dir = "undo", opt = "undodir" },
+    }
 
-"Create directories if they don't exist
-"This will also set the temp files be stored in those directories
-function! InitializeDirectories()
-    let parent = $HOME
-    let prefix = 'vim'
-    let dir_list = {
-                \ 'backup': 'backupdir',
-                \ 'views':  'viewdir',
-                \ 'swap':   'directory',
-                \ 'undo':   'undodir' }
+    for _, entry in ipairs(dir_list) do
+        local directory = common_dir .. entry.dir .. "/"
+        vim.fn.mkdir(directory, "p")
+        vim.opt[entry.opt] = directory
+    end
 
-    let common_dir = parent . '/.' . prefix . '/'
+    vim.g.scratch_dir = common_dir .. "scratch/"
+    vim.fn.mkdir(vim.g.scratch_dir, "p")
 
-    for [dirname, settingname] in items(dir_list)
-        let directory = common_dir . dirname . '/'
-        if exists("*mkdir")
-            if !isdirectory(directory)
-                call mkdir(directory, "p")
-            endif
-        endif
-        let directory = substitute(directory, " ", "\\\\ ", "g")
-        exec "set " . settingname . "=" . directory
-    endfor
-    let g:scratch_dir = common_dir . 'scratch'. '/'
-    if exists("*mkdir")
-        if !isdirectory(g:scratch_dir)
-            call mkdir(g:scratch_dir, "p")
-        endif
-    endif
-    let cache_dir = common_dir . 'tags'. '/'
-    if exists("*mkdir")
-        if !isdirectory(cache_dir)
-            call mkdir(cache_dir, "p")
-        endif
-    endif
-endfunction
-call InitializeDirectories()
+    vim.fn.mkdir(common_dir .. "tags/", "p")
+end
+initialize_directories()
 
+-- Move current window to the previous tab
+local function move_to_prev_tab()
+    if vim.fn.tabpagenr("$") == 1 and vim.fn.winnr("$") == 1 then
+        return
+    end
+    local tab_nr = vim.fn.tabpagenr("$")
+    local cur_buf = vim.fn.bufnr("%")
+    if vim.fn.tabpagenr() ~= 1 then
+        vim.cmd("close!")
+        if tab_nr == vim.fn.tabpagenr("$") then
+            vim.cmd("tabprev")
+        end
+        vim.cmd("sp")
+    else
+        vim.cmd("close!")
+        vim.cmd("0tabnew")
+    end
+    vim.cmd("b" .. cur_buf)
+end
 
+-- Move current window to the next tab
+local function move_to_next_tab()
+    if vim.fn.tabpagenr("$") == 1 and vim.fn.winnr("$") == 1 then
+        return
+    end
+    local tab_nr = vim.fn.tabpagenr("$")
+    local cur_buf = vim.fn.bufnr("%")
+    if vim.fn.tabpagenr() < tab_nr then
+        vim.cmd("close!")
+        if tab_nr == vim.fn.tabpagenr("$") then
+            vim.cmd("tabnext")
+        end
+        vim.cmd("sp")
+    else
+        vim.cmd("close!")
+        vim.cmd("tabnew")
+    end
+    vim.cmd("b" .. cur_buf)
+end
 
-"function MoveToPrevTab()
-"    "there is only one window
-"    if tabpagenr('$') == 1 && winnr('$') == 1
-"        return
-"    endif
-"    "preparing new window
-"    let l:tab_nr = tabpagenr('$')
-"    let l:cur_buf = bufnr('%')
-"    if tabpagenr() != 1
-"        close!
-"        if l:tab_nr == tabpagenr('$')
-"            tabprev
-"        endif
-"        sp
-"    else
-"        close!
-"        exe "0tabnew"
-"    endif
-"    "opening current buffer in new window
-"    exe "b".l:cur_buf
-"endfunc
-"
-"function MoveToNextTab()
-"    "there is only one window
-"    if tabpagenr('$') == 1 && winnr('$') == 1
-"        return
-"    endif
-"    "preparing new window
-"    let l:tab_nr = tabpagenr('$')
-"    let l:cur_buf = bufnr('%')
-"    if tabpagenr() < tab_nr
-"        close!
-"        if l:tab_nr == tabpagenr('$')
-"            tabnext
-"        endif
-"        sp
-"    else
-"        close!
-"        tabnew
-"    endif
-"    "opening current buffer in new window
-"    exe "b".l:cur_buf
-"endfunc
+-- Automatically split multiple files given via command line into their own tabs
+if not vim.o.diff and vim.fn.argc() > 1 then
+    vim.api.nvim_create_autocmd("VimEnter", {
+        nested = true,
+        desc = "Open CLI file arguments in separate tabs",
+        callback = function()
+            vim.cmd("silent tab sball")
+            vim.cmd("tabfirst")
+        end,
+    })
+end
 
-"[BINDINGS]
-"Automatically split multiple files given via command line into their own tabs
-if !&diff && argc() > 1
-    autocmd VimEnter * nested :execute 'silent argdo :tab split' | tabclose
-endif
+-- Window movement between tabs
+vim.keymap.set("n", "<A-.>", move_to_next_tab, { desc = "Move window to next tab" })
+vim.keymap.set("n", "<A-,>", move_to_prev_tab, { desc = "Move window to previous tab" })
 
-"[Window management]
-"Window movement
-nnoremap <A-.> :call MoveToNextTab()<CR>
-nnoremap <A-,> :call MoveToPrevTab()<CR>
+-- Run a shell command and display output in a scratch buffer
+local function run_shell_command(cmdline)
+    local expanded_cmdline = cmdline
+    for part in cmdline:gmatch("%S+") do
+        if part:sub(1, 1):match("[%%#<]") then
+            local expanded_part = vim.fn.fnameescape(vim.fn.expand(part))
+            expanded_cmdline = expanded_cmdline:gsub(vim.pesc(part), expanded_part, 1)
+        end
+    end
+    vim.cmd("botright new")
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
+    vim.bo.buflisted = false
+    vim.bo.swapfile = false
+    vim.wo.wrap = false
+    vim.fn.setline(1, "cmd: " .. expanded_cmdline)
+    vim.fn.setline(2, string.rep("=", #vim.fn.getline(1)))
+    vim.cmd("$read !" .. expanded_cmdline)
+    vim.bo.modifiable = false
+    vim.cmd("1")
+end
 
-
-"[PLUGIN CONFIG]
-
-command! -complete=shellcmd -nargs=+ Sh call s:RunShellCommand(<q-args>)
-function! s:RunShellCommand(cmdline)
-    echo a:cmdline
-    let expanded_cmdline = a:cmdline
-    for part in split(a:cmdline, ' ')
-        if part[0] =~ '\v[%#<]'
-            let expanded_part = fnameescape(expand(part))
-            let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
-        endif
-    endfor
-    botright new
-    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-    call setline(1, 'cmd: ' .expanded_cmdline)
-    call setline(2,substitute(getline(1),'.','=','g'))
-    execute '$read !'. expanded_cmdline
-    setlocal nomodifiable
-    1
-endfunction
-
-]])
+vim.api.nvim_create_user_command("Sh", function(opts)
+    run_shell_command(opts.args)
+end, { nargs = "+", complete = "shellcmd", desc = "Run shell command in scratch buffer" })

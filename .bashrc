@@ -310,22 +310,92 @@ function dockernuke () {
 }
 
 function untar () {
-    if [ $# -ne 1]; then
-        echo "Usage: untar <tarball>"
-        return
+    if [ $# -lt 1 ]; then
+        echo "Usage: untar <tarball> [tarball...]"
+        return 1
     fi
 
-    local tarball=$1
+    for F in "$@"
+    do
+        local tarball="$F"
 
-    # Create a directory based on the tarball name (without extension)
-    dirname="$(basename "$tarball" .tar)"
-    dirname="${dirname%.tar.*}" # Handle .tar.gz, .tar.xz, etc.
+        # Skip if file doesn't exist
+        if [ ! -f "$tarball" ]; then
+            echo "Skipping '$tarball': not a file"
+            continue
+        fi
 
-    mkdir -p "$dirname"
+        # Tier 1: Check known tarball extensions
+        local is_tarball=0
+        case "$tarball" in
+            *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz2|*.tar.xz|*.txz|*.tar.zst)
+                is_tarball=1
+                ;;
+        esac
 
-    # Extract the tarball into the new directory
-    tar xaf "$tarball" -C "$dirname"
+        # Tier 2: Fall back to file command for extensionless/renamed archives
+        if [ "$is_tarball" -eq 0 ]; then
+            local mimetype
+            mimetype="$(file --mime-type -b "$tarball" 2>/dev/null)"
+            case "$mimetype" in
+                application/x-tar|application/gzip|application/x-gzip| \
+                application/x-bzip2|application/x-xz|application/zstd| \
+                application/x-compressed-tar)
+                    is_tarball=1
+                    ;;
+            esac
+        fi
+
+        if [ "$is_tarball" -eq 0 ]; then
+            echo "Skipping '$tarball': not a recognized tarball"
+            continue
+        fi
+
+        # Preserve parent directory path
+        local parent
+        parent="$(dirname "$tarball")"
+
+        # Strip known extensions to get the output directory name
+        local base
+        base="$(basename "$tarball")"
+        base="${base%.tar.gz}"
+        base="${base%.tgz}"
+        base="${base%.tar.bz2}"
+        base="${base%.tbz2}"
+        base="${base%.tar.xz}"
+        base="${base%.txz}"
+        base="${base%.tar.zst}"
+        base="${base%.tar}"
+
+        local outdir="$parent/$base"
+        mkdir -p "$outdir"
+
+        # Extract the tarball into the output directory
+        tar xaf "$tarball" -C "$outdir"
+    done
 }
+
+function fixdirperms () {
+    if [ $# -lt 1 ]; then
+        echo "Usage: fixdirperms <directory> [directory...]"
+        return 1
+    fi
+
+    for target in "$@"
+    do
+        if [ ! -d "$target" ]; then
+            echo "Skipping '$target': not a directory"
+            continue
+        fi
+
+        # Add execute bit where read bit is set, for each permission class
+        find "$target" -type d -perm /u=r ! -perm /u=x -exec chmod u+x {} +
+        find "$target" -type d -perm /g=r ! -perm /g=x -exec chmod g+x {} +
+        find "$target" -type d -perm /o=r ! -perm /o=x -exec chmod o+x {} +
+    done
+}
+
+eval "$(wt shell-init)"
 
 source /usr/share/nvm/init-nvm.sh
 #source /etc/profile.d/google-cloud-cli.sh

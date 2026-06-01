@@ -6,3 +6,10 @@
 	editor = nvim
 [pull]
 	rebase = true
+#[remote "origin"]
+#	fetch = +refs/heads/*:refs/remotes/origin/*
+[alias]
+	pushc = "!f() { git push origin $(git symbolic-ref --short HEAD); }; f"
+	pushup = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
+	#wt-new = "!f() { git worktree add -b \"$1\" \"../branches/$1\" \"$2\"; }; f"
+	#wt-add = "!f() { git worktree add \"../branches/$1\" \"$1\"; }; f"

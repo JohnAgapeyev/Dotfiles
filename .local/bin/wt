@@ -1,0 +1,280 @@
+#!/usr/bin/env bash
+# wt - git worktree helper for bare-repo-with-worktrees layout
+#
+# Expected layout:
+#   <repo_root>/
+#   ├── <name>.git/        (bare repo)
+#   ├── bugfix/NIOS-1234/  (worktree → branch bugfix/NIOS-1234)
+#   ├── develop/9.2/       (worktree → branch develop/9.2)
+#   └── ...
+#
+# Works from anywhere inside the repo root or any worktree.
+
+set -euo pipefail
+PROG="wt"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+info()  { echo -e "${GREEN}${PROG}:${NC} $*" >&2; }
+warn()  { echo -e "${YELLOW}${PROG}:${NC} $*" >&2; }
+die()   { echo -e "${RED}${PROG}: error:${NC} $*" >&2; exit 1; }
+
+# Walk up from cwd looking for a directory containing a *.git bare repo
+find_repo_root() {
+    local dir="${PWD}"
+    while [[ "$dir" != "/" ]]; do
+        for candidate in "$dir"/*.git; do
+            [[ -d "$candidate" ]] || continue
+            if [[ "$(git --git-dir="$candidate" rev-parse --is-bare-repository 2>/dev/null)" == "true" ]]; then
+                echo "$dir"
+                return 0
+            fi
+        done
+        dir="$(dirname "$dir")"
+    done
+    die "Could not find a repo root containing a bare .git directory.\nSearched upward from: ${PWD}"
+}
+
+find_bare_repo() {
+    local root="$1"
+    for candidate in "$root"/*.git; do
+        [[ -d "$candidate" ]] || continue
+        if [[ "$(git --git-dir="$candidate" rev-parse --is-bare-repository 2>/dev/null)" == "true" ]]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    die "No bare .git repo found in $root"
+}
+
+get_current_branch() {
+    git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+# ── add ──────────────────────────────────────────────────────────────
+cmd_add() {
+    local branch="" fetch_first=false base_override=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -f|--fetch)  fetch_first=true; shift ;;
+            -b|--base)   base_override="$2"; shift 2 ;;
+            -h|--help)   usage_add; exit 0 ;;
+            -*)          die "Unknown option: $1" ;;
+            *)           branch="$1"; shift ;;
+        esac
+    done
+
+    [[ -n "$branch" ]] || die "Branch name required.\nUsage: $PROG add <branch> [-f] [-b <base>]"
+
+    local root bare worktree_path
+    root=$(find_repo_root)
+    bare=$(find_bare_repo "$root")
+    worktree_path="$root/$branch"
+
+    if [[ -d "$worktree_path" ]]; then
+        die "Worktree path already exists: $worktree_path\nUse 'cd $worktree_path' or '$PROG remove $branch' first."
+    fi
+
+    mkdir -p "$(dirname "$worktree_path")"
+
+    if $fetch_first; then
+        info "Fetching from origin..."
+        git --git-dir="$bare" fetch origin --quiet --prune
+    fi
+
+    # ── Case 1: branch exists on remote ──
+    if git --git-dir="$bare" rev-parse --verify "refs/remotes/origin/$branch" &>/dev/null; then
+        info "Found remote branch ${CYAN}origin/$branch${NC}"
+        git --git-dir="$bare" worktree add "$worktree_path" "$branch"
+
+    # ── Case 2: branch exists locally but not on remote ──
+    elif git --git-dir="$bare" rev-parse --verify "refs/heads/$branch" &>/dev/null; then
+        info "Found local branch ${CYAN}$branch${NC}"
+        git --git-dir="$bare" worktree add "$worktree_path" "$branch"
+
+    # ── Case 3: brand-new branch ──
+    else
+        local base
+        if [[ -n "$base_override" ]]; then
+            base="$base_override"
+        else
+            base=$(get_current_branch) || \
+                die "Branch '${branch}' doesn't exist and you're not in a worktree.\ncd into a worktree first, or specify a base: $PROG add $branch -b <base>"
+        fi
+
+        # When fetching, prefer latest remote state of the base
+        if $fetch_first; then
+            local remote_ref="origin/$base"
+            if git --git-dir="$bare" rev-parse --verify "refs/remotes/$remote_ref" &>/dev/null; then
+                info "Creating branch ${CYAN}$branch${NC} from ${CYAN}$remote_ref${NC} (latest remote)"
+                git --git-dir="$bare" worktree add -b "$branch" "$worktree_path" "$remote_ref"
+            else
+                warn "Remote ref $remote_ref not found, using local ${CYAN}$base${NC}"
+                git --git-dir="$bare" worktree add -b "$branch" "$worktree_path" "$base"
+            fi
+        else
+            info "Creating branch ${CYAN}$branch${NC} from ${CYAN}$base${NC}"
+            git --git-dir="$bare" worktree add -b "$branch" "$worktree_path" "$base"
+        fi
+    fi
+
+    info "Worktree ready: ${CYAN}$worktree_path${NC}"
+    # Print bare path on stdout (captured by shell wrapper for cd)
+    echo "$worktree_path"
+}
+
+# ── list ─────────────────────────────────────────────────────────────
+cmd_list() {
+    local root bare
+    root=$(find_repo_root)
+    bare=$(find_bare_repo "$root")
+    git --git-dir="$bare" worktree list "$@"
+}
+
+# ── remove ───────────────────────────────────────────────────────────
+cmd_remove() {
+    local branch="" force=false
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --force) force=true; shift ;;
+            -*)      die "Unknown option: $1" ;;
+            *)       branch="$1"; shift ;;
+        esac
+    done
+
+    [[ -n "$branch" ]] || die "Branch name required.\nUsage: $PROG remove <branch> [--force]"
+
+    local root bare worktree_path
+    root=$(find_repo_root)
+    bare=$(find_bare_repo "$root")
+    worktree_path="$root/$branch"
+
+    if [[ ! -d "$worktree_path" ]]; then
+        die "Worktree not found: $worktree_path"
+    fi
+
+    local extra_args=()
+    $force && extra_args+=(--force)
+
+    info "Removing worktree ${CYAN}$worktree_path${NC}..."
+    git --git-dir="$bare" worktree remove "${extra_args[@]}" "$worktree_path"
+
+    # Clean up empty parent dirs left behind
+    local parent
+    parent="$(dirname "$worktree_path")"
+    if [[ "$parent" != "$root" ]] && [[ -d "$parent" ]] && [[ -z "$(ls -A "$parent")" ]]; then
+        rmdir "$parent" 2>/dev/null || true
+    fi
+
+    info "Done."
+}
+
+# ── go ───────────────────────────────────────────────────────────────
+cmd_go() {
+    local branch="$1"
+    [[ -n "$branch" ]] || die "Branch name required.\nUsage: $PROG go <branch>"
+
+    local root
+    root=$(find_repo_root)
+    local worktree_path="$root/$branch"
+
+    if [[ ! -d "$worktree_path" ]]; then
+        die "Worktree not found: $worktree_path"
+    fi
+
+    echo "$worktree_path"
+}
+
+# ── shell-init ───────────────────────────────────────────────────────
+cmd_shell_init() {
+    cat <<'SHELL'
+# wt shell integration — add to your .bashrc / .zshrc
+# Source with:  eval "$(wt shell-init)"
+wt() {
+    if [[ "${1:-}" == "go" || "${1:-}" == "add" ]]; then
+        local output
+        output="$(command wt "$@")" || return $?
+        # Last line of output is the path
+        local target
+        target="$(echo "$output" | tail -1)"
+        if [[ -d "$target" ]]; then
+            cd "$target" || return $?
+        fi
+    elif [[ $# -gt 0 && "$1" != "list" && "$1" != "ls" && \
+            "$1" != "remove" && "$1" != "rm" && \
+            "$1" != "help" && "$1" != "-h" && "$1" != "--help" && \
+            "$1" != "shell-init" ]]; then
+        # Default (bare branch name) → treated as add, so cd after
+        local output
+        output="$(command wt "$@")" || return $?
+        local target
+        target="$(echo "$output" | tail -1)"
+        if [[ -d "$target" ]]; then
+            cd "$target" || return $?
+        fi
+    else
+        command wt "$@"
+    fi
+}
+SHELL
+}
+
+# ── usage ────────────────────────────────────────────────────────────
+usage_add() {
+    cat >&2 <<EOF
+Usage: $PROG add <branch> [options]
+
+Options:
+  -f, --fetch       Fetch origin first; for new branches, use latest remote state
+  -b, --base REF    Specify base branch/ref for new branch (default: current HEAD)
+
+Examples:
+  $PROG add bugfix/NIOS-1234           # New branch from current HEAD
+  $PROG add -f bugfix/NIOS-1234        # Fetch first, branch from origin/<current>
+  $PROG add -b develop/9.2 bugfix/X    # New branch from develop/9.2
+  $PROG add develop/9.2                # Check out existing remote branch
+EOF
+}
+
+usage() {
+    cat >&2 <<EOF
+${PROG} - git worktree helper for bare-repo layouts
+
+Usage: $PROG <command> [options]
+
+Commands:
+  add <branch> [-f] [-b base]   Add worktree (auto-detects new vs existing branch)
+  list                           List all worktrees
+  remove <branch> [--force]      Remove a worktree
+  go <branch>                    Print path to worktree (cd with shell integration)
+  shell-init                     Print shell function for cd integration
+
+If no known command is given, defaults to 'add'.
+
+Examples:
+  $PROG bugfix/NIOS-1234           # Create new branch from current HEAD
+  $PROG -f bugfix/NIOS-1234        # Fetch first, use latest remote state
+  $PROG -f develop/9.2             # Fetch + check out existing remote branch
+  $PROG remove bugfix/NIOS-1234    # Remove worktree
+  $PROG list                       # List worktrees
+
+Shell integration (auto-cd into new worktrees):
+  eval "\$($PROG shell-init)"      # Add to .bashrc / .zshrc
+EOF
+}
+
+# ── main ─────────────────────────────────────────────────────────────
+case "${1:-}" in
+    ""|-h|--help|help) usage; exit 0 ;;
+    add)        shift; cmd_add "$@" ;;
+    list|ls)    shift; cmd_list "$@" ;;
+    remove|rm)  shift; cmd_remove "$@" ;;
+    go)         shift; cmd_go "$@" ;;
+    shell-init) cmd_shell_init ;;
+    *)          cmd_add "$@" ;;   # default: treat arg as branch name
+esac
